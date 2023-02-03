@@ -4,7 +4,7 @@
 # REF ID:   e258e5d3 
 # LICENSE:  MIT
 # DATE:     2023-02-02
-# UPDATED: 
+# UPDATED:  2023-02-03
 
 # DEPENDENCIES ------------------------------------------------------------
   
@@ -27,6 +27,7 @@
   load_secrets("email")
   
   cntry <- "Malawi"
+  agency <- "USAID"
   
 # IMPORT ------------------------------------------------------------------
   
@@ -44,10 +45,11 @@
   
   #assign funding type
   df_fsd <- df_fsd %>% 
-    mutate(funding_type = case_when(interaction_type %in% c("Not Specified", "Service Delivery") ~ interaction_type,
-                                    program == "ASP" ~ "Above Site NSD",
+    mutate(funding_type = case_when(interaction_type == "Service Delivery" ~ "Service Delivery (SD)",
+                                    interaction_type == "Not Specified" ~ interaction_type,
+                                    program == "ASP" ~ "Above Site Non-SD",
                                     program %in% c("PM", "Applied Pipeline") ~ program,
-                                    interaction_type == "Non Service Delivery" ~ "Site Level NSD")) 
+                                    interaction_type == "Non Service Delivery" ~ "Site Level Non-SD")) 
   
   #remove M&O and supply chain
   df_fsd <- df_fsd %>% 
@@ -56,27 +58,37 @@
   
   #aggregate by year and 
   df_fsd_agg <- df_fsd %>% 
-    mutate(agency = ifelse(funding_agency == "USAID", "USAID", "Other")) %>% 
-    count(fiscal_year, agency, funding_type, wt = expenditure_amt, name = "expenditure_amt") %>% 
-    pivot_wider(names_from = agency, values_from = expenditure_amt,
-                names_glue = "{tolower(agency)}") %>% 
-    rowwise() %>% 
-    mutate(pepfar = sum(usaid, other, na.rm = TRUE)) %>% 
-    ungroup() %>% 
+    filter(funding_agency == agency) %>% 
+    count(country, fiscal_year, funding_agency, funding_type, wt = expenditure_amt, name = "exp_amt") %>% 
     group_by(fiscal_year) %>% 
-    mutate(usaid_total = sum(usaid, na.rm = TRUE)) %>% 
-    ungroup()
+    mutate(exp_total = sum(exp_amt, na.rm = TRUE)) %>% 
+    ungroup() 
+  
+  #labels for each type's share of the total
+  df_viz <- df_fsd_agg %>% 
+    mutate(lab = case_when(fiscal_year == max(fiscal_year) ~ percent(exp_amt/exp_total, 1)))
   
 
 # VIZ ---------------------------------------------------------------------
 
   
-  df_fsd_agg %>% 
-    ggplot(aes(fiscal_year, usaid, group = funding_type, fill = funding_type)) +
-    geom_area(aes(y = usaid_total), fill = "#909090", alpha = .2) +
-    geom_area() +
-    facet_grid(~fct_reorder2(funding_type, fiscal_year, usaid)) +
-    scale_y_continuous(label = number_format(scale = 1e-6, prefix = "$", suffix = "M")) + 
-    labs(x = NULL, y = NULL,
-         caption = glue("{metadata$caption}")) +
-    si_style_ygrid()
+  df_viz %>% 
+    ggplot(aes(fiscal_year, exp_amt, group = funding_type, fill = funding_type)) +
+    geom_area(aes(y = exp_total), fill = "#909090", alpha = .2) +
+    geom_area(alpha = .8) +
+    geom_text(aes(label = lab), family = "Source Sans Pro", hjust = -.1,
+              color = matterhorn, na.rm = TRUE) +
+    facet_grid(~fct_reorder2(funding_type, fiscal_year, exp_amt)) +
+    scale_y_continuous(label = number_format(scale = 1e-6, prefix = "$", suffix = "M"),
+                       expand = c(.005, .005)) + 
+    scale_fill_si("genoa", discrete = TRUE) +
+    coord_cartesian(clip = "off") +
+    labs(x = NULL, y = NULL, fill = NA,
+         subtitle = glue("{unique(df_viz$funding_agency)}/{unique(df_viz$country)}'s breakdown of annual expenditures by funding type"),
+         caption = glue("Note: M&O and supply chain excluded
+                        {metadata$caption}")) +
+    si_style_ygrid() +
+    theme(legend.position = "none")
+
+  si_save("Images/13_funding-distro_funding-flavors.png")
+  

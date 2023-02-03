@@ -11,3 +11,9 @@
   - Date on data source: 2022-12-16
   - Original Location: PEPFAR Panorama - https://pepfar-panorama.org/forms/downloads/
   - Google Drive ID: NA
+  
+**MER_Structured_Datasets_PSNU_IM_FY20-23_20221216_v2_1**
+  - Date accessed: 2023-01-17
+  - Date on data source: 2022-12-16
+  - Original Location: PEPFAR Panorama - https://pepfar-panorama.org/forms/downloads/
+  - Google Drive ID: NA

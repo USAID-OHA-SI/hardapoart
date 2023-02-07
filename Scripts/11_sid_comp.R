@@ -86,11 +86,14 @@
     fill(fct_grp, .direction = "downup") %>% 
     ungroup() 
   
+  df_viz <- df_viz %>% 
+    mutate(distance = val_cntry - avg)
 
 # VIZ ---------------------------------------------------------------------
 
   df_viz %>% 
-    ggplot(aes(avg_sid_score_weighted, fct_reorder(sid_area, avg_sid_score_weighted, mean, na.rm = TRUE))) +
+    ggplot(aes(avg_sid_score_weighted, fct_reorder(sid_area, val_cntry, sum, .na_rm = TRUE))) +
+    # ggplot(aes(avg_sid_score_weighted, fct_reorder(sid_area, avg_sid_score_weighted, mean, na.rm = TRUE))) +
     geom_linerange(aes(xmin = lower, xmax = upper), color = grey10k) +
     geom_point(color = "white", alpha = .2, na.rm = TRUE) +
     geom_point(alpha = .2, na.rm = TRUE) +
@@ -99,7 +102,7 @@
     geom_text(aes(x = val_cntry, label = number(lab, .1), color = font_color),
               na.rm = TRUE,
               family = "Source Sans Pro", size = 8/.pt) +
-    facet_grid(fct_grp~., scales = "free_y", space = "free") +
+    # facet_grid(fct_grp~., scales = "free_y", space = "free") +
     expand_limits(x = c(0, 10)) +
     scale_x_continuous(expand = c(.005, .005)) +
     coord_cartesian(clip = "off") +

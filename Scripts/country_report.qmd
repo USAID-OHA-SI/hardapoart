@@ -47,6 +47,17 @@ df_fsd %>%
 
 ```
 
+## 13. Does the country have the optimal mix of PEPFAR spending when thinking about sustainability?
+
+```{r}
+#| label: funding_distro
+
+df_fsd %>% 
+  prep_funding_distro(params$cntry, "USAID") %>% 
+  viz_funding_distro()
+
+```
+
 
 ## Calculations Used
 

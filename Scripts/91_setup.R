@@ -16,35 +16,51 @@
   library(tidytext)
   library(patchwork)
   library(ggtext)
-  
+  library(googlesheets4)
 
 # GLOBAL VARIABLES --------------------------------------------------------
   
-  get_metadata() #list of MSD metadata elements
-
   load_secrets()
 
   #SID_Global_Dataset Final 2.0.xlsx
   gs_id <- as_sheets_id("1nn4c9NBsYchD6xUjimbWBB-4tHvrc4-AnWntGOk0XLc")
 
 # IMPORT ------------------------------------------------------------------
+
+# LOAD MSD ----------------------------------------------------------------
+
+  #store meta data
+  get_metadata(type = "PSNU_IM")
+  metadata_msd <- metadata
+  rm(metadata)
   
+  #import
   df_msd <- si_path() %>% 
-    return_latest("OU_PSNU") %>% 
-    read_msd()   
+    return_latest("PSNU_IM") %>% 
+    read_psd()   
+  
+  #filter to data from last 5 quarters & relevant indicators/disaggs
+  df_msd %>% 
+    filter(fiscal_year >= 2022)
+  
+  
+  
+  
+  
+  
   
   df_fsd <- si_path() %>% 
     return_latest("Financial") %>% 
-    read_msd()   
+    read_psd() 
   
-  si_path() %>% 
-    return_latest("HRH") %>%
-    unzip(exdir = folderpath_tmp)
+  df_natsubnat <- si_path() %>% 
+    return_latest("NAT_SUBNAT") %>% 
+    read_psd()
   
-  df_hrh <- folderpath_tmp %>% 
-    return_latest("HRH.*xlsx") %>%
-    read_excel(col_types = "text")
-
+  df_hrh <- si_path() %>% 
+    return_latest("HRH") %>% 
+    read_psd()
+  
   df_sid <- range_speedread(gs_id,
                             col_types = c(
                               .default = "c",
@@ -54,6 +70,23 @@
   df_unaids_tt <- pull_unaids(TRUE, "HIV Test & Treat")
   
   df_unaids_epi <- pull_unaids(FALSE, "epicontrol")
+
+# STORE METDATA -----------------------------------------------------------
+
+
+  
+  get_metadata("Financial")
+  metadata_fsd <- metadata
+  
+  get_metadata("NAT_SUBNAT")
+  metadata_natsubnat <- metadata
+
+  get_metadata("HRH")
+  metadata_hrh <- metadata  
+  
+  metadata_sid <- list(caption = "Source: FY21 SID Global Dataset")
+  
+  metadata_unaids <- list(caption = glue("Source: {mindthegap::source_note()}"))
 
 # MUNGE -------------------------------------------------------------------
   

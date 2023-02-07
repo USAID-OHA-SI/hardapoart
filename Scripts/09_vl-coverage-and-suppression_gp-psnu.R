@@ -74,23 +74,6 @@
   
   df_psnu <- file_psnu %>% read_msd()
   
-  df_psnu %>% glimpse()
-  df_psnu %>% distinct(fiscal_year)
-  df_psnu %>% distinct(indicator)
-  
-  df_psnu %>% 
-    filter(funding_agency != "Dedup",
-           indicator %in% inds_vl) %>% 
-    distinct(indicator, standardizeddisaggregate)
-  
-  df_psnu %>% 
-    filter(funding_agency != "Dedup",
-           indicator %in% inds_vl) %>% 
-    count(fiscal_year, indicator, standardizeddisaggregate, wt = cumulative) %>% 
-    filter(n != 0) %>% 
-    pivot_wider(names_from = fiscal_year, values_from = n) %>% 
-    prinf()
-  
 # MUNGING ----
   
   ## TX Indicators
@@ -107,21 +90,9 @@
         TRUE ~ indicator)
     ) 
   
-  df_tx %>% 
-    distinct(fiscal_year, ageasentered) %>% 
-    arrange(fiscal_year, ageasentered) %>% 
-    prinf()
-  
   df_tx <- df_tx %>%
     select(-cumulative, -targets) %>% 
-    filter(ageasentered != "Unknown Age") %>% 
-    mutate(age = case_when(
-      trendscoarse == "<15" ~ trendscoarse,
-      ageasentered == "15-19" ~ ageasentered,
-      ageasentered %in% "20-24" ~ ageasentered,
-      TRUE ~ "25+"
-    )) %>% 
-    group_by(fiscal_year, funding_agency, operatingunit, indicator, age) %>%
+    group_by(fiscal_year, funding_agency, operatingunit, indicator, snu1) %>%
     #summarise(across(starts_with("qtr"), sum, na.rm = TRUE), .groups = "drop") %>%
     #summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = "drop") %>%
     summarise(qtr1 = sum(qtr1, na.rm = TRUE), 
@@ -139,7 +110,7 @@
     select(-period_type) %>% 
     pivot_wider(names_from = indicator, values_from = value) %>% 
     rename_with(str_to_lower) %>% 
-    group_by(funding_agency, operatingunit, age) %>% 
+    group_by(funding_agency, operatingunit, snu1) %>% 
     mutate(
       vlc = tx_pvls_d / dplyr::lag(tx_curr, 2, order_by = period),
       vls = tx_pvls / tx_pvls_d
@@ -175,7 +146,7 @@
          title = glue::glue("{toupper(cntry)} - VIRAL LOAD TRENDS"),
          subtitle = glue::glue("<span style='color:{burnt_sienna}'>Coverage</span> & <span style='color:{genoa}'>Supression</span>"),
          caption = glue::glue("Source: {src_msd} - Created by OHA/SIEI | Ref. ID #{ref_id}")) +
-    facet_wrap(~age) +
+    facet_wrap(~snu1) +
     si_style_nolines() +
     theme(plot.title = element_markdown(),
           plot.subtitle = element_markdown(),
@@ -204,7 +175,7 @@
              title = glue::glue("{toupper(.ou)} - VIRAL LOAD TRENDS"),
              subtitle = glue::glue("<span style='color:{burnt_sienna}'>Coverage</span> & <span style='color:{genoa}'>Supression</span>"),
              caption = glue::glue("Source: {src_msd} - Created by OHA/SIEI | Ref. ID #{ref_id}")) +
-        facet_wrap(~age) +
+        facet_wrap(~snu1) +
         si_style_nolines() +
         theme(plot.title = element_markdown(),
               plot.subtitle = element_markdown(),
@@ -214,7 +185,7 @@
       print(viz)
       
       si_save(plot = viz,
-              filename = glue::glue("./Graphics/{curr_pd} - {toupper(.ou)} VLCS Trends by Age Group.png"))
+              filename = glue::glue("./Graphics/{curr_pd} - {toupper(.ou)} VLCS Trends by SNU1"))
     })
   
 # EXPORT ----

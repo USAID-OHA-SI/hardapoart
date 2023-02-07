@@ -59,12 +59,57 @@
     fill(targets, .direction = "down") %>% 
     filter(nchar(period) != 4) 
   
+  df_hts_tgt <- df_hts_base %>% 
+    select(-results) %>% 
+    pivot_wider(names_from = indicator, values_from = targets) %>% 
+    mutate(linkage = TX_NEW / HTS_TST_POS)
+  
+  df_linkage <- df_hts_base %>% 
+    select(-targets) %>% 
+    pivot_wider(names_from = indicator, values_from = results) %>% 
+    mutate(linkage = TX_NEW / HTS_TST_POS)
+  
+  # VIZ ===========================================================================
+  
+  # Linkage visual w/ targets
+  bottom_hts <- df_linkage %>% 
+    ggplot(aes(x = period)) +
+    # geom_col(data = df_hts_tgt, aes(y = HTS_TST_POS), fill = "#efe9ed",
+    #          position = position_nudge(x = 0.15), width = 0.5) +
+    # geom_col(data = df_hts_tgt, aes(y = TX_NEW), fill = "#f8ead9", 
+    #          position = position_nudge(x = -0.15), width = 0.5) +
+    geom_col(aes(y = HTS_TST_POS), fill = "#855C75",
+             position = position_nudge(x = 0.1), width = 0.5) +
+    geom_col(aes(y = TX_NEW), fill = "#D9AF6B", 
+             position = position_nudge(x = -0.1), width = 0.5) +
+    si_style_ygrid() +
+    scale_y_continuous(labels = comma) +
+    labs(x = NULL, y = NULL) +
+    expand_limits(x = c(0, 9)) 
+  
+  # Linkage plot - #b08472
+  top_hts <- df_linkage %>% 
+    ggplot(aes(x = period, group = 1)) +
+    geom_line(aes(y = linkage), color = grey50k, size = 0.5) +
+    geom_point(aes(y = linkage), shape = 19, color = "#b08472",  size = 3) + 
+    geom_point(aes(y = linkage), shape = 1, color = grey90k,  size = 3) + 
+    geom_text(aes(y = linkage, label = percent(linkage, 1)), 
+              size = 9/.pt,
+              family = "Source Sans Pro",
+              fontface = "bold", 
+              color = "#b08472", 
+              vjust = -1.5) +
+    si_style_nolines() +
+    expand_limits(y = c(.85, 1), x = c(0, 9)) +
+    theme(axis.text.y = element_blank(), 
+          axis.text.x = element_blank()) +
+    labs(x = NULL, y = NULL) +
+    annotate("text", x = 8.5, y = 0.87, label = "Linkage", 
+             linewidth = 11/.pt, color = "#b08472")
+  
+  top_hts / bottom_hts +
+    plot_layout(heights = c(1, 4))
   
   
-  
-  
-  
-  
-  
-  
+  si_save("Graphics/Linkage_summary.svg")  
   

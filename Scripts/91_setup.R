@@ -20,12 +20,12 @@
 
 # GLOBAL VARIABLES --------------------------------------------------------
   
+  get_metadata() #list of MSD metadata elements
+
   load_secrets()
 
   #SID_Global_Dataset Final 2.0.xlsx
   gs_id <- as_sheets_id("1nn4c9NBsYchD6xUjimbWBB-4tHvrc4-AnWntGOk0XLc")
-
-# IMPORT ------------------------------------------------------------------
 
 # LOAD MSD ----------------------------------------------------------------
 
@@ -61,6 +61,25 @@
     return_latest("HRH") %>% 
     read_psd()
   
+=======
+  
+  df_msd <- si_path() %>% 
+    return_latest("OU_PSNU") %>% 
+    read_msd()   
+  
+  df_fsd <- si_path() %>% 
+    return_latest("Financial") %>% 
+    read_msd()   
+  
+  si_path() %>% 
+    return_latest("HRH") %>%
+    unzip(exdir = folderpath_tmp)
+  
+  df_hrh <- folderpath_tmp %>% 
+    return_latest("HRH.*xlsx") %>%
+    read_excel(col_types = "text")
+
+>>>>>>> 56075dff18ddf7eec8ba24e68a6406aa2ace838a
   df_sid <- range_speedread(gs_id,
                             col_types = c(
                               .default = "c",
@@ -71,6 +90,7 @@
   
   df_unaids_epi <- pull_unaids(FALSE, "epicontrol")
 
+<<<<<<< HEAD
 # STORE METDATA -----------------------------------------------------------
 
 
@@ -88,6 +108,8 @@
   
   metadata_unaids <- list(caption = glue("Source: {mindthegap::source_note()}"))
 
+=======
+>>>>>>> 56075dff18ddf7eec8ba24e68a6406aa2ace838a
 # MUNGE -------------------------------------------------------------------
   
   #TODO

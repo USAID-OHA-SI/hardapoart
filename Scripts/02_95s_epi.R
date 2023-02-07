@@ -155,14 +155,20 @@ viz_epi <-
 viz_95 <- df_tt_lim %>% 
   ggplot(aes(indicator, pop,
              fill = fill_color, color = scooter, shape = 22)) +
-  geom_point(size = 6.5) +
+  geom_point(size = 15) +
   geom_vline(xintercept = 3.5) +
   geom_text(data = . %>% filter(achv != TRUE & indicator != "Epi\nControl"), 
             vjust = .5, hjust = .5,
-            aes(label = value), family = "Source Sans Pro SemiBold", size = 3) +
+            aes(label = value), family = "Source Sans Pro SemiBold", size = 6) +
+  geom_text(data = . %>% filter(pop == "All Ages"), 
+            vjust = -5, hjust = .5,
+            aes(label = goal_rate, color = trolley_grey), family = "Source Sans Pro Light", size = 4) +
+  geom_text(data = . %>% filter(pop == "All Ages" & indicator == "Known\nStatus"), 
+            vjust = -5, hjust = 1.5,
+            aes(label = paste("Goal Rate"), color = trolley_grey), family = "Source Sans Pro Light", size = 4) +
   geom_text(data = . %>% filter(achv == TRUE & indicator != "Epi\nControl"), 
             vjust = .5, hjust = .5,
-            aes(label = value), color = "white", family = "Source Sans Pro SemiBold", size = 3) +
+            aes(label = value), color = "white", family = "Source Sans Pro SemiBold", size = 6) +
   # geom_text(data = . %>% filter(achv != TRUE & indicator == "Epi\nControl"), 
   #           vjust = .5, hjust = .5,
   #           aes(label = value), family = "Source Sans Pro SemiBold", size = 2.5) +

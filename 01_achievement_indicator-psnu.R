@@ -59,7 +59,7 @@ df <- read_msd(file_path)
 
 
 # MUNGE -------------------------------------------------------------------
-country_select<-"Tanzania"
+country_select<-"Colombia"
 
 #subset to key indicators
 df_achv <- df %>% 

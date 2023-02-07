@@ -1,0 +1,57 @@
+---
+title: "country report"
+date: "`r format(Sys.time(), '%Y-%m-%d')`"
+format: pptx
+execute:
+  echo: FALSE
+params: 
+  curr_pd: "FY22Q4"
+  cntry: "Malawi"
+
+---
+
+```{r}
+# | label: setup
+# | include: FALSE
+
+glue("{params$cntry}")
+```
+
+## Purpose
+
+TODO - fill with: - purpose statement/intent - what this is/isn't - contact info
+
+## 1. Are there any major gaps in achievement as of `params$curr_pd`?
+
+## 2. Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
+
+## 3. What does HIV prevalence look like across sex / SNUs? by age/sex bands?
+
+## 11. Are there key gaps identified by the SID for the country to prioritize?
+
+```{r}
+# | label: sid
+
+df_sid %>% 
+  prep_sid(params$cntry) %>% 
+  viz_sid()
+```
+## 12. Have COP budgets been flatlining or changing in a similar manner across agencies?
+
+```{r}
+# | label: budget_share
+
+df_fsd %>% 
+  prep_budget_trends(params$cntry) %>% 
+  viz_budget_trends()
+
+```
+
+
+## Calculations Used
+
+TODO
+
+## Data Sources
+
+TODO

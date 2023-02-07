@@ -17,13 +17,19 @@
   library(patchwork)
   library(ggtext)
   library(googlesheets4)
+  library(mindthegap)
+
+# SOURCE LOCAL FUNCTIONS --------------------------------------------------
+
+  source("Scripts/11_sid_comp.R")
+  source("Scripts/12_budget-trends_agency.R")
 
 # GLOBAL VARIABLES --------------------------------------------------------
   
   load_secrets("email")
 
   #SID_Global_Dataset Final 2.0.xlsx
-  gs_id <- as_sheets_id("1nn4c9NBsYchD6xUjimbWBB-4tHvrc4-AnWntGOk0XLc")
+  sid_gs_id <- as_sheets_id("1nn4c9NBsYchD6xUjimbWBB-4tHvrc4-AnWntGOk0XLc")
 
 # LOAD MSD ----------------------------------------------------------------
 
@@ -38,7 +44,7 @@
     read_psd()   
   
   #filter to data from last 5 quarters & relevant indicators/disaggs
-  df_msd %>% 
+  df_msd <- df_msd %>% 
     filter(fiscal_year >= 2022)
   
   
@@ -84,12 +90,6 @@
     return_latest("Financial") %>% 
     read_psd()   
   
-  #filter to data from last available year
-  df_fsd <- df_fsd %>% 
-    filter(fiscal_year == max(fiscal_year))
-  
-  
-
 # LOAD NAT_SUBNAT ---------------------------------------------------------
 
   #store meta data
@@ -131,20 +131,17 @@
   metadata_sid <- list(caption = "Source: FY21 SID Global Dataset")
   
   #import
-  df_sid <- range_speedread(gs_id,
+  df_sid <- range_speedread(sid_gs_id,
                             col_types = c(
                               .default = "c",
                               SIDweighted_answer = "d",
                               SIDraw = "d"))
-  
- 
-
 
 # LOAD UNAIDS -------------------------------------------------------------
 
 
   #store meta data
-  metadata_unaids <- list(caption = glue("Source: {mindthegap::source_note()}"))
+  metadata_unaids <- list(caption = glue("Source: {source_note()}"))
   
   #import
   df_unaids_tt <- pull_unaids(TRUE, "HIV Test & Treat")

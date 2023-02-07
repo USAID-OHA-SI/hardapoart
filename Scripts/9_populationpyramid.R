@@ -19,22 +19,18 @@
 # GLOBAL VARIABLES ------------------------------------------------------------
   
   ref_id <- "aa8bd5b4"
-  
-  get_metadata() #list of MSD metadata elements
-  
-  # testing with small and large OU portfolios
-  # ou <- "Zambia"
   ou <- "South Sudan"
-
-# IMPORT ----------------------------------------------------------------------
-  
   nat_subnat_path <- "NAT_SUBNAT"
 
-# MUNGE ------------------------------------------------------------------------
+# IMPORT ----------------------------------------------------------------------
   
   df <- si_path() %>%
     return_latest(nat_subnat_path) %>%
     read_msd()
+  
+  get_metadata()
+
+# MUNGE ------------------------------------------------------------------------
   
   df_filt <- df %>%
     filter(

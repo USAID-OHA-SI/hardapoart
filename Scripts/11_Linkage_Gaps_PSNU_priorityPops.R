@@ -26,8 +26,7 @@
 # GLOBAL VARIABLES ------------------------------------------------------------
   
   ref_id <- "f6f26589"
-  ou <- "South Sudan"
-  path <- "Genie_PSNU_IM_South_Sudan_Daily_2022-11-15"
+  path <- "Genie_PSNU_IM_Democratic_Republic_of_the_Congo_Frozen"
 
 # IMPORT ----------------------------------------------------------------------
   
@@ -41,7 +40,7 @@
 # MUNGE -----------------------------------------------------------------------
   
   df_msd <- df  %>% 
-    filter(operatingunit == ou) %>%
+   # filter(operatingunit == ou) %>%
     clean_agency() %>%
     resolve_knownissues()
   
@@ -70,7 +69,8 @@
   df_linkage_nat <- df_hts_nat_base %>% 
     select(-targets) %>% 
     pivot_wider(names_from = indicator, values_from = results) %>% 
-    mutate(linkage = TX_NEW / HTS_TST_POS)
+    mutate(linkage = TX_NEW / HTS_TST_POS, 
+           psnu = "National")
   
   # PSNU
   df_hts_psnu_base <- df_msd %>% 
@@ -96,52 +96,60 @@
     select(-targets) %>% 
     pivot_wider(names_from = indicator, values_from = results) %>% 
     mutate(linkage = TX_NEW / HTS_TST_POS)
-  
-  df_linkage <- bind_rows(df_linkage_nat, df_linkage_psnu)
-  
-  
+
   
   # VIZ ===========================================================================
   
   # Linkage visual w/ targets
-  bottom_hts <- df_linkage %>% 
-    ggplot(aes(x = reorder(psnu, HTS_TST))) +
+  nat <- df_linkage_nat %>% 
+    ggplot(aes(x = reorder(psnu, linkage))) +
     # geom_col(data = df_hts_tgt, aes(y = HTS_TST_POS), fill = "#efe9ed",
     #          position = position_nudge(x = 0.15), width = 0.5) +
     # geom_col(data = df_hts_tgt, aes(y = TX_NEW), fill = "#f8ead9", 
     #          position = position_nudge(x = -0.15), width = 0.5) +
-    geom_col(aes(y = HTS_TST_POS), fill = "#855C75",
+    geom_col(aes(y = linkage), fill = scooter_light,
              position = position_nudge(x = 0.1), width = 0.5) +
-    geom_col(aes(y = TX_NEW), fill = "#D9AF6B", 
-             position = position_nudge(x = -0.1), width = 0.5) +
-    si_style_ygrid() +
-    coord_flip() +
-    scale_y_continuous(labels = comma) +
-    labs(x = NULL, y = NULL) +
-    expand_limits(x = c(0, 9)) 
-  
-  # Linkage plot - #b08472
-  top_hts <- df_linkage %>% 
-    ggplot(aes(x = psnu, group = 1)) +
-    geom_line(aes(y = linkage), color = grey50k, linewidth = 0.5) +
-    geom_point(aes(y = linkage), shape = 19, color = "#b08472",  size = 3) + 
-    geom_point(aes(y = linkage), shape = 1, color = grey90k,  size = 3) + 
     geom_text(aes(y = linkage, label = percent(linkage, 1)), 
               size = 9/.pt,
               family = "Source Sans Pro",
               fontface = "bold", 
-              color = "#b08472", 
-              vjust = -1.5) +
-    si_style_nolines() +
-    expand_limits(y = c(.85, 1), x = c(0, 9)) +
-    theme(axis.text.y = element_blank(), 
-          axis.text.x = element_blank()) +
-    labs(x = NULL, y = NULL) +
-    annotate("text", x = 8.5, y = 0.87, label = "Linkage", 
-             size = 11/.pt, color = "#b08472")
+              color = scooter, 
+              vjust = 0) +
+    si_style_ygrid() +
+    coord_flip() +
+    scale_y_continuous(labels = comma) +
+    labs(x = NULL, y = NULL, 
+         title = "Linkage across PSNUs",
+         subtitle = glue("Linkage | {metadata$curr_pd_lab}")) +
+expand_limits(x = c(0, 9)) +
+    theme(
+      legend.position = "none",
+      plot.title = element_markdown(),
+      strip.text = element_markdown(), 
+      axis.text.x = element_blank())
   
-  top_hts / bottom_hts +
+  psnu <- df_linkage_psnu %>%
+  ggplot(aes(x = reorder(psnu, linkage))) +
+    # geom_col(data = df_hts_tgt, aes(y = HTS_TST_POS), fill = "#efe9ed",
+    #          position = position_nudge(x = 0.15), width = 0.5) +
+    # geom_col(data = df_hts_tgt, aes(y = TX_NEW), fill = "#f8ead9", 
+    #          position = position_nudge(x = -0.15), width = 0.5) +
+    geom_col(aes(y = linkage), fill = scooter_light,
+             position = position_nudge(x = 0.1), width = 0.5) +
+    geom_text(aes(y = linkage, label = percent(linkage, 1)), 
+              size = 9/.pt,
+              family = "Source Sans Pro",
+              fontface = "bold", 
+              color = scooter, 
+              vjust = 0) +
+    si_style_ygrid() +
+    coord_flip() +
+    scale_y_continuous(labels = comma) +
+    labs(x = NULL, y = NULL, 
+         caption = glue("Source: {metadata$curr_pd} MSD | Ref id: {ref_id} | US Agency for International Development")) +
+    expand_limits(x = c(0, 9)) 
+  
+  nat/ psnu +
     plot_layout(heights = c(1, 4))
   
-  si_save("Graphics/Linkage_summary.svg")  
-  
+  si_save("Images/Linkage_summary.png")  

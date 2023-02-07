@@ -44,75 +44,116 @@
     filter(fiscal_year >= 2022)
   
   
+  #add _D to denom variables
+  df_msd <- clean_indicator(df_msd)
+  
+  #MSD filter table
+  df_msd_ind <- tibble::tribble(
+    ~indicator,      ~standardizeddisaggregate,
+    "HTS_TST",              "Total Numerator",
+    "HTS_TST_POS",              "Total Numerator",
+    "KP_PREV",              "Total Numerator",
+    "OVC_SERV",              "Total Numerator",
+    "PMTCT_EID",              "Total Numerator",
+    "PrEP_NEW",                      "Age/Sex",
+    "PrEP_NEW",                    "KeyPopAbr",
+    "PrEP_NEW",              "Total Numerator",
+    "TB_PREV",              "Total Numerator",
+    "TX_CURR",            "Age/Sex/HIVStatus",
+    "TX_CURR",              "Total Numerator",
+    "TX_NEW",              "Total Numerator",
+    "TX_PVLS", "Age/Sex/Indication/HIVStatus",
+    "TX_PVLS",              "Total Numerator",
+    "TX_PVLS_D",            "Total Denominator",
+    "VMMC_CIRC",              "Total Numerator"
+  )
+
+  #filter to select indicators/disaggs
+  df_msd <- df_msd %>% 
+    semi_join(df_msd_ind, by = c("indicator", "standardizeddisaggregate"))
   
   
+
+# LOAD FSD ----------------------------------------------------------------
+
+  #store meta data
+  get_metadata(type = "Financial")
+  metadata_fsd <- metadata
+  rm(metadata)
   
-  
-  
+  #import
   df_fsd <- si_path() %>% 
     return_latest("Financial") %>% 
-    read_psd() 
+    read_psd()   
   
+  #filter to data from last available year
+  df_fsd <- df_fsd %>% 
+    filter(fiscal_year == max(fiscal_year))
+  
+  
+
+# LOAD NAT_SUBNAT ---------------------------------------------------------
+
+  #store meta data
+  get_metadata(type = "NAT_SUBNAT")
+  metadata_natsubnat <- metadata
+  rm(metadata)
+  
+  #import
   df_natsubnat <- si_path() %>% 
     return_latest("NAT_SUBNAT") %>% 
     read_psd()
   
+  df_natsubnat_ind <- tibble::tribble(
+    ~indicator, ~standardizeddisaggregate,
+       "PLHIV",       "Age/Sex/HIVStatus",
+     "POP_EST",                 "Age/Sex"
+    )
+
+  #filter to select indicators/disaggs
+  df_natsubnat <- df_natsubnat %>% 
+    semi_join(df_natsubnat_ind, by = c("indicator", "standardizeddisaggregate"))
+
+# LOAD HRH ----------------------------------------------------------------
+
+  #store meta data
+  get_metadata(type = "HRH")
+  metadata_hrh <- metadata
+  rm(metadata)
+  
+  #import
   df_hrh <- si_path() %>% 
     return_latest("HRH") %>% 
     read_psd()
   
-=======
-  
-  df_msd <- si_path() %>% 
-    return_latest("OU_PSNU") %>% 
-    read_msd()   
-  
-  df_fsd <- si_path() %>% 
-    return_latest("Financial") %>% 
-    read_msd()   
-  
-  si_path() %>% 
-    return_latest("HRH") %>%
-    unzip(exdir = folderpath_tmp)
-  
-  df_hrh <- folderpath_tmp %>% 
-    return_latest("HRH.*xlsx") %>%
-    read_excel(col_types = "text")
 
->>>>>>> 56075dff18ddf7eec8ba24e68a6406aa2ace838a
+# LOAD SID ----------------------------------------------------------------
+
+  #store meta data
+  metadata_sid <- list(caption = "Source: FY21 SID Global Dataset")
+  
+  #import
   df_sid <- range_speedread(gs_id,
                             col_types = c(
                               .default = "c",
                               SIDweighted_answer = "d",
                               SIDraw = "d"))
   
+ 
+
+
+# LOAD UNAIDS -------------------------------------------------------------
+
+
+  #store meta data
+  metadata_unaids <- list(caption = glue("Source: {mindthegap::source_note()}"))
+  
+  #import
   df_unaids_tt <- pull_unaids(TRUE, "HIV Test & Treat")
   
   df_unaids_epi <- pull_unaids(FALSE, "epicontrol")
-
-<<<<<<< HEAD
-# STORE METDATA -----------------------------------------------------------
-
-
   
-  get_metadata("Financial")
-  metadata_fsd <- metadata
-  
-  get_metadata("NAT_SUBNAT")
-  metadata_natsubnat <- metadata
 
-  get_metadata("HRH")
-  metadata_hrh <- metadata  
-  
-  metadata_sid <- list(caption = "Source: FY21 SID Global Dataset")
-  
-  metadata_unaids <- list(caption = glue("Source: {mindthegap::source_note()}"))
-
-=======
->>>>>>> 56075dff18ddf7eec8ba24e68a6406aa2ace838a
-# MUNGE -------------------------------------------------------------------
-  
-  #TODO
   
 
 # MARKDOWN ----------------------------------------------------------------

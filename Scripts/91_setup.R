@@ -4,7 +4,7 @@
 # REF ID:   3fa8f096 
 # LICENSE:  MIT
 # DATE:     2023-02-06
-# UPDATED: 
+# UPDATED:  2023-02-07
 
 # DEPENDENCIES ------------------------------------------------------------
   
@@ -20,9 +20,7 @@
 
 # GLOBAL VARIABLES --------------------------------------------------------
   
-  get_metadata() #list of MSD metadata elements
-
-  load_secrets()
+  load_secrets("email")
 
   #SID_Global_Dataset Final 2.0.xlsx
   gs_id <- as_sheets_id("1nn4c9NBsYchD6xUjimbWBB-4tHvrc4-AnWntGOk0XLc")
@@ -171,4 +169,4 @@
   #create reports
   reports %>%
     pwalk(render, 
-          input = here("Scripts","reports.Rmd"))
+          input = here("Scripts","reports.Qmd"))

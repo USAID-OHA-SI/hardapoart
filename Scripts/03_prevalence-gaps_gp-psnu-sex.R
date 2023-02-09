@@ -29,13 +29,6 @@
   ## Script Reference
   ref_id <- "8fb89847"
   
-  authors <- c("A.Chatfez",
-               "B.Kagniniwa", 
-               "J.Hoehner",
-               "K.Srikanth", 
-               "N.Petrovic",
-               "T.Essam")
-  
   # SI Backstop Coverage
   cntry = "Nigeria"
   
@@ -69,51 +62,179 @@
   
 # FUNCTIONS ----
 
+  #' @title Prep HIV Prevalence Source Data
+  #' 
+  #' @param cntry     OU/Country name
+  #' @param fy        Fiscal Year
+  #' @param add_style Append color code
+  #' 
+  prep_hiv_prevalence <- function(df, cntry, fy,
+                                  add_style = T) {
+    
+    # disagg option
+    .disagg <- match.arg(disagg)
+    
+    ## Age/Sex Summaries
+    df_pops <- df %>% 
+      dplyr::filter(fiscal_year == fy,
+                    country == cntry) %>% 
+      dplyr::group_by(operatingunit, country, snu1uid, snu1,
+                      psnuuid, psnu, indicator, ageasentered, sex) %>% 
+      dplyr::summarise(value = sum(targets, na.rm = T), .groups = "drop") %>% 
+      gophr::clean_psnu()
+    
+    ## Add OU/Country Summary
+    
+    df_pops <- df_pops %>% 
+      group_by(operatingunit, country, indicator, ageasentered, sex) %>% 
+      summarise(value = sum(value, na.rm = T), .groups = "drop") %>% 
+      mutate(psnu = "COUNTRY") %>% 
+      bind_rows(df_pops, .)
+    
+    df_pops <- df_pops %>% 
+      filter(psnu != "COUNTRY") %>% 
+      group_by(operatingunit, indicator, ageasentered, sex) %>% 
+      summarise(value = sum(value, na.rm = T), .groups = "drop") %>% 
+      mutate(psnu = "OU") %>% 
+      bind_rows(df_pops, .)
+    
+    ## Compute Prevalence
+    df_prev_sex <- df_pops %>% 
+      group_by(operatingunit, country, snu1uid, snu1, psnuuid, psnu, sex) %>% 
+      reframe(prevalence = value[indicator == "PLHIV"] / 
+                value[indicator == "POP_EST"]) %>% 
+      ungroup() 
+    
+    df_prev_psnu <- df_pops %>% 
+      group_by(operatingunit, country, snu1uid, snu1, psnuuid, psnu) %>% 
+      reframe(psnu_prev = sum(value[indicator == "PLHIV"], na.rm = T) / 
+                sum(value[indicator == "POP_EST"], na.rm = T)) %>% 
+      ungroup() 
+    
+    df_prev <- df_prev_sex %>% 
+      left_join(df_prev_psnu,
+                by = c("operatingunit", "country", 
+                       "snu1uid", "snu1", "psnuuid", "psnu"))
+    
+    ## Add SI Style for viz
+    if (add_style & .disagg == "psnu") {
+      
+      df_prev_gap <- df_prev %>% 
+        select(-psnu_prev) %>% 
+        mutate(sex = tolower(sex)) %>% 
+        pivot_wider(names_from = sex,
+                    values_from = prevalence) %>% 
+        mutate(color_gap = grey30k)
+      
+      df_prev <- df_prev %>% 
+        left_join(df_prev_gap,
+                  by = c("operatingunit", "country", 
+                         "snu1uid", "snu1", "psnuuid", "psnu")) %>% 
+        mutate(
+          color_sex = case_when(
+            sex == "Female" ~ moody_blue,
+            sex == "Male" ~ genoa,
+            TRUE ~ grey30k
+          ),
+          psnu_label = case_when(
+            psnu %in% c("COUNTRY", "OU") ~ paste0("<span style='color:", usaid_black, "'><strong>", psnu, "</strong></span>"),
+            TRUE ~ psnu
+          ),
+        ) %>% 
+        group_by(operatingunit) %>% 
+        mutate(
+          threshold = case_when(
+            psnu_prev < prevalence[psnu == "OU"] ~ .3,
+            TRUE ~ 1
+          )
+        )
+      
+    }
+    
+    return(df_prev)
+  }
+  
+  
+  #' @title Visualize HIV Prevalence by PSNU/Gender
+  #' 
+  #' 
+  #' 
+  viz_hiv_prevalence <- function(df, cntry, 
+                                 fy, pd, src, id, 
+                                 save = F) {
+    
+    # Guides
+    gap_max <- df %>% 
+      filter(psnu != "COUNTRY" & psnu =! "OU") %>% 
+      pull(prevalence) %>%
+      max() %>%
+      round(2)
+    
+    gap_step <- .01
+    
+    if (gap_max > .01) gap_step <- .05
+    
+    # Viz
+    viz <- df %>% 
+      ggplot(data = ., 
+             aes(x = reorder(psnu, female), 
+                 y = prevalence,
+                 fill = color_sex)) +
+      geom_hline(yintercept = seq(from = 0, 
+                                  to = gap_max, 
+                                  by = gap_step),
+                 size = .8, linetype = "dashed", color = grey20k) +
+      geom_vline(xintercept = "OU",
+                 size = .8, linetype = "dashed", color = usaid_darkgrey) +
+      geom_segment(aes(xend = reorder(psnu, female),
+                       y = female, 
+                       yend = male,
+                       color = color_gap),
+                   linewidth = 2) +
+      geom_point(shape = 21, size = 5, color = grey10k) +
+      scale_fill_identity() +
+      scale_color_identity() +
+      scale_y_continuous(labels = percent, position = "right") +
+      coord_flip() +
+      labs(x = "", y = "", 
+           title = glue::glue("{toupper(cntry)} - {fy} HIV PREVALANCE"),
+           subtitle = glue::glue("Prevalence Gap between <span style='color:{moody_blue}'>Female</span> & <span style='color:{genoa}'>Male</span> by PSNU"),
+           caption = glue::glue("Source: {src} - Created by OHA/SIEI | Ref. ID #{id}")) +
+      si_style_nolines() +
+      theme(plot.subtitle = element_markdown(),
+            axis.text.y = element_markdown())
+    
+    print(viz)
+    
+    if (save) {
+      si_save(plot = viz,
+              filename = glue::glue("{pd} - {toupper(cntry)} HIV Prevalence.png"))
+    }
+  }
+  
 # DATA IMPORT ----
-  
-  # UNAIDS Country Stats
-  
-  # df_prev <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
-  #   
-  # df_prev %>% glimpse()
-  # df_prev %>% distinct(year) %>% prinf()
-  # df_prev %>% distinct(indicator)
   
   # PEPFAR Program Data
   
   df_subnat <- file_subnat %>% read_msd()
   
-  df_subnat %>% glimpse()
-  df_subnat %>% distinct(fiscal_year)
-  df_subnat %>% distinct(indicator)
-  
-  df_subnat %>% 
-    filter(indicator %in% c("PLHIV", "POP_EST")) %>% 
-    count(fiscal_year, indicator, standardizeddisaggregate, wt = targets) %>% 
-    filter(n != 0) %>% 
-    pivot_wider(names_from = fiscal_year, values_from = n) %>% 
-    prinf()
   
 # MUNGING ----
   
-  df_subnat %>% 
-    filter(indicator %in% inds) %>% 
-    count(fiscal_year, indicator, standardizeddisaggregate, wt = targets) %>% 
-    filter(n != 0) %>% 
-    pivot_wider(names_from = fiscal_year, values_from = n) %>% 
-    prinf()
+  df_prev2 <- prep_hiv_prevalence(df = df_natsubnat, 
+                                  cntry = cntry,
+                                  fy = metadata_natsubnat$curr_fy)
   
   ## Age/Sex Summaries
   
-  df_pops <- df_subnat %>% 
-    filter(fiscal_year == curr_fy,
-           indicator %in% inds_pops,
-           standardizeddisaggregate %in% disaggs_pops) 
+  df_pops <- df_natsubnat %>% 
+    filter(fiscal_year == metadata_natsubnat$curr_fy) 
   
   df_pops <- df_pops %>% 
     group_by(operatingunit, country, snu1uid, snu1,
              psnuuid, psnu, indicator, ageasentered, sex) %>% 
-    summarise(value = sum(targets, na.rm = T), .groups = "drop")
+    summarise(value = sum(targets, na.rm = T), .groups = "drop") %>% 
+    clean_psnu()
   
   ## Add OU/Country Summary
   
@@ -145,14 +266,12 @@
   ## Calculate HIV Prevalence by sex
   
   df_prev_sex <- df_pops_sex %>% 
-    clean_psnu() %>% 
     group_by(operatingunit, country, snu1uid, snu1, psnuuid, psnu, sex) %>% 
     reframe(prevalence = value[indicator == "PLHIV"] / 
               value[indicator == "POP_EST"]) %>% 
     ungroup() 
   
   df_prev_psnu <- df_pops_sex %>% 
-    clean_psnu() %>% 
     group_by(operatingunit, country, snu1uid, snu1, psnuuid, psnu) %>% 
     reframe(psnu_prev = sum(value[indicator == "PLHIV"], na.rm = T) / 
               sum(value[indicator == "POP_EST"], na.rm = T)) %>% 

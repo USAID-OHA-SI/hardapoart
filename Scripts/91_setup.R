@@ -4,7 +4,7 @@
 # REF ID:   3fa8f096 
 # LICENSE:  MIT
 # DATE:     2023-02-06
-# UPDATED:  2023-02-07
+# UPDATED:  2023-02-09
 
 # DEPENDENCIES ------------------------------------------------------------
   
@@ -17,13 +17,22 @@
   library(patchwork)
   library(ggtext)
   library(googlesheets4)
+  library(mindthegap)
+
+# SOURCE LOCAL FUNCTIONS --------------------------------------------------
+
+  source("Scripts/11_sid_comp.R")
+  source("Scripts/12_budget-trends_agency.R")
+  source("Scripts/13_funding-distro_funding-flavors.R")
+  source("Scripts/14_hrh-footprint-various.R")
+  source("Scripts/16_hrh-titles.R")
 
 # GLOBAL VARIABLES --------------------------------------------------------
   
   load_secrets("email")
 
   #SID_Global_Dataset Final 2.0.xlsx
-  gs_id <- as_sheets_id("1nn4c9NBsYchD6xUjimbWBB-4tHvrc4-AnWntGOk0XLc")
+  sid_gs_id <- as_sheets_id("1nn4c9NBsYchD6xUjimbWBB-4tHvrc4-AnWntGOk0XLc")
 
 # LOAD MSD ----------------------------------------------------------------
 
@@ -37,8 +46,11 @@
     return_latest("PSNU_IM") %>% 
     read_psd()   
   
+  #resolve known issues
+  df_msd <- resolve_knownissues(df_msd)
+  
   #filter to data from last 5 quarters & relevant indicators/disaggs
-  df_msd %>% 
+  df_msd <- df_msd %>% 
     filter(fiscal_year >= 2022)
   
   curr_pds <- metadata_msd$curr_fy %>% 
@@ -158,12 +170,6 @@
     return_latest("Financial") %>% 
     read_psd()   
   
-  #filter to data from last available year
-  df_fsd <- df_fsd %>% 
-    filter(fiscal_year == max(fiscal_year))
-  
-  
-
 # LOAD NAT_SUBNAT ---------------------------------------------------------
 
   #store meta data
@@ -198,6 +204,9 @@
     return_latest("HRH") %>% 
     read_psd()
   
+  #limit to latest fy
+  df_hrh <- df_hrh %>% 
+    filter(fiscal_year == max(fiscal_year, na.rm = TRUE))
 
 # LOAD SID ----------------------------------------------------------------
 
@@ -205,20 +214,17 @@
   metadata_sid <- list(caption = "Source: FY21 SID Global Dataset")
   
   #import
-  df_sid <- range_speedread(gs_id,
+  df_sid <- range_speedread(sid_gs_id,
                             col_types = c(
                               .default = "c",
                               SIDweighted_answer = "d",
                               SIDraw = "d"))
-  
- 
-
 
 # LOAD UNAIDS -------------------------------------------------------------
 
 
   #store meta data
-  metadata_unaids <- list(caption = glue("Source: {mindthegap::source_note()}"))
+  metadata_unaids <- list(caption = glue("Source: {source_note()}"))
   
   #import
   df_unaids_tt <- pull_unaids(TRUE, "HIV Test & Treat")

@@ -1,0 +1,90 @@
+---
+title: "country report"
+date: "`r format(Sys.time(), '%Y-%m-%d')`"
+format: pptx
+execute:
+  echo: FALSE
+params: 
+  curr_pd: "FY22Q4"
+  cntry: "Malawi"
+  agency: "USAID"
+
+---
+
+```{r}
+# | label: setup
+# | include: FALSE
+
+glue("{params$cntry}")
+```
+
+## Purpose
+
+TODO - fill with: - purpose statement/intent - what this is/isn't - contact info
+
+## 1. Are there any major gaps in achievement as of `params$curr_pd`?
+
+## 2. Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
+
+## 3. What does HIV prevalence look like across sex / SNUs? by age/sex bands?
+
+## 11. Are there key gaps identified by the SID for the country to prioritize?
+
+```{r}
+# | label: sid
+
+df_sid %>% 
+  prep_sid(params$cntry) %>% 
+  viz_sid()
+```
+## 12. Have COP budgets been flatlining or changing in a similar manner across agencies?
+
+```{r}
+# | label: budget_share
+
+df_fsd %>% 
+  prep_budget_trends(params$cntry) %>% 
+  viz_budget_trends()
+
+```
+
+## 13. Does the country have the optimal mix of PEPFAR spending when thinking about sustainability?
+
+```{r}
+#| label: funding_distro
+
+df_fsd %>% 
+  prep_funding_distro(params$cntry, param$agency) %>% 
+  viz_funding_distro()
+
+```
+
+## 14. What does the current staffing footprint look like in country? How do they align with sustainability and leveraging our assets?
+
+```{r}
+#| label: staffing_footprint
+
+df_hrh %>% 
+  prep_hrh_footprint(params$cntry, param$agency) %>% 
+  viz_hrh_footprint()
+```
+
+## 15
+
+## 16. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
+
+```{r}
+#| label: staffing_titles
+
+df_hrh %>% 
+  prep_hrh_titles(params$cntry, param$agency) %>% 
+  viz_hrh_titles()
+```
+
+## Calculations Used
+
+TODO
+
+## Data Sources
+
+TODO

@@ -55,11 +55,6 @@ prep_sid <- function(df, cntry){
     tidyr::fill(fct_grp, .direction = "downup") %>% 
     dplyr::ungroup() 
 }
-  
-  
-  
-  df_viz <- df_viz %>% 
-    mutate(distance = val_cntry - avg)
 
 # VIZ ---------------------------------------------------------------------
 

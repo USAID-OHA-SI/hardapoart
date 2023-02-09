@@ -23,9 +23,27 @@ TODO - fill with: - purpose statement/intent - what this is/isn't - contact info
 
 ## 1. Are there any major gaps in achievement as of `params$curr_pd`?
 
+```{r}
+# | label: achievement
+  df_msd %>%
+        prep_achv_psnu(params$cntry,params$agency) %>%
+        viz_achv_psnu(params$cntry,params$agency)
+```  
+  
+
 ## 2. Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
 
 ## 3. What does HIV prevalence look like across sex / SNUs? by age/sex bands?
+
+## 10. Is PrEP uptake relatvely constant across demographics? 
+
+```{r}
+# | label: prep
+df_msd %>%
+    prep_prep_disagg(params$cntry,params$agency) %>%
+    viz_prep_disagg(params$cntry,params$agency)
+```
+
 
 ## 11. Are there key gaps identified by the SID for the country to prioritize?
 

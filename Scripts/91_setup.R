@@ -18,7 +18,7 @@
   library(ggtext)
   library(googlesheets4)
   library(mindthegap)
-  library()
+  library(janitor)
 
 # SOURCE LOCAL FUNCTIONS --------------------------------------------------
 
@@ -174,9 +174,6 @@
   df_tens <- googlesheets4::range_speedread(pol_lab_id, "Policy adoption data", skip = 6,
                                             col_types = "c") %>% 
     janitor::clean_names()
-  
-  
-
   
 
 # MARKDOWN ----------------------------------------------------------------

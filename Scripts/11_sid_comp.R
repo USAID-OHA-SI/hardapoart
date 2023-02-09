@@ -58,6 +58,8 @@ prep_sid <- function(df, cntry){
   
   
   
+  df_viz <- df_viz %>% 
+    mutate(distance = val_cntry - avg)
 
 # VIZ ---------------------------------------------------------------------
 
@@ -89,6 +91,5 @@ viz_sid <- function(df){
   
 
 }
-  
   
   

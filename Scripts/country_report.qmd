@@ -7,6 +7,7 @@ execute:
 params: 
   curr_pd: "FY22Q4"
   cntry: "Malawi"
+  agency: "USAID"
 
 ---
 
@@ -53,20 +54,32 @@ df_fsd %>%
 #| label: funding_distro
 
 df_fsd %>% 
-  prep_funding_distro(params$cntry, "USAID") %>% 
+  prep_funding_distro(params$cntry, param$agency) %>% 
   viz_funding_distro()
 
 ```
 
-## 14. What does the PEPFAR funding staffing footprint look like?
+## 14. What does the current staffing footprint look like in country? How do they align with sustainability and leveraging our assets?
+
 ```{r}
 #| label: staffing_footprint
 
 df_hrh %>% 
-  prep_hrh_footprint(params$cntry) %>% 
+  prep_hrh_footprint(params$cntry, param$agency) %>% 
   viz_hrh_footprint()
 ```
 
+## 15
+
+## 16. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
+
+```{r}
+#| label: staffing_titles
+
+df_hrh %>% 
+  prep_hrh_titles(params$cntry, param$agency) %>% 
+  viz_hrh_titles()
+```
 
 ## Calculations Used
 

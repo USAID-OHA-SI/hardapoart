@@ -54,7 +54,8 @@ prep_10s_barriers <- function(df, cntry) {
                                        TRUE ~ 1),
            fill_color = dplyr::case_when(adoption_level == "Not adopted" ~ glitr::old_rose,
                                   adoption_level == "Partial" ~ glitr::burnt_sienna_light,
-                                  adoption_level == "Adopted" ~ glitr::scooter_med))
+                                  adoption_level == "Adopted" ~ glitr::scooter_med),
+           cntry = cntry) 
   
   return(df_viz)
   
@@ -75,7 +76,7 @@ viz_10s_barriers <- function(df) {
     ggplot2::scale_fill_identity() +
     ggplot2::scale_x_continuous(position = "top") +
     ggplot2::labs(x = NULL, y = NULL,
-         title = glue::glue("THE LARGEST GAP IN THE 10-10-10 GOALS IN {cntry %>% toupper()}"),
+         title = glue::glue("THE LARGEST GAP IN THE 10-10-10 GOALS IN {unique(df$cntry) %>% toupper()}"),
          subtitle = "Progress towards adopting structural laws/policies towards UNAIDS' 10-10-10 goals",
          caption = glue::glue("{metadata_pol_lab$caption}",
                         "{ref_id}", .sep = " | ")) +

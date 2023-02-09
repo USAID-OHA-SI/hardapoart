@@ -9,8 +9,13 @@
   
 # MUNGE -------------------------------------------------------------------
   
-prep_hrh_footprint <- function(df, cntry){
+prep_hrh_footprint <- function(df, cntry, agency){
  
+  #limit to just the country/agency selected
+  df <- df %>% 
+    filter(country == cntry,
+           funding_agency == agency)
+  
   #assign funding type
   df_int <- gophr::apply_funding_type(df) 
   
@@ -66,8 +71,8 @@ prep_hrh_footprint <- function(df, cntry){
   df_viz <- df_total %>% 
     dplyr::bind_rows(df_sd, df_loc, df_er) %>%
     dplyr::mutate(lab_val = ifelse(subcat == "Total Staffing",
-                                   glue("**{subcat}**<br>FTEs: {number_format(accuracy = .1, scale_cut = cut_short_scale())(individual_count)}<br>Individual Staff: {number_format(accuracy = .1, scale_cut = cut_short_scale())(annual_fte)} | Actual Annual Spend: {number_format(accuracy = .1, prefix = '$', scale_cut = cut_short_scale())(actual_annual_spend)}"),
-                                   glue("**{subcat}**<br>{number_format(accuracy = .1, scale_cut = cut_short_scale())(individual_count)}<br>{number_format(accuracy = .1, scale_cut = cut_short_scale())(annual_fte)} | {number_format(accuracy = .1, prefix = '$', scale_cut = cut_short_scale())(actual_annual_spend)}")))
+                                   glue::glue("**{subcat}**<br>FTEs: {scales::number_format(accuracy = .1, scale_cut = cut_short_scale())(individual_count)}<br>Individual Staff: {scales::number_format(accuracy = .1, scale_cut = cut_short_scale())(annual_fte)} | Actual Annual Spend: {scales::number_format(accuracy = .1, prefix = '$', scale_cut = cut_short_scale())(actual_annual_spend)}"),
+                                   glue::glue("**{subcat}**<br>{scales::number_format(accuracy = .1, scale_cut = cut_short_scale())(individual_count)}<br>{scales::number_format(accuracy = .1, scale_cut = cut_short_scale())(annual_fte)} | {scales::number_format(accuracy = .1, prefix = '$', scale_cut = cut_short_scale())(actual_annual_spend)}")))
   
   #order categories (and number for color mapping)
   df_viz <- df_viz %>% 
@@ -124,31 +129,3 @@ viz_hrh_footprint <- function(df){
                    panel.spacing = unit(.1, "picas")) 
   
 }  
-  
-  
-  
-# #top staff by title
-# df_viz2 <- df_hrh_lim %>% 
-#   group_by(fiscal_year, employment_title) %>% 
-#   summarise(across(c(individual_count, annual_fte, actual_annual_spend),
-#                    \(x) sum(x, na.rm = TRUE)),
-#             .groups = "drop") %>% 
-#   slice_max(order_by = annual_fte, n = 10) %>% 
-#   mutate(lab_val = ifelse(annual_fte == max(annual_fte),
-#                           glue("**{employment_title}**<br>FTEs: {number_format(accuracy = .1, scale_cut = cut_short_scale())(individual_count)} | Staff: {number_format(accuracy = .1, scale_cut = cut_short_scale())(annual_fte)} | Annual Spend: {number_format(accuracy = .1, prefix = '$', scale_cut = cut_short_scale())(actual_annual_spend)}"),
-#                           glue("**{employment_title}**<br>{number_format(accuracy = .1, scale_cut = cut_short_scale())(individual_count)} | {number_format(accuracy = .1, scale_cut = cut_short_scale())(annual_fte)} | {number_format(accuracy = .1, prefix = '$', scale_cut = cut_short_scale())(actual_annual_spend)}")))  
-# 
-# v2 <- df_viz2 %>% 
-#   ggplot(aes(annual_fte, fct_reorder(lab_val, annual_fte))) +
-#   geom_col(fill = genoa, alpha = .7) +
-#   scale_x_continuous(expand = c(.005, .005), label = comma) +
-#   labs(x = NULL, y = NULL,
-#        subtitle = glue("Top FTEs Position Titles in {cntry}"),
-#        caption = glue("Source: FY21-22c SitexIM HRH Structured Dataset (not redacted) | Ref id: {ref_id}")) + 
-#   si_style_xgrid() +
-#   theme(axis.text.y = element_markdown())
-# 
-# 
-# 
-# v1 + v2 +
-#   plot_layout(widths = c(2, 1))

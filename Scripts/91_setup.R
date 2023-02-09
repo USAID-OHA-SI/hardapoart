@@ -25,6 +25,7 @@
   source("Scripts/12_budget-trends_agency.R")
   source("Scripts/13_funding-distro_funding-flavors.R")
   source("Scripts/14_hrh-footprint-various.R")
+  source("Scripts/16_hrh-titles.R")
 
 # GLOBAL VARIABLES --------------------------------------------------------
   

@@ -44,6 +44,9 @@
     return_latest("PSNU_IM") %>% 
     read_psd()   
   
+  #resolve known issues
+  df_msd <- resolve_knownissues(df_msd)
+  
   #filter to data from last 5 quarters & relevant indicators/disaggs
   df_msd <- df_msd %>% 
     filter(fiscal_year >= 2022)
@@ -125,6 +128,9 @@
     return_latest("HRH") %>% 
     read_psd()
   
+  #limit to latest fy
+  df_hrh <- df_hrh %>% 
+    filter(fiscal_year == max(fiscal_year, na.rm = TRUE))
 
 # LOAD SID ----------------------------------------------------------------
 

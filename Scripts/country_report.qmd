@@ -58,6 +58,15 @@ df_fsd %>%
 
 ```
 
+## 14. What does the PEPFAR funding staffing footprint look like?
+```{r}
+#| label: staffing_footprint
+
+df_hrh %>% 
+  prep_hrh_footprint(params$cntry) %>% 
+  viz_hrh_footprint()
+```
+
 
 ## Calculations Used
 

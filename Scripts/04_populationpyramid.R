@@ -9,17 +9,13 @@
 # DEPENDENCIES -----------------------------------------------------------------
   source("Scripts/91_setup.R")
 
-# GLOBAL VARIABLES -------------------------------------------------------------
-  ref_id <- "aa8bd5b4"
-  
-# MUNGE ------------------------------------------------------------------------
-  
-  # df_natsubnat comes from 91_setup.R, could add a test to make sure it is actually natsubnat data
+  # df = df_natsubnat comes from 91_setup.R, could add a test to make sure 
+  # it is actually natsubnat data
   # ou is a string, could add a unit test to make sure it's a valid OU
-  
+
   prep_pop_pyramid <- function(.df, .ou,...){
   
-    df_filt <- .df %>%
+  df_filt <- .df %>%
     dplyr::filter(
       fiscal_year == metadata$curr_fy,
       operatingunit == .ou,
@@ -41,13 +37,15 @@
   
   }
   
-  ou <- "South Sudan"
+  # df = df_natsubnat comes from 91_setup.R, could add a test to make sure 
+  # it is actually natsubnat data
+  # ou is a string, could add a unit test to make sure it's a valid OU
+  # age is ageasenetered in MSD, categorized age (could be fct or char)
+  # population is a numeric var for number of people in each age band
+  # sex is a factor or char containing "Male" and "Female"
+  # ref_id is an image reference id
   
-  df_viz <- prep_pop_pyramid(df_natsubnat, ou)
-  
-# VIZ --------------------------------------------------------------------------
-  
-  viz_pop_pyramid <- function(.df, .age_var, .pop_var, .sex_var, ...){
+  viz_pop_pyramid <- function(.df, .age_var, .pop_var, .sex_var, .ref_id, ...){
     
     .df %>%
       ggplot2::ggplot(aes(x = .age_var, y = .pop_var, fill = .sex_var)) +
@@ -70,7 +68,7 @@
                     subtitle = glue("{.df$indicator[1]} | {metadata$curr_fy_lab}"),
                     caption = 
                       glue("Note: There are {unknown$n_unknown[1]} PLHIV with unreported age and sex data.
-                  Source: {metadata$curr_pd} MSD | Ref id: {ref_id} | US Agency for International Development")) +
+                  Source: {metadata$curr_pd} MSD | Ref id: {.ref_id} | US Agency for International Development")) +
       glitr::si_style_yline() +
       ggplot2::theme(
         panel.spacing = unit(.5, "line"),
@@ -79,8 +77,18 @@
         strip.text = element_markdown())
     
   }
+
+# GLOBAL VARIABLES -------------------------------------------------------------
+  ref_id <- "aa8bd5b4"
+  ou <- "South Sudan"
   
+# MUNGE ------------------------------------------------------------------------
+
+  df_viz <- prep_pop_pyramid(df_natsubnat, ou)
+  
+# VIZ --------------------------------------------------------------------------
+
   # i think there is a better way to do this in ggplot2 but this works!
-  viz_pop_pyramid(df_viz, df_viz$ageasentered, df_viz$population, df_viz$sex)
+  viz_pop_pyramid(df_viz, df_viz$ageasentered, df_viz$population, df_viz$sex, ref_id)
   
   glitr::si_save("Images/8_pop_pyramid.png")

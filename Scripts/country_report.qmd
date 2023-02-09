@@ -15,18 +15,101 @@ params:
 # | label: setup
 # | include: FALSE
 
-glue("{params$cntry}")
+# DEPENDENCIES ------------------------------------------------------------
+  
+  library(tidyverse)
+  library(gagglr)
+  library(glue)
+  library(scales)
+  library(extrafont)
+  library(tidytext)
+  library(patchwork)
+  library(ggtext)
+  library(googlesheets4)
+  library(mindthegap)
+
+# SOURCE LOCAL FUNCTIONS --------------------------------------------------
+
+  source("Scripts/11_sid_comp.R")
+  source("Scripts/12_budget-trends_agency.R")
+  source("Scripts/13_funding-distro_funding-flavors.R")
+  source("Scripts/14_hrh-footprint-various.R")
+  source("Scripts/16_hrh-titles.R")
+
 ```
 
 ## Purpose
 
-TODO - fill with: - purpose statement/intent - what this is/isn't - contact info
+In advance of the PLLs and COP meetings starting the week of February 13, the OHA/SIEI division wanted to provide some useful data points that may help as a launching point to these discussions and help hasten further exploration. The visuals provided here aim to provide a first step in identifying gaps and a baseline as they relate to COP priorities informed by Dr. Nkengasong's 5x3 pillars. 
+
+These supporting visuals are intended to help create and inform initial discussion and prompt further data exploration. We have provided notes, data sources, and calculations for anything included here to make this a jumping off point to delve into any software and explore further. If you have questions, please contact your SIEI backstop for assistance.
 
 ## 1. Are there any major gaps in achievement as of `params$curr_pd`?
 
+```{r}
+# | label: achievement
+
+```
+
 ## 2. Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
 
+```{r}
+# | label: epi_95s
+
+```
 ## 3. What does HIV prevalence look like across sex / SNUs? by age/sex bands?
+
+```{r}
+#| label: prevalence
+
+```
+## 4. Is there a youth buldge of PLHIV we need to plan for?
+
+```{r}
+# | label: youth_bulge
+
+```
+
+## 5. Does testing favor prevention or case finding and does this fit with where `params$cntry` is in the epidemic?
+
+```{r}
+# | label: testing
+
+```
+
+## 6. Are there any major issues with proxy linkage by geography/population that can be targeted?
+
+```{r}
+# | label: linkage
+
+```
+
+## 7. Are new patients being added to the areas with the largest gaps in treatment coverage?
+
+```{r}
+# | label: tx_gap
+
+```
+
+## 8. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
+
+```{r}
+# | label: vlsc_pop
+
+```
+
+## 9. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
+
+```{r}
+# | label: vlsc_geo
+
+```
+
+## 10. Is PrEP uptake relatively consistent across demographics?
+
+```{r}
+# | label: prep
+```
 
 ## 11. Are there key gaps identified by the SID for the country to prioritize?
 
@@ -69,7 +152,7 @@ df_hrh %>%
   viz_hrh_footprint()
 ```
 
-## 15
+## 15.
 
 ## 16. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
 

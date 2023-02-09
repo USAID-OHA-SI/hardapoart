@@ -145,6 +145,10 @@
                               .default = "c",
                               SIDweighted_answer = "d",
                               SIDraw = "d"))
+  
+  #filter to max year
+  df_sid <- filter(df_sid, fiscal_year == max(fiscal_year))
+  
 
 # LOAD UNAIDS -------------------------------------------------------------
 

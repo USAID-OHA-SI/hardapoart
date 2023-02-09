@@ -77,6 +77,9 @@ viz_unaids_all(params$cntry)
 ```{r}
 # | label: testing
 
+ prep_modality_age(df_msd, params$cntry, trendscoarse) %>% 
+   viz_modality_age()
+
 ```
 
 ## 6. Are there any major issues with proxy linkage by geography/population that can be targeted?

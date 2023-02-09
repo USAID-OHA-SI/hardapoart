@@ -158,7 +158,7 @@
 
 
   #store meta data
-  metadata_unaids <- list(caption = glue("Source: {source_note()}"))
+  metadata_unaids <- list(caption = glue("Source: {source_note}"))
   
   #import
   df_unaids_tt <- pull_unaids(TRUE, "HIV Test & Treat")

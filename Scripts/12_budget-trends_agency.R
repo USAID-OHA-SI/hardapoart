@@ -11,6 +11,9 @@
   
 prep_budget_trends <- function(df, cntry){
   
+  if(cntry %ni% unique(df$country))
+    return(NULL)
+  
   #limit to select country
   df_int <- df %>% 
     dplyr::filter(country == cntry,
@@ -46,6 +49,9 @@ prep_budget_trends <- function(df, cntry){
 
 viz_budget_trends <- function(df){
   
+  if(is.null(df))
+    return(print(paste("No data available.")))
+  
   ref_id <- "11a316e1"
   
   df %>% 
@@ -64,7 +70,7 @@ viz_budget_trends <- function(df){
     ggplot2::labs(x = NULL, y = NULL,
          subtitle = glue("{unique(df$country)}'s annual budget shifts by agency (fiscal year)"),
          caption = glue("Note: M&O and supply chain excluded
-                        {metadata_fsd$caption}")) +
+                        {metadata_fsd$caption} | USAID | Ref id: {ref_id}")) +
     si_style_ygrid() +
     ggplot2::theme(legend.position = "none")
 }

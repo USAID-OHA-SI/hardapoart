@@ -6,12 +6,13 @@
 # DATE:     2023-02-07
 # UPDATED: 
 
-# DEPENDENCIES ----------------------------------------------------------------
+# DEPENDENCIES -----------------------------------------------------------------
   source("Scripts/91_setup.R")
 
   # I can't load the PSNUxIM file so I'm trusting that it works
   # .df is the PSNUxIM MSD df_msd
-  # .ou = a character string
+  # .ou = a character string in pepfar_country_list$operatingunit
+  prep_national_linkage <- function(df, ou, ...){
   
   prep_national_linkage <- function(.df, .ou, ...){
     
@@ -21,9 +22,11 @@
              standardizeddisaggregate == "Total Numerator",
              fiscal_year == metadata$curr_fy,
              funding_agency == "USAID",
-             operatingunit == .ou) %>% 
-      group_by(indicator, fiscal_year) %>% 
-      summarise(across(targets:qtr4, \(x) sum(x, na.rm = T)), 
+             operatingunit == ou) %>% 
+      assertr::verify(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST") &
+               standardizeddisaggregate == "Total Numerator" &
+               fiscal_year == metadata$curr_fy & 
+               funding_agency == "USAID" &
                 .groups = "drop") %>% 
       reshape_msd(direction ="semi-wide") %>% 
       group_by(indicator) %>% 

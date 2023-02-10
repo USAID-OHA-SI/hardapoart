@@ -6,10 +6,6 @@
 # DATE:     2023-02-02
 # UPDATED:  
 
-df<-df_msd
-cntry<-"Malawi"
-agency<-"USAID"
-
 prep_prep_disagg <- function (df, cntry, agency){
 
       ## Filter for age/sex and KP disaggregates. Trend starts at FY22Q1

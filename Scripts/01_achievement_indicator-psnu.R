@@ -7,10 +7,6 @@
 # UPDATED:  
 
 prep_achv_psnu <- function (df, cntry, agency){
-
-    #df<-df_msd
-    #cntry<-"Tanzania"
-    #agency<-"USAID"
   
     #select indicators
     ind_sel <- c("HTS_TST","HTS_TST_POS", "TX_NEW", "TX_CURR", 
@@ -19,9 +15,12 @@ prep_achv_psnu <- function (df, cntry, agency){
 
     #function used to clean number format later
     clean_number <- function(x, digits = 0){
-                   dplyr::case_when(x >= 1e9 ~ glue("{round(x/1e9, digits)}B"),
-                   x >= 1e6 ~ glue("{round(x/1e6, digits)}M"),
-                   x >= 1e3 ~ glue("{round(x/1e3, digits)}K"),
+                   dplyr::case_when((x >= 1e9 & x < 1e10) ~ glue("{round(x/1e9, digits+1)}B"),
+                   (x >= 1e9 & x >= 1e10) ~ glue("{round(x/1e9, digits)}B"),                
+                   (x >= 1e6 & x < 1e7) ~ glue("{round(x/1e6, digits+1)}M"),
+                   (x >= 1e6 & x >= 1e7) ~ glue("{round(x/1e6, digits)}M"),
+                   (x >= 1e3 & x < 1e4) ~ glue("{round(x/1e3, digits+1)}K"),
+                   (x >= 1e3 & x >= 1e4) ~ glue("{round(x/1e3, digits)}K"),
                    TRUE ~ glue("{x}"))
                     }
 

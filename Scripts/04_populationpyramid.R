@@ -46,7 +46,9 @@ prep_pop_pyramid <- function(df, cntry){
     # so that the note on the viz reads:
     # "Note: There are no PLHIV with unreported age and sex data.
     # otherwise it will show the number
-    full_join(., unknown) %>%
+    full_join(., unknown, 
+              by = join_by(fiscal_year, country, indicator, sex, ageasentered, targets,
+                           population)) %>%
     mutate(n_unknown = if_else(is.na(n_unknown) == TRUE, 
                                "no", n_unknown))
   

@@ -12,10 +12,13 @@
 
 prep_sid <- function(df, cntry){
   
+  if(cntry %ni% unique(df$operatingunit))
+    return(NULL)
+  
   #limit dataset
   df_int <- df %>% 
     dplyr::select(fiscal_year,  
-                  countryname = operatingunit,
+                  country = operatingunit,
                   uuid = UUID,
                   sid_area = SIDQuestion,
                   sid_short_q = SIDshortquestion,
@@ -29,26 +32,26 @@ prep_sid <- function(df, cntry){
   
   #average score for each area by country
   df_int_weighted <- df_int %>% 
-    dplyr::group_by(fiscal_year, countryname, sid_area) %>% 
+    dplyr::group_by(fiscal_year, country, sid_area) %>% 
     dplyr::summarise(avg_sid_score_weighted = sum(sid_score_weighted, na.rm = TRUE),
                      .groups = "drop")
   
   
   #create point for country, PEPFAR avg, and bounds for plotting
   df_viz <- df_int_weighted %>% 
-    dplyr::mutate(val_cntry = dplyr::case_when(countryname == cntry ~ avg_sid_score_weighted)) %>% 
+    dplyr::mutate(val_cntry = dplyr::case_when(country == cntry ~ avg_sid_score_weighted)) %>% 
     dplyr::group_by(sid_area) %>% 
     dplyr::mutate(lower = min(avg_sid_score_weighted),
                   upper = max(avg_sid_score_weighted),
                   avg = mean(avg_sid_score_weighted),
-                  lab = case_when(countryname == cntry ~ avg_sid_score_weighted)) %>% 
+                  lab = case_when(country == cntry ~ avg_sid_score_weighted)) %>% 
     dplyr::ungroup() 
   
   #color and group areas
   df_viz %>% 
     dplyr::group_by(sid_area) %>% 
-    dplyr::mutate(fill_color = dplyr::case_when(countryname == cntry & avg_sid_score_weighted > avg ~ genoa,
-                                                countryname == cntry ~ moody_blue,
+    dplyr::mutate(fill_color = dplyr::case_when(country == cntry & avg_sid_score_weighted > avg ~ genoa,
+                                                country == cntry ~ moody_blue,
                                                 TRUE ~ trolley_grey_light),
                   font_color = ifelse(lab == max(lab, na.rm = TRUE), "white", matterhorn),
                   fct_grp = ifelse(val_cntry > avg, "Above PEPFAR Average", "Below PEPFAR Average")) %>%
@@ -59,6 +62,9 @@ prep_sid <- function(df, cntry){
 # VIZ ---------------------------------------------------------------------
 
 viz_sid <- function(df){
+  
+  if(is.null(df))
+    return(print(paste("No data available.")))
   
   ref_id <- "79fe7ff5" 
   

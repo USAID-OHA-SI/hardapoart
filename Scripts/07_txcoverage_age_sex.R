@@ -13,14 +13,6 @@ prep_txcoverage_age_sex <- function(df, cntry) {
   
   ind_sel <- c("PLHIV", "DIAGNOSED_SUBNAT" ,"TX_CURR_SUBNAT", "VL_SUPPRESSION_SUBNAT")
   
-  clean_number <- function(x, digits = 0){
-    dplyr::case_when(x >= 1e9 ~ glue("{round(x/1e9, digits)}B"),
-                     x >= 1e6 ~ glue("{round(x/1e6, digits)}M"),
-                     x >= 1e3 ~ glue("{round(x/1e3, digits)}K"),
-                     TRUE ~ glue("{x}"))
-  }
-  
-  
   df_gap <- df %>% 
     dplyr::filter(country %in% cntry,
            fiscal_year == 2022,
@@ -47,17 +39,29 @@ prep_txcoverage_age_sex <- function(df, cntry) {
 
 prep_txnew_age_sex <- function(df, cntry) {
   
+  clean_number <- function(x, digits = 0){
+    dplyr::case_when(x >= 1e9 ~ glue("{round(x/1e9, digits)}B"),
+                     x >= 1e6 ~ glue("{round(x/1e6, digits)}M"),
+                     x >= 1e3 ~ glue("{round(x/1e3, digits)}K"),
+                     TRUE ~ glue("{x}"))
+  }
+  
   df_viz <- df %>% 
     dplyr::filter(country %in% cntry,
                   fiscal_year == 2022,
                   indicator == "TX_NEW",
                   standardizeddisaggregate == "Age/Sex/HIVStatus") %>% 
-    group_by(country, fiscal_year, indicator, ageasentered, sex) %>% 
+    dplyr::group_by(country, fiscal_year, indicator, ageasentered, sex) %>% 
     dplyr::summarise(across(starts_with("qtr"), sum, na.rm = TRUE)) %>%
     dplyr::ungroup() %>%
     gophr::reshape_msd() %>% 
-    mutate(fill_color = ifelse(sex == "Male", glitr::genoa_light, glitr::moody_blue_light)) %>% 
-    dplyr::rename(cntry = country)
+    dplyr::mutate(ctry_name = glue::glue("{country}<br> ")) %>%
+    dplyr::mutate(fill_color = ifelse(sex == "Male", glitr::genoa_light, glitr::moody_blue_light)) %>% 
+    dplyr::rename(cntry = country) %>% 
+    dplyr::group_by(cntry, period, indicator, ageasentered, sex) %>% 
+    dplyr::mutate(val_lab = glue::glue("{clean_number(value)}")) %>% 
+    dplyr::ungroup()
+    
   
   return(df_viz)
   
@@ -71,32 +75,32 @@ viz_txcoverage_age_sex <- function(df) {
   ref_id <- "725ebd70"
   
   df %>% 
-    ggplot(aes(plhiv, ageasentered, fill = fill_color, color = fill_color)) +
-    geom_blank(aes(plhiv*1.1)) +
-    geom_col(fill = NA, width = .8, alpha = .8) +
-    geom_col(aes(tx_curr_subnat), width = .8, alpha = .8) +
-    geom_errorbar(aes(xmin = plhiv_marker, xmax = plhiv_marker), 
+    ggplot2::ggplot(aes(plhiv, ageasentered, fill = fill_color, color = fill_color)) +
+    ggplot2::geom_blank(aes(plhiv*1.1)) +
+    ggplot2::geom_col(fill = NA, width = .8, alpha = .8) +
+    ggplot2::geom_col(aes(tx_curr_subnat), width = .8, alpha = .8) +
+    ggplot2::geom_errorbar(aes(xmin = plhiv_marker, xmax = plhiv_marker), 
                   na.rm = TRUE, color = "white", linetype = "dotted") +
-    geom_text(aes(label = lab_gap), na.rm = TRUE,
-              family = "Source Sans Pro", color = suva_grey,
+    ggplot2::geom_text(aes(label = lab_gap), na.rm = TRUE,
+              family = "Source Sans Pro", color = glitr::suva_grey,
               size = 10/.pt, hjust = -.5) +
-    facet_grid(sex ~ fct_reorder(ctry_name, plhiv, sum, na.rm = TRUE, .desc = TRUE),
+    ggplot2::facet_grid(sex ~ forcats::fct_reorder(ctry_name, plhiv, sum, na.rm = TRUE, .desc = TRUE),
                switch = "y", scales = "free_x"
     ) +
-    scale_x_continuous(labels = label_number_si(),
+    ggplot2::scale_x_continuous(label = scales::label_number(scale_cut = cut_short_scale()),
                        expand = c(.005, .005)) +
-    scale_fill_identity(aesthetics = c("fill", "color")) +
-    labs(x = NULL, y = NULL,
-         title = glue("Treatment coverage gaps in {unique(df$cntry) %>% toupper()} by age and sex") %>% toupper,
-         subtitle = "TX_CURR_SUBNAT coverage of PLHIV",
-         caption = glue("{metadata_natsubnat$caption}")) +
-    coord_cartesian(clip = "off") +
-    si_style_xgrid() +
-    theme(strip.text.y = element_text(hjust = .5),
-          strip.text.x = element_markdown(),
-          strip.placement = "outside",
-          panel.spacing.x = unit(1, "lines"),
-          panel.spacing.y = unit(.5, "lines")
+    ggplot2::scale_fill_identity(aesthetics = c("fill", "color")) +
+    ggplot2::labs(x = NULL, y = NULL,
+         title = glue::glue("{metadata_natsubnat$curr_fy_lab} Treatment coverage gaps") %>% toupper,
+         subtitle = "TX_CURR_SUBNAT coverage of PLHIV by age and sex",
+         caption = glue::glue("{metadata_natsubnat$caption}")) +
+    ggplot2::coord_cartesian(clip = "off") +
+    glitr::si_style_xgrid() +
+    ggplot2::theme(strip.text.y = element_text(hjust = .5),
+                  strip.text.x = element_markdown(),
+                  strip.placement = "outside",
+                  panel.spacing.x = unit(1, "lines"),
+                  panel.spacing.y = unit(.5, "lines")
           )
   
 }
@@ -104,36 +108,53 @@ viz_txcoverage_age_sex <- function(df) {
 viz_txnew_age_sex <- function(df) {
   
   df %>% 
-    filter(ageasentered != "Unknown Age") %>% 
-    ggplot(aes(value, ageasentered, fill = fill_color, color = fill_color)) +
-    geom_col(aes(fill = fill_color), width = .8, alpha = .8) +
+    dplyr::filter(ageasentered != "Unknown Age",
+           period == metadata_natsubnat$curr_pd) %>% 
+    ggplot2::ggplot(aes(value, ageasentered, fill = fill_color, color = fill_color)) +
+    ggplot2::geom_col(aes(fill = fill_color), width = .8, alpha = .8) +
     #facet_wrap(~sex, switch = "y", scales = "free_x") +
-    facet_grid(sex ~ fct_reorder(cntry, value, sum, na.rm = TRUE, .desc = TRUE),
+    ggplot2::facet_grid(sex ~ forcats::fct_reorder(ctry_name, value, sum, na.rm = TRUE, .desc = TRUE),
                switch = "y", scales = "free_x"
     ) +
-    scale_fill_identity(aesthetics = c("fill", "color")) +
-    si_style_xgrid() +
-    labs(x = NULL, y = NULL,
-         title = glue("{metadata_msd$curr_pd} treatment initations in {unique(df$cntry) %>% toupper()}") %>% toupper,
-         subtitle = "TX_CURR_SUBNAT coverage of PLHIV",
-         caption = glue("{metadata_msd$caption}")) +
-    coord_cartesian(clip = "off") +
-    theme(
+    ggplot2:: geom_text(aes(label = val_lab), na.rm = TRUE,
+              family = "Source Sans Pro", color = suva_grey,
+              size = 10/.pt, hjust = -.5) +
+    ggplot2::scale_fill_identity(aesthetics = c("fill", "color")) +
+    ggplot2::scale_x_continuous(label = scales::label_number(scale_cut = cut_short_scale()),
+                       expand = c(.005, .005)) +
+    glitr::si_style_xgrid() +
+    ggplot2::labs(x = NULL, y = NULL,
+         title = glue::glue("{metadata_msd$curr_pd} treatment initations") %>% toupper,
+         subtitle = "TX_NEW by age and sex",
+         caption = glue::glue("{metadata_msd$caption}")) +
+    ggplot2::coord_cartesian(clip = "off") +
+    ggplot2::theme(
       strip.text.y = element_text(hjust = .5),
-          strip.text.x = element_markdown(),
-          strip.placement = "outside",
-          panel.spacing.x = unit(1, "lines"),
-          panel.spacing.y = unit(.5, "lines"),
-          axis.text.y = element_blank())
- }
+      strip.text.x = element_markdown(),
+      strip.placement = "outside",
+      panel.spacing.x = unit(1, "lines"),
+      panel.spacing.y = unit(.5, "lines"),
+      axis.text.y = element_blank())
+}
 
-v1 <- prep_txcoverage_age_sex(df_natsubnat, "Zambia") %>% 
-  viz_txcoverage_age_sex()
 
-v2 <- prep_txnew_age_sex(df_msd, "Zambia") %>% 
-  viz_txnew_age_sex()
+viz_tx_all <- function(cntry) {
+  
+  v1 <- prep_txcoverage_age_sex(df_natsubnat, cntry) %>% 
+    viz_txcoverage_age_sex()
+  
+  v2 <- prep_txnew_age_sex(df_msd, cntry) %>% 
+    viz_txnew_age_sex()
+  
+  viz_tx <- cowplot::plot_grid(v1, v2, ncol = 2, align = 'v')
+  
+  return(viz_tx)
+  
+  
+}
+
+viz_tx_all("Zambia")
 
 #(v1 + v2) + plot_layout(widths = c(2, 1), heights = c(10))
 
-cowplot::plot_grid(v1, v2, ncol = 2, align = 'v')
 

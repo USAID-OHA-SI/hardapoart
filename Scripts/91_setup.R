@@ -39,6 +39,7 @@
   source("Scripts/13_funding-distro_funding-flavors.R")
   source("Scripts/14_hrh-footprint-various.R")
   source("Scripts/16_hrh-titles.R")
+
   # Helper function for assertr::verify() to show more descriptive error messages
   err_text <- function(msg) stop(msg, call = FALSE)
 
@@ -294,7 +295,7 @@
     
     #filter to data from last 5 quarters & relevant indicators/disaggs
     df_msd <- df_msd %>% 
-      filter(fiscal_year >= 2022)
+      filter(fiscal_year >= 2021)
     
     #add _D to denom variables
     df_msd <- clean_indicator(df_msd)
@@ -317,6 +318,7 @@
       "TX_NEW",              "Age/Sex/HIVStatus",
       "TX_PVLS", "Age/Sex/Indication/HIVStatus",
       "TX_PVLS",              "Total Numerator",
+      "TX_PVLS_D", "Age/Sex/Indication/HIVStatus",
       "TX_PVLS_D",            "Total Denominator",
       "VMMC_CIRC",              "Total Numerator"
     )

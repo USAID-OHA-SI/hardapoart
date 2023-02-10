@@ -4,7 +4,7 @@
 # REF ID:   f6f26589 
 # LICENSE:  MIT
 # DATE:     2023-02-07
-# UPDATED: 
+# UPDATED:  2023-02-10
 
 # DEPENDENCIES -----------------------------------------------------------------
   source("Scripts/91_setup.R")
@@ -57,7 +57,7 @@
     return(df_linkage_nat)
     
 }
-  prep_psnu_linkage <- function(.df, .ou, ...){
+  prep_psnu_linkage <- function(df, ou, ...){
     
     
     df_reshaped <- df %>% 

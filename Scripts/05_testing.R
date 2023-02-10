@@ -46,11 +46,12 @@ prep_undiagnosed <- function(cntry) {
  }
   
  #munge modalities into case-finding and prevention (prevention = PMTCT, ANC, VMMC)
- prep_modality_age <- function(df, cntry, ...){   
+ prep_modality_age <- function(df, cntry, agency, ...){   
    
    df_hts_full <- df %>% 
      dplyr::filter(indicator == "HTS_TST",
             country == cntry,
+            funding_agency == agency,
             standardizeddisaggregate == "Modality/Age/Sex/Result",
             fiscal_year <= metadata_msd$curr_fy) %>%  
      #funding_agency == "USAID", ...) %>% 

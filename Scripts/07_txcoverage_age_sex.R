@@ -37,7 +37,7 @@ prep_txcoverage_age_sex <- function(df, cntry) {
   
 } 
 
-prep_txnew_age_sex <- function(df, cntry) {
+prep_txnew_age_sex <- function(df, cntry, agency) {
   
   clean_number <- function(x, digits = 0){
     dplyr::case_when(x >= 1e9 ~ glue("{round(x/1e9, digits)}B"),
@@ -50,12 +50,13 @@ prep_txnew_age_sex <- function(df, cntry) {
     dplyr::filter(country %in% cntry,
                   fiscal_year == 2022,
                   indicator == "TX_NEW",
+                  funding_agency == agency,
                   standardizeddisaggregate == "Age/Sex/HIVStatus") %>% 
-    dplyr::group_by(country, fiscal_year, indicator, ageasentered, sex) %>% 
+    dplyr::group_by(country, fiscal_year, funding_agency, indicator, ageasentered, sex) %>% 
     dplyr::summarise(across(starts_with("qtr"), sum, na.rm = TRUE)) %>%
     dplyr::ungroup() %>%
     gophr::reshape_msd() %>% 
-    dplyr::mutate(ctry_name = glue::glue("{country}<br> ")) %>%
+    dplyr::mutate(ctry_name = glue::glue("{country}/{funding_agency}<br> ")) %>%
     dplyr::mutate(fill_color = ifelse(sex == "Male", glitr::genoa_light, glitr::moody_blue_light)) %>% 
     dplyr::rename(cntry = country) %>% 
     dplyr::group_by(cntry, period, indicator, ageasentered, sex) %>% 
@@ -138,12 +139,12 @@ viz_txnew_age_sex <- function(df) {
 }
 
 
-viz_tx_all <- function(cntry) {
+viz_tx_all <- function(cntry, agency) {
   
   v1 <- prep_txcoverage_age_sex(df_natsubnat, cntry) %>% 
     viz_txcoverage_age_sex()
   
-  v2 <- prep_txnew_age_sex(df_msd, cntry) %>% 
+  v2 <- prep_txnew_age_sex(df_msd, cntry, agency) %>% 
     viz_txnew_age_sex()
   
   viz_tx <- cowplot::plot_grid(v1, v2, ncol = 2, align = 'v')

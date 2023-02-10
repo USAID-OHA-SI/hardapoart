@@ -65,17 +65,16 @@
   #' @title Prep HIV Prevalence Source Data
   #' 
   #' @param cntry     OU/Country name
-  #' @param fy        Fiscal Year
   #' @param add_style Append color code
   #' 
-  prep_hiv_prevalence <- function(df, cntry, fy,
+  prep_hiv_prevalence <- function(df, cntry,
                                   add_style = T) {
     
     ## PSNU/Age/Sex Summaries
     df_pops <- df %>% 
-      dplyr::filter(fiscal_year == fy,
+      dplyr::filter(fiscal_year == max(fiscal_year),
                     country == cntry) %>% 
-      dplyr::group_by(operatingunit, country, snu1uid, snu1,
+      dplyr::group_by(fiscal_year, operatingunit, country, snu1uid, snu1,
                       psnuuid, psnu, indicator, ageasentered, sex) %>% 
       dplyr::summarise(value = sum(targets, na.rm = T), .groups = "drop") %>% 
       gophr::clean_psnu()
@@ -83,46 +82,46 @@
     ## Add OU/Country Summary
     
     df_pops <- df_pops %>% 
-      group_by(operatingunit, country, indicator, ageasentered, sex) %>% 
+      group_by(fiscal_year, operatingunit, country, indicator, ageasentered, sex) %>% 
       summarise(value = sum(value, na.rm = T), .groups = "drop") %>% 
       mutate(psnu = "COUNTRY") %>% 
       bind_rows(df_pops, .)
     
     df_pops <- df_pops %>% 
       filter(psnu != "COUNTRY") %>% 
-      group_by(operatingunit, indicator, ageasentered, sex) %>% 
+      group_by(fiscal_year, operatingunit, indicator, ageasentered, sex) %>% 
       summarise(value = sum(value, na.rm = T), .groups = "drop") %>% 
       mutate(psnu = "OU") %>% 
       bind_rows(df_pops, .)
     
     # PSNU Only Summaries
     df_pops_psnu <- df_pops %>%
-      group_by(operatingunit, country,
+      group_by(fiscal_year, operatingunit, country,
                snu1uid, snu1, psnuuid, psnu, indicator) %>%
       summarise(value = sum(value, na.rm = T), .groups = "drop")
 
     # Sex Only Summaries
     df_pops_sex <- df_pops %>%
-      group_by(operatingunit, country,
+      group_by(fiscal_year, operatingunit, country,
                snu1uid, snu1, psnuuid, psnu, indicator, sex) %>%
       summarise(value = sum(value, na.rm = T), .groups = "drop")
     
     ## Compute Prevalence
     df_prev_sex <- df_pops_sex %>% 
-      group_by(operatingunit, country, snu1uid, snu1, psnuuid, psnu, sex) %>% 
+      group_by(fiscal_year, operatingunit, country, snu1uid, snu1, psnuuid, psnu, sex) %>% 
       reframe(prevalence = value[indicator == "PLHIV"] / 
                 value[indicator == "POP_EST"]) %>% 
       ungroup() 
     
     df_prev_psnu <- df_pops_psnu %>% 
-      group_by(operatingunit, country, snu1uid, snu1, psnuuid, psnu) %>% 
+      group_by(fiscal_year, operatingunit, country, snu1uid, snu1, psnuuid, psnu) %>% 
       reframe(psnu_prev = sum(value[indicator == "PLHIV"], na.rm = T) / 
                 sum(value[indicator == "POP_EST"], na.rm = T)) %>% 
       ungroup() 
     
     df_prev <- df_prev_sex %>% 
       left_join(df_prev_psnu,
-                by = c("operatingunit", "country", 
+                by = c("fiscal_year","operatingunit", "country", 
                        "snu1uid", "snu1", "psnuuid", "psnu"))
     
     ## Add SI Style for viz
@@ -137,7 +136,7 @@
       
       df_prev <- df_prev %>% 
         left_join(df_prev_gap,
-                  by = c("operatingunit", "country", 
+                  by = c("fiscal_year","operatingunit", "country", 
                          "snu1uid", "snu1", "psnuuid", "psnu")) %>% 
         mutate(
           color_sex = case_when(
@@ -168,12 +167,12 @@
   #' 
   #' 
   #' 
-  viz_hiv_prevalence <- function(df, cntry, 
-                                 fy, pd, src, rid, 
+  viz_hiv_prevalence <- function(df,
                                  save = F) {
     
     # OU/Country Reference line
     
+    ref_id <- "8fb89847"
     ref_psnu <- "OU"
     
     if (all(na.omit(df$country) %in% df$operatingunit)) {

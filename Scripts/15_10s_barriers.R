@@ -11,13 +11,10 @@
 
 
 prep_10s_barriers <- function(df, cntry) {
-  
-<<<<<<< HEAD
-=======
+
   if(cntry %ni% unique(df$country))
     return(NULL)
-  
->>>>>>> 1a6ff4f... Merge branch 'main' into np_branch
+
   #select just the policy structural indicators
   ind_sel <- c(paste0("S", 1:6), "S9")
   
@@ -72,12 +69,10 @@ prep_10s_barriers <- function(df, cntry) {
 
 viz_10s_barriers <- function(df) {
   
-<<<<<<< HEAD
-=======
+
   if(is.null(df))
     return(print(paste("No data available.")))
   
->>>>>>> 1a6ff4f... Merge branch 'main' into np_branch
   ref_id <- "1e748b9a" #for plot identification
   
   df %>% 

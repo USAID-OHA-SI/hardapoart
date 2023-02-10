@@ -97,6 +97,9 @@ viz_unaids_all(params$cntry)
 ```{r}
 # | label: tx_gap
 
+prep_txcoverage_age_sex(df_natsubnat, params$cntry) %>%
+  viz_txcoverage_age_sex()
+
 ```
 
 ## 8. Are certain populations by age or sex being missed when trying to reach the 3rd 95?

@@ -98,6 +98,10 @@ df_natsubnat %>%
 ```{r}
 # | label: youth_bulge
 
+df_natsubnat %>% 
+  prep_pop_pyramid(params$cntry) %>% 
+  viz_pop_pyramid()
+
 ```
 
 ## 5. Does testing favor prevention or case finding and does this fit with where `params$cntry` is in the epidemic?

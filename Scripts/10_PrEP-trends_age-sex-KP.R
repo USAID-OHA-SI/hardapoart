@@ -54,7 +54,7 @@ viz_prep_disagg <-function (df, cntry, agency){
   coord_cartesian(clip="off")+
   labs(x = NULL, y = NULL,
        title = glue("PREP_NEW DISAGGREGATED BY AGE/SEX (<span style = 'color: #8980cb;'>FEMALE</span><span style = 'color: #287c6f;'>/MALE</span>) 
-       AND <span style = 'color: #e07653;'>KEY POPULATIONS</span> IN {toupper(cntry)} <br />"),  
+       AND <span style = 'color: #e07653;'>KEY POPULATIONS</span> IN {toupper(cntry)}, {toupper(agency)} <br />"),  
        caption = glue("Source: {metadata_msd$source} 
                        SI analytics US Agency for International Development | Ref ID: {ref_id}"))+
   theme(plot.title = element_markdown())

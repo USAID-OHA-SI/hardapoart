@@ -107,7 +107,7 @@ viz_txnew_age_sex <- function(df) {
     filter(ageasentered != "Unknown Age") %>% 
     ggplot(aes(value, ageasentered, fill = fill_color, color = fill_color)) +
     geom_col(aes(fill = fill_color), width = .8, alpha = .8) +
-   # facet_wrap(~sex, switch = "y", scales = "free_x") +
+    #facet_wrap(~sex, switch = "y", scales = "free_x") +
     facet_grid(sex ~ fct_reorder(cntry, value, sum, na.rm = TRUE, .desc = TRUE),
                switch = "y", scales = "free_x"
     ) +
@@ -115,7 +115,7 @@ viz_txnew_age_sex <- function(df) {
     si_style_xgrid() +
     labs(x = NULL, y = NULL,
          title = glue("{metadata_msd$curr_pd} treatment initations in {unique(df$cntry) %>% toupper()}") %>% toupper,
-         #   subtitle = "TX_CURR_SUBNAT coverage of PLHIV",
+         subtitle = "TX_CURR_SUBNAT coverage of PLHIV",
          caption = glue("{metadata_msd$caption}")) +
     coord_cartesian(clip = "off") +
     theme(
@@ -133,5 +133,7 @@ v1 <- prep_txcoverage_age_sex(df_natsubnat, "Zambia") %>%
 v2 <- prep_txnew_age_sex(df_msd, "Zambia") %>% 
   viz_txnew_age_sex()
 
-v1 + v2 + plot_layout(widths = c(2, 1), heights = c(10))
+#(v1 + v2) + plot_layout(widths = c(2, 1), heights = c(10))
+
+cowplot::plot_grid(v1, v2, ncol = 2, align = 'v')
 

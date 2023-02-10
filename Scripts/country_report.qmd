@@ -126,7 +126,7 @@ df_natsubnat %>%
 ```{r}
 # | label: tx_gap
 
-viz_tx_all(params$cntry) #wrapper function for tx_coverage and tx_new
+viz_tx_all(params$cntry, params$agency) #wrapper function for tx_coverage and tx_new
 
 
 ```

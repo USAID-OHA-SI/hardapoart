@@ -216,9 +216,9 @@
       scale_y_continuous(labels = percent, position = "right") +
       coord_flip() +
       labs(x = "", y = "", 
-           title = glue::glue("{toupper(cntry)} - {fy} HIV PREVALANCE"),
-           subtitle = glue::glue("HIV Prevalence Gap between <span style='color:{moody_blue}'>Female</span> & <span style='color:{genoa}'>Male</span> by PSNU"),
-           caption = glue::glue("Source: {src} - Created by OHA/SIEI | Ref. ID #{rid}")) +
+           title = glue::glue("{toupper(unique(df$country))} - {unique(df$fiscal_year)} HIV PREVALANCE"),
+           subtitle = glue::glue("HIV Prevalence Gap between <span style='color:{genoa}'>Male</span> & <span style='color:{moody_blue}'>Female</span> by PSNU"),
+           caption = glue::glue("{metadata_natsubnat$caption} | USAID | Ref id: {ref_id}")) +
       si_style_nolines() +
       theme(plot.subtitle = element_markdown(),
             axis.text.y = element_markdown())
@@ -228,7 +228,7 @@
     if (save) {
       glitr::si_save(
         plot = viz,
-        filename = glue::glue("./Graphics/{pd} - {toupper(cntry)} HIV Prevalence.png"))
+        filename = glue::glue("./Graphics/{unique(df$fiscal_year)} - {toupper(unique(df$country))} HIV Prevalence.png"))
     }
   }
   

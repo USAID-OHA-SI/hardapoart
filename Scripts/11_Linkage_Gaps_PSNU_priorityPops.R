@@ -174,7 +174,7 @@
       coord_flip() +
       scale_y_continuous(labels = comma) +
       labs(x = NULL, y = NULL, 
-           caption = glue("Source: {metadata$curr_pd} MSD | Ref id: {.ref_id} | US Agency for International Development")) +
+           caption = glue("Source: {metadata$curr_pd} MSD | Ref id: {ref_id} | US Agency for International Development")) +
       expand_limits(x = c(0, 9)) 
   }
   

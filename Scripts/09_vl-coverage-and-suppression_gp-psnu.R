@@ -63,7 +63,7 @@
   
   ## Tech Areas / Disaggs
   
-  inds_vl <- c("TX_CURR", "TX_PVLS")
+  inds_vl <- c("TX_CURR", "TX_PVLS", "TX_PVLS_D")
   disaggs_vl <- c("Age/Sex/HIVStatus", "Age/Sex/Indication/HIVStatus")
   
 # FUNCTIONS ----

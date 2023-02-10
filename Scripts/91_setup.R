@@ -20,6 +20,14 @@
   library(mindthegap)
   library(ggrepel)
   library(janitor)
+  library(sf)
+  library(selfdestructin5)
+  library(gt)
+  library(cascade) # Use dev version
+  library(ggpattern)
+  library(rcartocolor)
+  library(here)
+  library(assertr)
 
 # SOURCE LOCAL FUNCTIONS --------------------------------------------------
 
@@ -30,6 +38,8 @@
   source("Scripts/13_funding-distro_funding-flavors.R")
   source("Scripts/14_hrh-footprint-various.R")
   source("Scripts/16_hrh-titles.R")
+  # Helper function for assertr::verify() to show more descriptive error messages
+  err_text <- function(msg) stop(msg, call = FALSE)
 
 # GLOBAL VARIABLES --------------------------------------------------------
   
@@ -308,6 +318,9 @@
   df_epi_original <- pull_unaids(TRUE, "HIV Estimates")
   
 # LOAD 10-10-10 ------------------------------------------------------------
+  vct_cntry <- pepfar_country_list %>% 
+    pull(country)
+  #TODO
   
   #store meta data
   metadata_tens <- list(caption = "Source: HIV Policy Lab [2021-11-09]")
@@ -316,6 +329,11 @@
   df_tens <- googlesheets4::range_speedread(pol_lab_id, "Policy adoption data", 
                                             skip = 6, col_types = "c") %>% 
     janitor::clean_names()
+  #output files
+  reports <- tibble(
+    output_file = glue(here("markdown","{metadata$curr_pd}_{vct_cntry}_cop-support-viz_oha-siei.pptx")),
+    params = map(vct_cntry, ~list(vct_cntry = .))
+  )
   
 
 # MARKDOWN ----------------------------------------------------------------

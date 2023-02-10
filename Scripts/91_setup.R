@@ -154,7 +154,9 @@
   df_natsubnat_ind <- tibble::tribble(
     ~indicator, ~standardizeddisaggregate,
        "PLHIV",       "Age/Sex/HIVStatus",
-     "POP_EST",                 "Age/Sex"
+     "POP_EST",                 "Age/Sex",
+    "DIAGNOSED_SUBNAT",         "Age/Sex/HIVStatus",
+    "TX_CURR_SUBNAT",         "Age/Sex/HIVStatus"
     )
 
   #filter to select indicators/disaggs

@@ -109,7 +109,7 @@ df_natsubnat %>%
 ```{r}
 # | label: testing
 
- prep_modality_age(df_msd, params$cntry, params$agency, trendscoarse) %>% 
+ prep_modality_age(df_msd, params$cntry, trendscoarse) %>% 
    viz_modality_age()
 
 ```

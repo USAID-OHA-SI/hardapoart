@@ -82,12 +82,12 @@ prep_pop_pyramid <- function(df, cntry){
     }
     
     df %>%
-      ggplot2::ggplot(aes(x = ageasentered, y = population, fill = sex)) +
+      ggplot2::ggplot(aes(population, ageasentered, fill = sex)) +
       ggplot2::geom_col() +
-      ggplot2::coord_flip() +
-      ggplot2::scale_fill_manual(values = c("Male" = genoa, 
-                                            "Female" = moody_blue)) +
-      ggplot2::scale_y_continuous(
+      ggplot2::geom_vline(aes(xintercept = 0), color = "white", linewidth = 1.1)+
+      ggplot2::scale_fill_manual(values = c("Male" = glitr::genoa, 
+                                            "Female" = glitr::moody_blue)) +
+      ggplot2::scale_x_continuous(
         # would be great to have it 
         # dynamically choose a scale 
         # based on the length of "value" since this can vary by OU 
@@ -97,12 +97,12 @@ prep_pop_pyramid <- function(df, cntry){
         # can't figure out how to use this and abs together
         # label_number(scale_cut = cut_short_scale())
       ) +
-      ggplot2::labs(title = glue("Population Pyramid"),
+      ggplot2::labs(title = glue("{unique(df$country)} Population Pyramid") %>% toupper,
                     x = NULL, y = NULL, fill = NULL,
-                    subtitle = glue("{df$indicator[1]} | {metadata_natsubnat$curr_fy_lab}"),
+                    subtitle = glue("{df$indicator[1]} | {unique(df$fiscal_year)}"),
                     caption = 
                       glue("Note: There are {n_PLHIV_unknown} PLHIV with unreported age and sex data.
-                  Source: {metadata_natsubnat$curr_pd} MSD | Ref id: {ref_id} | US Agency for International Development")) +
+                  {metadata_natsubnat$caption} | USAID | Ref id: {ref_id}")) +
       glitr::si_style_yline() +
       ggplot2::theme(
         panel.spacing = unit(.5, "line"),

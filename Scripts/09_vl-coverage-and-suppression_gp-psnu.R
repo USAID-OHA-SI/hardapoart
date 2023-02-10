@@ -24,52 +24,51 @@
 # DISCLAIMERS ----
 
 # GLOBAL PARAMS ----
-  
-  ## Script Reference
-  ref_id <- "29675452"
-  
-  # SI Backstop Coverage
-  
-  cntry <- "Nigeria"
-  
-  agency <- "USAID"
-  
-  ## Dirs 
-  
-  dir_mer <- si_path(type = "path_msd")
-  dir_out <- "./Dataout"
-  dir_imagess <- "./Images"
-  dir_graphics <- "./Graphics"
-  
-  ## Files
-  
-  # file_psnu <- dir_mer %>% 
-  #   return_latest("PSNU_IM")
-  
-  ## Info
-  
-  # src_msd <- source_info(file_psnu)
   # 
-  # curr_fy <- source_info(file_psnu, return = "fiscal_year")
-  # curr_qtr <- source_info(file_psnu, return = "quarter")
-  # curr_pd <- source_info(file_psnu, return = "period")
-  
-  ## Tech Areas / Disaggs
-  
-  inds_vl <- c("TX_CURR", "TX_PVLS", "TX_PVLS_D")
-  disaggs_vl <- c("Age/Sex/HIVStatus", "Age/Sex/Indication/HIVStatus")
+  # ## Script Reference
+  # ref_id <- "29675452"
+  # 
+  # # SI Backstop Coverage
+  # 
+  # cntry <- "Nigeria"
+  # 
+  # agency <- "USAID"
+  # 
+  # ## Dirs 
+  # 
+  # dir_mer <- si_path(type = "path_msd")
+  # dir_out <- "./Dataout"
+  # dir_imagess <- "./Images"
+  # dir_graphics <- "./Graphics"
+  # 
+  # ## Files
+  # 
+  # # file_psnu <- dir_mer %>% 
+  # #   return_latest("PSNU_IM")
+  # 
+  # ## Info
+  # 
+  # # src_msd <- source_info(file_psnu)
+  # # 
+  # # curr_fy <- source_info(file_psnu, return = "fiscal_year")
+  # # curr_qtr <- source_info(file_psnu, return = "quarter")
+  # # curr_pd <- source_info(file_psnu, return = "period")
+  # 
+  # ## Tech Areas / Disaggs
+  # 
+  # inds_vl <- c("TX_CURR", "TX_PVLS", "TX_PVLS_D")
+  # disaggs_vl <- c("Age/Sex/HIVStatus", "Age/Sex/Indication/HIVStatus")
   
 # FUNCTIONS ----
 
   #' @title Prep TX VL Datasets
   #' 
-  prep_varial_load_psnu <- function(df, fy, agency, cntry,
+  prep_viral_load_psnu <- function(df, cntry, agency,
                                     pd_hist = 5) {
     
     # Filter
     df_tx <- df %>% 
       filter(
-        fiscal_year %in% c(fy, fy - 1),
         funding_agency == agency, 
         country == cntry,
         indicator %in% c("TX_CURR", "TX_PVLS", "TX_PVLS_D"),
@@ -126,8 +125,10 @@
   
   #' @title Viz TX VL
   #' 
-  viz_viral_load_psnu <- function(df, cntry, pd, src, rid,
+  viz_viral_load_psnu <- function(df,
                                   save = F) {
+    
+    ref_id <- "29675452"
     
     # Filter all SNUs with > 95% VLS
     n_snu <- df %>% 
@@ -147,24 +148,22 @@
     
     # Generate the plot
     viz <- df %>% 
-      filter(funding_agency == agency, 
-             operatingunit == cntry) %>% 
       ggplot(aes(x = period, group = 1)) +
       geom_line(aes(y = vlc), color = burnt_sienna, linewidth = 1) +
       geom_point(aes(y = vlc), fill = burnt_sienna, color = grey10k, 
                  shape = 21, size = 3.5) +
-      geom_text(aes(y = vlc, label = percent(vlc, 1)), 
+      geom_text(aes(y = vlc, label = percent(vlc, 1)), family = "Source Sans Pro",
                 size = 3, vjust = 2, color = burnt_sienna) +
       geom_line(aes(y = vls), color = genoa, linewidth = 1) +
       geom_point(aes(y = vls), fill = genoa, color = grey10k, 
                  shape = 21, size = 3.5) +
-      geom_text(aes(y = vls, label = percent(vls, 1)), 
+      geom_text(aes(y = vls, label = percent(vls, 1)), family = "Source Sans Pro",
                 size = 3, vjust = -1.8, color = genoa) +
       scale_y_continuous(labels = percent) +
       labs(x = "", y = "",
-           title = glue::glue("{toupper(agency)}/{toupper(cntry)} - VIRAL LOAD TRENDS"),
+           title = glue::glue("{toupper(unique(df$funding_agency))}/{toupper(unique(df$country))} - VIRAL LOAD TRENDS"),
            subtitle = glue::glue("VL <span style='color:{burnt_sienna}'>Coverage</span> & <span style='color:{genoa}'>Supression</span> for the last 5 quarters"),
-           caption = glue::glue("Source: {src} - Created by OHA/SIEI | Ref. ID #{rid}")) +
+           caption = glue::glue("{metadata_msd$caption} | USAID | Ref id: {ref_id}")) +
       coord_cartesian(clip = "off") +
       facet_wrap(~snu1, ncol = 4) +
       si_style_nolines() +
@@ -181,43 +180,43 @@
     if (save) {
       glitr::si_save(
         plot = viz,
-        filename = glue::glue("./Graphics/{pd} - {toupper(agency)} - {toupper(cntry)} VLCS Trends by PSNU.png"))
+        filename = glue::glue("./Graphics/{max(df$period)} - {toupper(unique(df$country)} VLCS Trends by PSNU.png"))
     }
   }
   
 # DATA IMPORT ----
-  
-  # PEPFAR Program Data
-  
-  #df_psnu <- file_psnu %>% read_msd()
-  df_psnu <- df_msd
-  
-# MUNGING ----
-  
-  
-  df_vlcs <- prep_varial_load_psnu(df = df_psnu, 
-                              fy = metadata_msd$curr_fy, 
-                              agency = agency, 
-                              cntry = cntry,
-                              pd_hist = 5)
-  
-# VIZ ----
-
-  agency <- "USAID"
-  
-  prep_varial_load_psnu(df = df_psnu, 
-                        fy = metadata_msd$curr_fy, 
-                        agency = agency, 
-                        cntry = cntry,
-                        pd_hist = 5) %>% 
-    viz_viral_load_psnu(
-      df = ., 
-      cntry = cntry, 
-      pd = metadata_msd$curr_pd, 
-      src = metadata_msd$source,
-      rid = ref_id,
-      save = F
-    )
-  
-# EXPORT ----
-  
+#   
+#   # PEPFAR Program Data
+#   
+#   #df_psnu <- file_psnu %>% read_msd()
+#   df_psnu <- df_msd
+#   
+# # MUNGING ----
+#   
+#   
+#   df_vlcs <- prep_varial_load_psnu(df = df_psnu, 
+#                               fy = metadata_msd$curr_fy, 
+#                               agency = agency, 
+#                               cntry = cntry,
+#                               pd_hist = 5)
+#   
+# # VIZ ----
+# 
+#   agency <- "USAID"
+#   
+#   prep_varial_load_psnu(df = df_psnu, 
+#                         fy = metadata_msd$curr_fy, 
+#                         agency = agency, 
+#                         cntry = cntry,
+#                         pd_hist = 5) %>% 
+#     viz_viral_load_psnu(
+#       df = ., 
+#       cntry = cntry, 
+#       pd = metadata_msd$curr_pd, 
+#       src = metadata_msd$source,
+#       rid = ref_id,
+#       save = F
+#     )
+#   
+# # EXPORT ----
+#   

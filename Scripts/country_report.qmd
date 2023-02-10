@@ -147,6 +147,10 @@ df_msd %>%
 ```{r}
 # | label: vlsc_geo
 
+df_msd %>% 
+  prep_viral_load_psnu(params$cntry, params$agency) %>% 
+  viz_viral_load_psnu()
+
 ```
 
 ## 10. Is PrEP uptake relatively consistent across demographics?

@@ -72,7 +72,7 @@ These supporting visuals are intended to help create and inform initial discussi
 # | label: achievement
   df_msd %>%
         prep_achv_psnu(params$cntry,params$agency) %>%
-        viz_achv_psnu(params$cntry,params$agency)
+        viz_achv_psnu()
 ```  
 
 

@@ -53,8 +53,8 @@ prep_txnew_age_sex <- function(df, cntry, agency) {
                   funding_agency == agency,
                   standardizeddisaggregate == "Age/Sex/HIVStatus") %>% 
     dplyr::group_by(country, fiscal_year, funding_agency, indicator, ageasentered, sex) %>% 
-    dplyr::summarise(across(starts_with("qtr"), sum, na.rm = TRUE)) %>%
-    dplyr::ungroup() %>%
+    dplyr::summarise(across(starts_with("qtr"), sum, na.rm = TRUE),
+                     .groups = "drop") %>%
     gophr::reshape_msd() %>% 
     dplyr::mutate(ctry_name = glue::glue("{country}/{funding_agency}<br> ")) %>%
     dplyr::mutate(fill_color = ifelse(sex == "Male", glitr::genoa_light, glitr::moody_blue_light)) %>% 
@@ -94,7 +94,7 @@ viz_txcoverage_age_sex <- function(df) {
     ggplot2::labs(x = NULL, y = NULL,
          title = glue::glue("{metadata_natsubnat$curr_fy_lab} Treatment coverage gaps") %>% toupper,
          subtitle = "TX_CURR_SUBNAT coverage of PLHIV by age and sex",
-         caption = glue::glue("{metadata_natsubnat$caption}")) +
+         caption = glue::glue(" ")) +
     ggplot2::coord_cartesian(clip = "off") +
     glitr::si_style_xgrid() +
     ggplot2::theme(strip.text.y = element_text(hjust = .5),
@@ -107,6 +107,8 @@ viz_txcoverage_age_sex <- function(df) {
 }
 
 viz_txnew_age_sex <- function(df) {
+  
+  ref_id <- "725ebd70"
   
   df %>% 
     dplyr::filter(ageasentered != "Unknown Age",
@@ -127,10 +129,10 @@ viz_txnew_age_sex <- function(df) {
     ggplot2::labs(x = NULL, y = NULL,
          title = glue::glue("{metadata_msd$curr_pd} treatment initations") %>% toupper,
          subtitle = "TX_NEW by age and sex",
-         caption = glue::glue("{metadata_msd$caption}")) +
+         caption = glue::glue("{metadata_msd$caption} | USAID | Ref Id: {ref_id}")) +
     ggplot2::coord_cartesian(clip = "off") +
     ggplot2::theme(
-      strip.text.y = element_text(hjust = .5),
+      strip.text.y = element_blank(), #element_text(hjust = .5),
       strip.text.x = element_markdown(),
       strip.placement = "outside",
       panel.spacing.x = unit(1, "lines"),

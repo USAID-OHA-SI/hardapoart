@@ -34,9 +34,8 @@ prep_achv_psnu <- function (df, cntry, agency){
     ## Aggregating results & targets at the OU level for each indicator
     df_achv <- df_achv %>% 
                bind_rows(df_achv %>% mutate(psnuuid = "GLOBAL")) %>% 
-               filter(standardizeddisaggregate %in% c("Total Numerator",
-                                         "Total Denominator")) %>% 
-               group_by(fiscal_year, country, psnuuid, indicator) %>%
+               pluck_totals() %>% 
+               group_by(fiscal_year, country, funding_agency, psnuuid, indicator) %>%
                summarize(across(c(targets, cumulative), \(x) sum(x, na.rm = TRUE)), 
                .groups = "drop")
 

@@ -6,84 +6,105 @@
 # DATE:     2023-02-03
 # UPDATED:  
 
-# DEPENDENCIES ----------------------------------------------------------------
-  library(tidyverse)
-  library(extrafont)
-  library(gagglr)
-  library(glue)
-  library(scales)
-  library(tidytext)
-  library(patchwork)
-  library(ggtext)
+# DEPENDENCIES -----------------------------------------------------------------
+  source("Scripts/91_setup.R")
 
-# GLOBAL VARIABLES ------------------------------------------------------------
-  
-  ref_id <- "aa8bd5b4"
-  
-  get_metadata() #list of MSD metadata elements
-  
-  # testing with small and large OU portfolios
-  # ou <- "Zambia"
-  ou <- "South Sudan"
+# PREP -------------------------------------------------------------------------
 
-# IMPORT ----------------------------------------------------------------------
-  
-  nat_subnat_path <- "NAT_SUBNAT"
+  # df = df_natsubnat comes from 91_setup.R, could add a test to make sure 
+  # it is actually natsubnat data
+  # ou is a string, could add a unit test to make sure it's a valid OU
 
-# MUNGE ------------------------------------------------------------------------
-  
-  df <- si_path() %>%
-    return_latest(nat_subnat_path) %>%
-    read_msd()
+  prep_pop_pyramid <- function(df, ou){
   
   df_filt <- df %>%
-    filter(
-      fiscal_year == metadata$curr_fy,
+    dplyr::filter(
+      fiscal_year == metadata_natsubnat$curr_fy,
       operatingunit == ou,
       indicator == "PLHIV") %>%
-    select(fiscal_year, operatingunit, indicator, sex, ageasentered, targets) %>%
-    group_by(fiscal_year, operatingunit, indicator, sex, ageasentered) %>%
-    summarise(across(targets, \(x) sum(x, na.rm = TRUE))) %>%
-    mutate(
+    assertr::verify(indicator == "PLHIV" &
+                    fiscal_year == metadata_natsubnat$curr_fy & 
+                      operatingunit == ou, 
+                    error_fun = err_text(glue::glue("Error: {df} has not been filtered correctly. 
+                                               Please check the first filter in prep_pop_pyramid().")), 
+                    description = glue::glue("Verify that the filters worked")) %>%
+    dplyr::select(fiscal_year, operatingunit, indicator, sex, ageasentered, targets) %>%
+    dplyr::group_by(fiscal_year, operatingunit, indicator, sex, ageasentered) %>%
+    dplyr::summarise(across(targets, \(x) sum(x, na.rm = TRUE))) %>%
+    dplyr::mutate(
       population = if_else(sex == "Male", targets*(-1), targets*1))
   
   unknown <- df_filt  %>%
-    filter(is.na(sex) & is.na(ageasentered)) %>%
-    mutate(n_unknown = comma(targets))
+    dplyr::filter(is.na(sex) & is.na(ageasentered)) %>%
+    dplyr::mutate(n_unknown = comma(targets))
   
   df_viz <- df_filt %>%
-    drop_na(sex, ageasentered)
+    tidyr::drop_na(sex, ageasentered) %>%
+    # include those with age and sex data unavailable in the notes on the viz
+    # if there are no PLHIV missing age or sex data, replace NA with "No"
+    # so that the note on the viz reads:
+    # "Note: There are no PLHIV with unreported age and sex data.
+    # otherwise it will show the number
+    full_join(., unknown) %>%
+    mutate(n_unknown = if_else(is.na(n_unknown) == TRUE, 
+                               "no", n_unknown))
   
+  return(df_viz)
+  
+  }
+
 # VIZ --------------------------------------------------------------------------
   
-  df_viz %>%
-    ggplot(aes(x = ageasentered, y = population, fill = sex)) +
-    geom_col() +
-    coord_flip() +
-    scale_fill_manual(values = c("Male" = genoa, 
-                                 "Female" = moody_blue)) +
-    scale_y_continuous(
-                       # would be great to have it 
-                       # dynamically choose a scale 
-                       # based on the length of "value" since this can vary by OU 
-                       limits = c(min(df_viz$population), max(df_viz$population)),
-                       labels = function(x) {glue("{comma(abs(x))}")}, 
-                       # would like it to be able to use this ideally but
-                       # can't figure out how to use this and abs together
-                       # label_number(scale_cut = cut_short_scale())
-                      ) +
-    labs(title = glue("Population Pyramid"),
-         x = NULL, y = NULL, fill = NULL,
-         subtitle = glue("{df_viz$indicator[1]} | {metadata$curr_fy_lab}"),
-         caption = 
-           glue("Note: There are {unknown$n_unknown[1]} PLHIV with unreported age and sex data.
-                  Source: {metadata$curr_pd} MSD | Ref id: {ref_id} | US Agency for International Development")) +
-    si_style_yline() +
-    theme(
-      panel.spacing = unit(.5, "line"),
-      legend.position = "none",
-      plot.title = element_markdown(),
-      strip.text = element_markdown())
+  # df = df_natsubnat comes from 91_setup.R, could add a test to make sure 
+  # it is actually natsubnat data
+  # ou is a string, could add a unit test to make sure it's a valid OU
+  # age is ageasenetered in MSD, categorized age (could be fct or char)
+  # population is a numeric var for number of people in each age band
+  # sex is a factor or char containing "Male" and "Female"
+  # ref_id is an image reference id
   
-  si_save("Images/8_pop_pyramid.png")
-  
+  viz_pop_pyramid <- function(df){
+    
+    ref_id <- "aa8bd5b4"
+    
+    # pull in the number of PLHIV reported with no age or sex data available
+    n_PLHIV_unknown <- df$n_unknown[1]
+    
+    # format the number with a comma if it is not "no"
+    if(n_PLHIV_unknown != "no"){
+      
+      scales::comma(n_PLHIV_unknown)
+      
+      return(n_PLHIV_unknown)
+    }
+    
+    df %>%
+      ggplot2::ggplot(aes(x = ageasentered, y = population, fill = sex)) +
+      ggplot2::geom_col() +
+      ggplot2::coord_flip() +
+      ggplot2::scale_fill_manual(values = c("Male" = genoa, 
+                                            "Female" = moody_blue)) +
+      ggplot2::scale_y_continuous(
+        # would be great to have it 
+        # dynamically choose a scale 
+        # based on the length of "value" since this can vary by OU 
+        limits = c(min(df$population), max(df$population)),
+        labels = function(x) {glue("{comma(abs(x))}")}, 
+        # would like it to be able to use this ideally but
+        # can't figure out how to use this and abs together
+        # label_number(scale_cut = cut_short_scale())
+      ) +
+      ggplot2::labs(title = glue("Population Pyramid"),
+                    x = NULL, y = NULL, fill = NULL,
+                    subtitle = glue("{df$indicator[1]} | {metadata_natsubnat$curr_fy_lab}"),
+                    caption = 
+                      glue("Note: There are {n_PLHIV_unknown} PLHIV with unreported age and sex data.
+                  Source: {metadata_natsubnat$curr_pd} MSD | Ref id: {ref_id} | US Agency for International Development")) +
+      glitr::si_style_yline() +
+      ggplot2::theme(
+        panel.spacing = unit(.5, "line"),
+        legend.position = "none",
+        plot.title = element_markdown(),
+        strip.text = element_markdown())
+    
+  }

@@ -34,10 +34,10 @@
   
   ## Dirs 
   
-  dir_mer <- si_path(type = "path_msd")
-  dir_out <- "./Dataout"
-  dir_imagess <- "./Images"
-  dir_graphics <- "./Graphics"
+  # dir_mer <- si_path(type = "path_msd")
+  # dir_out <- "./Dataout"
+  # dir_imagess <- "./Images"
+  # dir_graphics <- "./Graphics"
   
   ## Files
   
@@ -238,14 +238,15 @@
   # PEPFAR Program Data
   
   #df_subnat <- file_subnat %>% read_msd()
-  df_subnat <- file_subnat %>% read_msd()
   
 # MUNGING ----
   
-  df_prev <- prep_hiv_prevalence(df = df_natsubnat, 
-                                  cntry = cntry,
-                                  fy = metadata_natsubnat$curr_fy,
-                                  add_style = T)
+  # Test Munge
+  
+  # df_prev <- prep_hiv_prevalence(df = df_natsubnat, 
+  #                                 cntry = cntry,
+  #                                 fy = metadata_natsubnat$curr_fy,
+  #                                 add_style = T)
   
 # VIZ ----
 

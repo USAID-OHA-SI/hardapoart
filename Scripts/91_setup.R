@@ -318,25 +318,19 @@
   df_epi_original <- pull_unaids(TRUE, "HIV Estimates")
   
 # LOAD 10-10-10 ------------------------------------------------------------
-  vct_cntry <- pepfar_country_list %>% 
-    pull(country)
-  #TODO
   
   #store meta data
-  metadata_tens <- list(caption = "Source: HIV Policy Lab [2021-11-09]")
+  metadata_pol_lab <- list(caption = "Source: HIV Policy Lab [2021-11-09]")
   
   #read in HIV Policy Lab data export
   df_tens <- googlesheets4::range_speedread(pol_lab_id, "Policy adoption data", 
                                             skip = 6, col_types = "c") %>% 
     janitor::clean_names()
-  #output files
-  reports <- tibble(
-    output_file = glue(here("markdown","{metadata$curr_pd}_{vct_cntry}_cop-support-viz_oha-siei.pptx")),
-    params = map(vct_cntry, ~list(vct_cntry = .))
-  )
+
   
 
 # MARKDOWN ----------------------------------------------------------------
+
 
   # #TODO
   # vct_cntry <- pepfar_country_list %>% 

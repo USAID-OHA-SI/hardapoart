@@ -153,7 +153,6 @@ viz_tx_all <- function(cntry) {
   
 }
 
-viz_tx_all("Zambia")
 
 #(v1 + v2) + plot_layout(widths = c(2, 1), heights = c(10))
 

@@ -11,6 +11,9 @@
 
 prep_funding_distro <- function(df, cntry, agency){
   
+  if(cntry %ni% unique(df$country) | agency %ni% unique(df$funding_agency))
+    return(NULL)
+  
   #limit to select country
   df_int <- df %>% 
     dplyr::filter(country == cntry,
@@ -45,6 +48,9 @@ prep_funding_distro <- function(df, cntry, agency){
 # VIZ ---------------------------------------------------------------------
 
 viz_funding_distro <- function(df){
+  
+  if(is.null(df))
+    return(print(paste("No data available.")))
   
   ref_id <- "e258e5d3" #id for adorning to plots, making it easier to find on GH
   

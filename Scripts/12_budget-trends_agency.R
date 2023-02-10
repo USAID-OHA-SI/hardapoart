@@ -11,6 +11,9 @@
   
 prep_budget_trends <- function(df, cntry){
   
+  if(cntry %ni% unique(df$country))
+    return(NULL)
+  
   #limit to select country
   df_int <- df %>% 
     dplyr::filter(country == cntry,
@@ -45,6 +48,9 @@ prep_budget_trends <- function(df, cntry){
 
 
 viz_budget_trends <- function(df){
+  
+  if(is.null(df))
+    return(print(paste("No data available.")))
   
   ref_id <- "11a316e1"
   

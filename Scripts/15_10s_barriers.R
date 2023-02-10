@@ -12,6 +12,9 @@
 
 prep_10s_barriers <- function(df, cntry) {
   
+  if(cntry %ni% unique(df$country))
+    return(NULL)
+  
   #select just the policy structural indicators
   ind_sel <- c(paste0("S", 1:6), "S9")
   
@@ -65,6 +68,9 @@ prep_10s_barriers <- function(df, cntry) {
 
 
 viz_10s_barriers <- function(df) {
+  
+  if(is.null(df))
+    return(print(paste("No data available.")))
   
   ref_id <- "1e748b9a" #for plot identification
   

@@ -64,7 +64,7 @@ viz_budget_trends <- function(df){
     ggplot2::labs(x = NULL, y = NULL,
          subtitle = glue("{unique(df$country)}'s annual budget shifts by agency (fiscal year)"),
          caption = glue("Note: M&O and supply chain excluded
-                        {metadata_fsd$caption}")) +
+                        {metadata_fsd$caption} | USAID | Ref id: {ref_id}")) +
     si_style_ygrid() +
     ggplot2::theme(legend.position = "none")
 }

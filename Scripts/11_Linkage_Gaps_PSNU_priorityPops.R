@@ -34,15 +34,22 @@
       dplyr::group_by(indicator, fiscal_year) %>% 
       dplyr::summarise(across(targets:qtr4, \(x) sum(x, na.rm = T)), 
                 .groups = "drop") %>% 
-      reshape_msd(direction ="semi-wide") %>% 
-      group_by(indicator) %>% 
-      fill(targets, .direction = "down") %>% 
-      filter(nchar(period) != 4, 
+      gophr::reshape_msd(direction ="semi-wide") 
+    
+    df_linkage_nat  <- df_reshaped %>% 
+      assertr::verify("period" %in% names(df_reshaped), 
+                      error_fun = err_text(glue::glue("Error: {.df} has not been reshaped correctly and the period column does not exist. 
+                                               Please check reshape_msd in prep_national_linkage().")), 
+                      description = glue::glue("Verify that reshape_md worked")) %>%
+      dplyr::group_by(indicator) %>% 
+      tidyr::fill(targets, .direction = "down") %>% 
+      dplyr::filter(nchar(period) != 4, 
              period == metadata$curr_pd) %>% 
       assertr::verify(period == metadata$curr_pd & nchar(period) != 4, 
                       error_fun = err_text(glue::glue("Error: df_linkage_nat has not been filtered correctly. 
                                                Please check the last filter in prep_national_linkage().")), 
                       description = glue::glue("Verify that last time period filtering worked")) %>%
+      dplyr::select(-targets) %>% 
     
     return(df_linkage_nat)
     
@@ -69,8 +76,14 @@
                 .groups = "drop") %>% 
       reshape_msd(direction ="semi-wide") %>% 
       group_by(indicator) %>% 
-      fill(targets, .direction = "down") %>% 
-      filter(nchar(period) != 4, 
+    df_linkage_psnu <- df_reshaped %>% 
+      assertr::verify("period" %in% names(df_reshaped), 
+                      error_fun = err_text(glue::glue("Error: {.df} has not been reshaped correctly and the period column does not exist. 
+                                               Please check reshape_msd in prep_psnu_linkage().")), 
+                      description = glue::glue("Verify that reshape_md worked")) %>%
+      dplyr::group_by(indicator) %>% 
+      tidyr::fill(targets, .direction = "down") %>% 
+      dplyr::filter(nchar(period) != 4, 
              period == metadata$curr_pd) %>% 
       assertr::verify(period == metadata$curr_pd & nchar(period) != 4, 
                       error_fun = err_text(glue::glue("Error: df_linkage_psnu has not been filtered correctly. 

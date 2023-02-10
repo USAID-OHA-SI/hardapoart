@@ -33,6 +33,8 @@
 
   source("Scripts/01_achievement_indicator-psnu.R")
   source("Scripts/03_prevalence-gaps_gp-psnu-sex.R")
+  source("Scripts/08_vl-coverage-and-suppression_gp-age.R")
+  source("Scripts/09_vl-coverage-and-suppression_gp-psnu.R")
   source("Scripts/10_PrEP-trends_age-sex-KP.R")
   source("Scripts/11_sid_comp.R")
   source("Scripts/12_budget-trends_agency.R")

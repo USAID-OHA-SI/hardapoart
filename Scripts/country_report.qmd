@@ -72,7 +72,7 @@ These supporting visuals are intended to help create and inform initial discussi
 # | label: achievement
   df_msd %>%
         prep_achv_psnu(params$cntry,params$agency) %>%
-        viz_achv_psnu(params$cntry,params$agency)
+        viz_achv_psnu()
 ```  
 
 
@@ -88,12 +88,19 @@ viz_unaids_all(params$cntry, params$agency)
 
 ```{r}
 #| label: prevalence
-
+df_natsubnat %>% 
+  prep_hiv_prevalence(params$cntry) %>% 
+  viz_hiv_prevalence()
+  
 ```
 ## 4. Is there a youth buldge of PLHIV we need to plan for?
 
 ```{r}
 # | label: youth_bulge
+
+df_natsubnat %>% 
+  prep_pop_pyramid(params$cntry) %>% 
+  viz_pop_pyramid()
 
 ```
 

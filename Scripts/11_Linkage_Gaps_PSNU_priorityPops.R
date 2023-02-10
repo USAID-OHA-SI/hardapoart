@@ -50,6 +50,13 @@
                                                Please check the last filter in prep_national_linkage().")), 
                       description = glue::glue("Verify that last time period filtering worked")) %>%
       dplyr::select(-targets) %>% 
+      tidyr::pivot_wider(names_from = indicator, values_from = results) %>% 
+      dplyr::mutate(linkage = TX_NEW / HTS_TST_POS, 
+             psnu = "National") %>%
+    assertr::verify(psnu == "National", 
+                    error_fun = err_text(glue::glue("Error: PSNU in df_linkage_nat has not been assigned correctly. 
+                                               Please check the last mutate() in prep_national_linkage().")), 
+                    description = glue::glue("Verify that PSNU is National for this dataset"))
     
     return(df_linkage_nat)
     
@@ -74,8 +81,8 @@
       dplyr::group_by(indicator, psnu, fiscal_year) %>% 
       dplyr::summarise(across(targets:qtr4, \(x) sum(x, na.rm = T)), 
                 .groups = "drop") %>% 
-      reshape_msd(direction ="semi-wide") %>% 
-      group_by(indicator) %>% 
+      gophr::reshape_msd(direction ="semi-wide") 
+    
     df_linkage_psnu <- df_reshaped %>% 
       assertr::verify("period" %in% names(df_reshaped), 
                       error_fun = err_text(glue::glue("Error: {.df} has not been reshaped correctly and the period column does not exist. 
@@ -92,6 +99,10 @@
       dplyr::select(-targets) %>% 
       tidyr::pivot_wider(names_from = indicator, values_from = results) %>% 
       dplyr::mutate(linkage = TX_NEW / HTS_TST_POS) %>%
+      assertr::verify(psnu != "National" & is.na(psnu) == FALSE,
+      error_fun = err_text(glue::glue("Error: PSNU in df_linkage_psnu has not been assigned correctly. 
+                                      Please check the values of psnu in df_reshaped in prep_psnu_linkage().")), 
+                           description = glue::glue("Verify that PSNU is not National or missing for this dataset"))
     
     return(df_linkage_psnu)
     

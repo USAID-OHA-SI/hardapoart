@@ -26,11 +26,13 @@ prep_prep_disagg <- function (df, cntry, agency){
       # Fill sex indicator with "KP" value for KP - will be used for color
       mutate(sex = case_when(is.na(sex)==TRUE  ~ "KP", TRUE ~ sex)) %>%
       group_by(fiscal_year, standardizeddisaggregate, sex, ageasentered, otherdisaggregate, facet_ind) %>% 
-      summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE))) %>% 
-      ungroup() %>% 
+      summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE)),
+                .groups = "drop") %>% 
       reshape_msd() %>% 
       select(-period_type) %>% 
       arrange(period) 
+      
+      return(df_prep)
 
 }
 
@@ -38,26 +40,30 @@ viz_prep_disagg <-function (df, cntry, agency){
   
   # Reference ID to be used for searching GitHub
   ref_id <- "0530547f"
+  
+  pd_brks <- unique(df$period) %>% str_replace(".*(2|4)$", "")
 
   # Facets
-  ggplot(df, aes(x=period, y=value)) + 
-  geom_point(aes(color=sex), size = 4) +  
-  geom_line(aes(group=sex, color=sex), linewidth=1)+
-  scale_color_manual(values = c("Female" = moody_blue, "Male" = genoa, "KP"=burnt_sienna),
-                     labels = function(x) str_to_upper(x)) +
-  facet_wrap(facet_ind ~ ., scales = "fixed", ncol=5, dir="h") + 
-  si_style_yline() +
-  theme(strip.text.x = element_text(size = 14, face="bold"),
-        axis.text.x = element_text(size=11, angle=45),
-        axis.text.y = element_text(size=11, angle=0))+
-  theme(legend.position = "none") + 
-  coord_cartesian(clip="off")+
-  labs(x = NULL, y = NULL,
-       title = glue("PREP_NEW DISAGGREGATED BY AGE/SEX (<span style = 'color: #8980cb;'>FEMALE</span><span style = 'color: #287c6f;'>/MALE</span>) 
+  df %>% 
+    ggplot(aes(x=period, y=value)) + 
+    geom_point(aes(color=sex), size = 4) +  
+    geom_line(aes(group=sex, color=sex), linewidth=1)+
+    scale_x_discrete(labels = pd_brks) +
+    scale_y_continuous(labels = comma) +
+    scale_color_manual(values = c("Female" = moody_blue, "Male" = genoa, "KP"=burnt_sienna),
+                       labels = function(x) str_to_upper(x)) +
+    facet_wrap(facet_ind ~ ., scales = "fixed", ncol=5, dir="h") + 
+    si_style_yline() +
+    theme(strip.text.x = element_text(size = 14, face="bold"),
+          axis.text.x = element_text(size=11),
+          axis.text.y = element_text(size=11, angle=0))+
+    theme(legend.position = "none") + 
+    coord_cartesian(clip="off")+
+    labs(x = NULL, y = NULL,
+         title = glue("PREP_NEW DISAGGREGATED BY AGE/SEX (<span style = 'color: #8980cb;'>FEMALE</span><span style = 'color: #287c6f;'>/MALE</span>) 
        AND <span style = 'color: #e07653;'>KEY POPULATIONS</span> IN {toupper(cntry)} <br />"),  
-       caption = glue("Source: {metadata_msd$source} 
-                       SI analytics US Agency for International Development | Ref ID: {ref_id}"))+
-  theme(plot.title = element_markdown())
+         caption = glue("{metadata_msd$caption} | USAID | Ref ID: {ref_id}"))+
+    theme(plot.title = element_markdown())
 } 
 
 

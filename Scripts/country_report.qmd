@@ -46,7 +46,7 @@ params:
   source("Scripts/03_prevalence-gaps_gp-psnu-sex.R")
   source("Scripts/04_populationpyramid.R")
   source("Scripts/05_testing.R")
-  #missing #6 linkage
+  source("Scripts/06_Linkage_PSNU.R")
   source("Scripts/07_txcoverage_age_sex.R")
   source("Scripts/08_vl-coverage-and-suppression_gp-age.R")
   source("Scripts/09_vl-coverage-and-suppression_gp-psnu.R")
@@ -119,6 +119,9 @@ df_natsubnat %>%
 ```{r}
 # | label: linkage
 
+viz_linkage(prep_national_linkage(df_msd, params$cntry),
+            prep_psnu_linkage(df_msd, params$cntry))
+
 ```
 
 ## 7. Are new patients being added to the areas with the largest gaps in treatment coverage?
@@ -126,7 +129,7 @@ df_natsubnat %>%
 ```{r}
 # | label: tx_gap
 
-viz_tx_all(params$cntry) #wrapper function for tx_coverage and tx_new
+viz_tx_all(params$cntry, params$agency) #wrapper function for tx_coverage and tx_new
 
 
 ```
@@ -136,12 +139,20 @@ viz_tx_all(params$cntry) #wrapper function for tx_coverage and tx_new
 ```{r}
 # | label: vlsc_pop
 
+df_msd %>% 
+  prep_viral_load(params$cntry, params$agency) %>% 
+  viz_viral_load()
+
 ```
 
 ## 9. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
 
 ```{r}
 # | label: vlsc_geo
+
+df_msd %>% 
+  prep_viral_load_psnu(params$cntry, params$agency) %>% 
+  viz_viral_load_psnu()
 
 ```
 

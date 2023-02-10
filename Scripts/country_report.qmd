@@ -48,8 +48,11 @@ These supporting visuals are intended to help create and inform initial discussi
 
 ```{r}
 # | label: achievement
+  df_msd %>%
+        prep_achv_psnu(params$cntry,params$agency) %>%
+        viz_achv_psnu(params$cntry,params$agency)
+```  
 
-```
 
 ## 2. Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
 
@@ -114,6 +117,10 @@ viz_unaids_all(params$cntry)
 
 ```{r}
 # | label: prep
+
+df_msd %>%
+    prep_prep_disagg(params$cntry,params$agency) %>%
+    viz_prep_disagg(params$cntry,params$agency)
 ```
 
 ## 11. Are there key gaps identified by the SID for the country to prioritize?

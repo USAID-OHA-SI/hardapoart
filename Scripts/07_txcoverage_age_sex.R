@@ -29,7 +29,7 @@ prep_txcoverage_age_sex <- function(df, cntry) {
            fill_color = ifelse(sex == "Male", glitr::genoa, glitr::moody_blue)) %>% 
     dplyr::group_by(country) %>% 
     dplyr::mutate(ctry_name = glue::glue("{country}<br>{label_number_si(accuracy = .1)(sum(tx_curr_subnat, na.rm = TRUE))}/{label_number_si(accuracy = .1)(sum(plhiv, na.rm = TRUE))}"),
-           lab_gap = dplyr::case_when(cov_tx < .95^2 ~ scales::percent(cov_tx, 1))) %>% 
+           lab_gap = scales::percent(cov_tx, 1)) %>% 
     dplyr::ungroup() %>% 
     dplyr::rename(cntry = country)
   

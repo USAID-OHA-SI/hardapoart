@@ -22,6 +22,12 @@
       fiscal_year == metadata_natsubnat$curr_fy,
       operatingunit == ou,
       indicator == "PLHIV") %>%
+    assertr::verify(indicator == "PLHIV" &
+                    fiscal_year == metadata_natsubnat$curr_fy & 
+                      operatingunit == ou, 
+                    error_fun = err_text(glue::glue("Error: {df} has not been filtered correctly. 
+                                               Please check the first filter in prep_pop_pyramid().")), 
+                    description = glue::glue("Verify that the filters worked")) %>%
     dplyr::select(fiscal_year, operatingunit, indicator, sex, ageasentered, targets) %>%
     dplyr::group_by(fiscal_year, operatingunit, indicator, sex, ageasentered) %>%
     dplyr::summarise(across(targets, \(x) sum(x, na.rm = TRUE))) %>%

@@ -81,7 +81,7 @@ These supporting visuals are intended to help create and inform initial discussi
 ```{r}
 # | label: epi_95s
 
-viz_unaids_all(params$cntry)
+viz_unaids_all(params$cntry, params$agency)
 
 ```
 ## 3. What does HIV prevalence look like across sex / SNUs? by age/sex bands?
@@ -102,7 +102,7 @@ viz_unaids_all(params$cntry)
 ```{r}
 # | label: testing
 
- prep_modality_age(df_msd, params$cntry, trendscoarse) %>% 
+ prep_modality_age(df_msd, params$cntry, params$agency, trendscoarse) %>% 
    viz_modality_age()
 
 ```
@@ -119,8 +119,8 @@ viz_unaids_all(params$cntry)
 ```{r}
 # | label: tx_gap
 
-prep_txcoverage_age_sex(df_natsubnat, params$cntry) %>%
-  viz_txcoverage_age_sex()
+viz_tx_all(params$cntry) #wrapper function for tx_coverage and tx_new
+
 
 ```
 

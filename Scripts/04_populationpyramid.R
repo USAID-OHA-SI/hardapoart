@@ -7,7 +7,7 @@
 # UPDATED:  
 
 # DEPENDENCIES -----------------------------------------------------------------
-  source("Scripts/91_setup.R")
+  # source("Scripts/91_setup.R")
 
 # PREP -------------------------------------------------------------------------
 
@@ -15,22 +15,23 @@
   # it is actually natsubnat data
   # ou is a string, could add a unit test to make sure it's a valid OU
 
-  prep_pop_pyramid <- function(df, ou){
+prep_pop_pyramid <- function(df, cntry){
   
   df_filt <- df %>%
     dplyr::filter(
-      fiscal_year == metadata_natsubnat$curr_fy,
-      operatingunit == ou,
+      fiscal_year == max(fiscal_year),
+      country == cntry,
       indicator == "PLHIV") %>%
     assertr::verify(indicator == "PLHIV" &
-                    fiscal_year == metadata_natsubnat$curr_fy & 
-                      operatingunit == ou, 
+                    fiscal_year == max(fiscal_year) & 
+                      country == cntry, 
                     error_fun = err_text(glue::glue("Error: {df} has not been filtered correctly. 
                                                Please check the first filter in prep_pop_pyramid().")), 
                     description = glue::glue("Verify that the filters worked")) %>%
-    dplyr::select(fiscal_year, operatingunit, indicator, sex, ageasentered, targets) %>%
-    dplyr::group_by(fiscal_year, operatingunit, indicator, sex, ageasentered) %>%
-    dplyr::summarise(across(targets, \(x) sum(x, na.rm = TRUE))) %>%
+    dplyr::select(fiscal_year, country, indicator, sex, ageasentered, targets) %>%
+    dplyr::group_by(fiscal_year, country, indicator, sex, ageasentered) %>%
+    dplyr::summarise(targets = sum(targets, na.rm = TRUE),
+                     .groups = "drop") %>%
     dplyr::mutate(
       population = if_else(sex == "Male", targets*(-1), targets*1))
   

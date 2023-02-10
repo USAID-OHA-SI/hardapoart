@@ -136,6 +136,10 @@ viz_tx_all(params$cntry, params$agency) #wrapper function for tx_coverage and tx
 ```{r}
 # | label: vlsc_pop
 
+df_msd %>% 
+  prep_viral_load(params$cntry, params$agency) %>% 
+  viz_viral_load()
+
 ```
 
 ## 9. Are certain populations by age or sex being missed when trying to reach the 3rd 95?

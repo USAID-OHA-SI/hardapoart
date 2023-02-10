@@ -29,6 +29,8 @@
 
 # SOURCE LOCAL FUNCTIONS --------------------------------------------------
 
+  source("Scripts/01_achievement_indicator-psnu.R")
+  source("Scripts/10_PrEP-trends_age-sex-KP.R")
   source("Scripts/11_sid_comp.R")
   source("Scripts/12_budget-trends_agency.R")
   source("Scripts/13_funding-distro_funding-flavors.R")

@@ -18,6 +18,8 @@
   library(ggtext)
   library(googlesheets4)
   library(mindthegap)
+  library(ggrepel)
+  library(janitor)
   library(sf)
   library(selfdestructin5)
   library(gt)

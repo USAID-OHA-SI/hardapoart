@@ -24,14 +24,18 @@
   library(cascade) # Use dev version
   library(ggpattern)
   library(rcartocolor)
+  library(here)
+  library(assertr)
 
 # SOURCE LOCAL FUNCTIONS --------------------------------------------------
 
-  #source("Scripts/11_sid_comp.R")
+  source("Scripts/11_sid_comp.R")
   source("Scripts/12_budget-trends_agency.R")
   source("Scripts/13_funding-distro_funding-flavors.R")
   source("Scripts/14_hrh-footprint-various.R")
   source("Scripts/16_hrh-titles.R")
+  # Helper function for assertr::verify() to show more descriptive error messages
+  err_text <- function(msg) stop(msg, call = FALSE)
 
 # GLOBAL VARIABLES --------------------------------------------------------
   

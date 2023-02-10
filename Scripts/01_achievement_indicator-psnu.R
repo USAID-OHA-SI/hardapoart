@@ -68,7 +68,7 @@ prep_achv_psnu <- function (df, cntry, agency){
 
 # VIZ - ACHIEVEMENT BY COUNTRY -------------------------------------------------------
 
-viz_achv_psnu <- function (df, cntry, agency){
+viz_achv_psnu <- function (df){
 
     #Reference ID to be used for searching GitHub
     ref_id <- "d51dd3f9"
@@ -94,10 +94,10 @@ viz_achv_psnu <- function (df, cntry, agency){
         scale_color_identity() + #whatever value is defined by color -- use that value from data frame
         facet_wrap(~ind_w_glob_vals, scales = "free_y", nrow=2) +
         labs(x = NULL, y = NULL,
-             title = glue("{metadata_msd$curr_pd} {cntry} achievement, year to date, {agency}") %>% toupper,
+             title = glue("{metadata_msd$curr_pd} {unique(df$funding_agency)}/{unique(df$country)} achievement, year to date") %>% toupper,
              subtitle = glue("Country achievement (large, labeled points) with PSNU achievement reference points <br>"),
              caption = glue("Target achievement capped at 110%
-                              Source: {metadata_msd$source}, US Agency for International Development | Ref ID: {ref_id}")) +
+                              Source: {metadata_msd$source} | USAID | Ref ID: {ref_id}")) +
         si_style_nolines() +
         theme(
           axis.text.x = element_blank(),

@@ -195,7 +195,7 @@
   
   #output files
   reports <- tibble(
-    output_file = glue(here("markdown","{curr_pd}_{vct_cntry}_cop-support-viz_oha-siei.pptx")),
+    output_file = glue(here("markdown","{metadata$curr_pd}_{vct_cntry}_cop-support-viz_oha-siei.pptx")),
     params = map(vct_cntry, ~list(vct_cntry = .))
   )
   

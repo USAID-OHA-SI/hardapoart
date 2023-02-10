@@ -119,8 +119,8 @@ viz_unaids_all(params$cntry)
 ```{r}
 # | label: tx_gap
 
-prep_txcoverage_age_sex(df_natsubnat, params$cntry) %>%
-  viz_txcoverage_age_sex()
+viz_tx_all(params$cntry) #wrapper function for tx_coverage and tx_new
+
 
 ```
 

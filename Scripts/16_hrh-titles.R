@@ -10,6 +10,12 @@
 
   prep_hrh_titles <- function(df, cntry, agency){
     
+<<<<<<< HEAD
+=======
+    if(cntry %ni% unique(df$country) | agency %ni% unique(df$funding_agency))
+      return(NULL)
+    
+>>>>>>> 1a6ff4f... Merge branch 'main' into np_branch
     #limit to just the country/agency selected
     df <- df %>% 
       filter(country == cntry,
@@ -35,6 +41,12 @@
 
  viz_hrh_titles <- function(df){
   
+<<<<<<< HEAD
+=======
+   if(is.null(df))
+     return(print(paste("No data available.")))
+   
+>>>>>>> 1a6ff4f... Merge branch 'main' into np_branch
    ref_id <- "9831a46a" #id for adorning to plots, making it easier to find on GH
    
    df %>%

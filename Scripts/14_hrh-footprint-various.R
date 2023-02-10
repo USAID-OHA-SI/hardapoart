@@ -11,6 +11,12 @@
   
 prep_hrh_footprint <- function(df, cntry, agency){
  
+<<<<<<< HEAD
+=======
+  if(cntry %ni% unique(df$country) | agency %ni% unique(df$funding_agency))
+    return(NULL)
+  
+>>>>>>> 1a6ff4f... Merge branch 'main' into np_branch
   #limit to just the country/agency selected
   df <- df %>% 
     filter(country == cntry,
@@ -108,6 +114,9 @@ prep_hrh_footprint <- function(df, cntry, agency){
 # VIZ ---------------------------------------------------------------------
 
 viz_hrh_footprint <- function(df){
+  
+  if(is.null(df))
+    return(print(paste("No data available.")))
   
   ref_id <- "d98b536f" #id for adorning to plots, making it easier to find on GH
   

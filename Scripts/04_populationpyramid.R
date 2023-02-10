@@ -9,17 +9,25 @@
 # DEPENDENCIES -----------------------------------------------------------------
   source("Scripts/91_setup.R")
 
+# PREP -------------------------------------------------------------------------
+
   # df = df_natsubnat comes from 91_setup.R, could add a test to make sure 
   # it is actually natsubnat data
   # ou is a string, could add a unit test to make sure it's a valid OU
 
-  prep_pop_pyramid <- function(.df, .ou,...){
+  prep_pop_pyramid <- function(df, ou){
   
-  df_filt <- .df %>%
+  df_filt <- df %>%
     dplyr::filter(
-      fiscal_year == metadata$curr_fy,
-      operatingunit == .ou,
+      fiscal_year == metadata_natsubnat$curr_fy,
+      operatingunit == ou,
       indicator == "PLHIV") %>%
+    assertr::verify(indicator == "PLHIV" &
+                    fiscal_year == metadata_natsubnat$curr_fy & 
+                      operatingunit == ou, 
+                    error_fun = err_text(glue::glue("Error: {df} has not been filtered correctly. 
+                                               Please check the first filter in prep_pop_pyramid().")), 
+                    description = glue::glue("Verify that the filters worked")) %>%
     dplyr::select(fiscal_year, operatingunit, indicator, sex, ageasentered, targets) %>%
     dplyr::group_by(fiscal_year, operatingunit, indicator, sex, ageasentered) %>%
     dplyr::summarise(across(targets, \(x) sum(x, na.rm = TRUE))) %>%
@@ -31,11 +39,21 @@
     dplyr::mutate(n_unknown = comma(targets))
   
   df_viz <- df_filt %>%
-    tidyr::drop_na(sex, ageasentered)
+    tidyr::drop_na(sex, ageasentered) %>%
+    # include those with age and sex data unavailable in the notes on the viz
+    # if there are no PLHIV missing age or sex data, replace NA with "No"
+    # so that the note on the viz reads:
+    # "Note: There are no PLHIV with unreported age and sex data.
+    # otherwise it will show the number
+    full_join(., unknown) %>%
+    mutate(n_unknown = if_else(is.na(n_unknown) == TRUE, 
+                               "no", n_unknown))
   
   return(df_viz)
   
   }
+
+# VIZ --------------------------------------------------------------------------
   
   # df = df_natsubnat comes from 91_setup.R, could add a test to make sure 
   # it is actually natsubnat data
@@ -45,10 +63,23 @@
   # sex is a factor or char containing "Male" and "Female"
   # ref_id is an image reference id
   
-  viz_pop_pyramid <- function(.df, .age_var, .pop_var, .sex_var, .ref_id, ...){
+  viz_pop_pyramid <- function(df){
     
-    .df %>%
-      ggplot2::ggplot(aes(x = .age_var, y = .pop_var, fill = .sex_var)) +
+    ref_id <- "aa8bd5b4"
+    
+    # pull in the number of PLHIV reported with no age or sex data available
+    n_PLHIV_unknown <- df$n_unknown[1]
+    
+    # format the number with a comma if it is not "no"
+    if(n_PLHIV_unknown != "no"){
+      
+      scales::comma(n_PLHIV_unknown)
+      
+      return(n_PLHIV_unknown)
+    }
+    
+    df %>%
+      ggplot2::ggplot(aes(x = ageasentered, y = population, fill = sex)) +
       ggplot2::geom_col() +
       ggplot2::coord_flip() +
       ggplot2::scale_fill_manual(values = c("Male" = genoa, 
@@ -57,7 +88,7 @@
         # would be great to have it 
         # dynamically choose a scale 
         # based on the length of "value" since this can vary by OU 
-        limits = c(min(df_viz$population), max(df_viz$population)),
+        limits = c(min(df$population), max(df$population)),
         labels = function(x) {glue("{comma(abs(x))}")}, 
         # would like it to be able to use this ideally but
         # can't figure out how to use this and abs together
@@ -65,10 +96,10 @@
       ) +
       ggplot2::labs(title = glue("Population Pyramid"),
                     x = NULL, y = NULL, fill = NULL,
-                    subtitle = glue("{.df$indicator[1]} | {metadata$curr_fy_lab}"),
+                    subtitle = glue("{df$indicator[1]} | {metadata_natsubnat$curr_fy_lab}"),
                     caption = 
-                      glue("Note: There are {unknown$n_unknown[1]} PLHIV with unreported age and sex data.
-                  Source: {metadata$curr_pd} MSD | Ref id: {.ref_id} | US Agency for International Development")) +
+                      glue("Note: There are {n_PLHIV_unknown} PLHIV with unreported age and sex data.
+                  Source: {metadata_natsubnat$curr_pd} MSD | Ref id: {ref_id} | US Agency for International Development")) +
       glitr::si_style_yline() +
       ggplot2::theme(
         panel.spacing = unit(.5, "line"),
@@ -77,18 +108,3 @@
         strip.text = element_markdown())
     
   }
-
-# GLOBAL VARIABLES -------------------------------------------------------------
-  ref_id <- "aa8bd5b4"
-  ou <- "South Sudan"
-  
-# MUNGE ------------------------------------------------------------------------
-
-  df_viz <- prep_pop_pyramid(df_natsubnat, ou)
-  
-# VIZ --------------------------------------------------------------------------
-
-  # i think there is a better way to do this in ggplot2 but this works!
-  viz_pop_pyramid(df_viz, df_viz$ageasentered, df_viz$population, df_viz$sex, ref_id)
-  
-  glitr::si_save("Images/8_pop_pyramid.png")

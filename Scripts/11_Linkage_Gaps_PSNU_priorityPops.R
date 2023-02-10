@@ -16,12 +16,12 @@
     df_reshaped <- df %>% 
       dplyr::filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
              standardizeddisaggregate == "Total Numerator",
-             fiscal_year == metadata$curr_fy,
+             fiscal_year == metadata_msd$curr_fy,
              funding_agency == "USAID",
              operatingunit == ou) %>% 
       assertr::verify(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST") &
                standardizeddisaggregate == "Total Numerator" &
-               fiscal_year == metadata$curr_fy & 
+               fiscal_year == metadata_msd$curr_fy & 
                funding_agency == "USAID" &
                operatingunit == ou, 
                error_fun = err_text(glue::glue("Error: {.df} has not been filtered correctly. 
@@ -40,8 +40,8 @@
       dplyr::group_by(indicator) %>% 
       tidyr::fill(targets, .direction = "down") %>% 
       dplyr::filter(nchar(period) != 4, 
-             period == metadata$curr_pd) %>% 
-      assertr::verify(period == metadata$curr_pd & nchar(period) != 4, 
+             period == metadata_msd$curr_pd) %>% 
+      assertr::verify(period == metadata_msd$curr_pd & nchar(period) != 4, 
                       error_fun = err_text(glue::glue("Error: df_linkage_nat has not been filtered correctly. 
                                                Please check the last filter in prep_national_linkage().")), 
                       description = glue::glue("Verify that last time period filtering worked")) %>%
@@ -63,12 +63,12 @@
     df_reshaped <- df %>% 
       dplyr::filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
              standardizeddisaggregate == "Total Numerator",
-             fiscal_year == metadata$curr_fy,
+             fiscal_year == metadata_msd$curr_fy,
              funding_agency == "USAID",
              operatingunit == ou) %>% 
       assertr::verify(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST") &
                         standardizeddisaggregate == "Total Numerator" &
-                        fiscal_year == metadata$curr_fy & 
+                        fiscal_year == metadata_msd$curr_fy & 
                         funding_agency == "USAID" &
                         operatingunit == ou, 
                       error_fun = err_text(glue::glue("Error: {.df} has not been filtered correctly. 
@@ -87,8 +87,8 @@
       dplyr::group_by(indicator) %>% 
       tidyr::fill(targets, .direction = "down") %>% 
       dplyr::filter(nchar(period) != 4, 
-             period == metadata$curr_pd) %>% 
-      assertr::verify(period == metadata$curr_pd & nchar(period) != 4, 
+             period == metadata_msd$curr_pd) %>% 
+      assertr::verify(period == metadata_msd$curr_pd & nchar(period) != 4, 
                       error_fun = err_text(glue::glue("Error: df_linkage_psnu has not been filtered correctly. 
                                                Please check the last filter in prep_psnu_linkage().")), 
                       description = glue::glue("Verify that last time period filtering worked")) %>%
@@ -135,7 +135,7 @@
       ggplot2::coord_flip() +
       ggplot2::scale_y_continuous(labels = comma) +
       ggplot2::labs(x = NULL, y = NULL, 
-                    subtitle = glue("Linkage | {metadata$curr_pd_lab}")) +
+                    subtitle = glue("Linkage | {metadata_msd$curr_pd_lab}")) +
       ggplot2::expand_limits(x = c(0, 9)) +
       ggplot2::theme(
         legend.position = "none",
@@ -174,7 +174,7 @@
       coord_flip() +
       scale_y_continuous(labels = comma) +
       labs(x = NULL, y = NULL, 
-           caption = glue("Source: {metadata$curr_pd} MSD | Ref id: {ref_id} | US Agency for International Development")) +
+           caption = glue("Source: {metadata_msd$curr_pd} MSD | Ref id: {ref_id} | US Agency for International Development")) +
       expand_limits(x = c(0, 9)) 
   }
   

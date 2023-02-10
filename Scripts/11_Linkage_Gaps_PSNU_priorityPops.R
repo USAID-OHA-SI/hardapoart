@@ -9,16 +9,12 @@
 # DEPENDENCIES -----------------------------------------------------------------
   source("Scripts/91_setup.R")
 
-  # I can't load the PSNUxIM file so I'm trusting that it works
   # .df is the PSNUxIM MSD df_msd
   # .ou = a character string in pepfar_country_list$operatingunit
   prep_national_linkage <- function(df, ou, ...){
   
     df_reshaped <- df %>% 
       dplyr::filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
-    
-    df_linkage_nat <- .df %>% 
-      filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
              standardizeddisaggregate == "Total Numerator",
              fiscal_year == metadata$curr_fy,
              funding_agency == "USAID",
@@ -111,8 +107,6 @@
   # df_nat is the national level linkage data
   # for df_nat psnu var = "National"
   # linkage percent is a number from 0-1
-  # ref_id is the image reference id
-  # df_psnu is the psnu level linkage data
   viz_link_nat <- function(.df_nat, .psnu_var, .linkage_pct, .ref_id, ...){
     
     .df_nat %>% 
@@ -141,8 +135,8 @@
   
   # for df_psnu psnu var is the actual PSNU
   # linkage percent is a number from 0-1
-  # linkage percent is a number from 0-1
-  # ref_id is the image reference id
+  
+  viz_link_psnu <- function(df_psnu, psnu_var_psnu, psnu_linkage_pct){
   
   viz_link_psnu <- function(.df_psnu, .psnu_var, .linkage_pct, .ref_id, ...){
     
@@ -163,21 +157,12 @@
            caption = glue("Source: {metadata$curr_pd} MSD | Ref id: {.ref_id} | US Agency for International Development")) +
       expand_limits(x = c(0, 9)) 
   }
-
-# GLOBAL VARIABLES ------------------------------------------------------------
   
-  ref_id <- "f6f26589"
-
-# MUNGE -----------------------------------------------------------------------
-
-  link_nat <- prep_national_linkage(df_msd, "Democratic Republic of the Congo")
-  link_psnu <- prep_psnu_linkage(df_msd, "Democratic Republic of the Congo")
+  psnu <- viz_link_psnu(df_psnu, psnu_var_psnu, psnu_linkage_pct)
   
-  # VIZ ========================================================================
-
-  nat <- viz_link_nat(link_nat, link_nat$psnu, link_nat$linkage, ref_id)
-  psnu <- viz_link_psnu(link_psnu, link_psnu$psnu, link_psnu$linkage, ref_id)
-
+  # Combined viz -------
+  
+  # each figure could be used individually but for this visual they're combined
   nat / psnu + plot_layout(heights = c(1, 4))
-
-  si_save("Images/Linkage_summary.png")  
+  
+  }

@@ -71,13 +71,9 @@
       return_latest("PSNU_IM") %>% 
       read_psd()   
     
-    #resolve known issues
-    df_msd <- resolve_knownissues(df_msd)
-    
     #filter to data from last 5 quarters & relevant indicators/disaggs
     df_msd <- df_msd %>% 
       filter(fiscal_year >= 2022)
-    
     
     #add _D to denom variables
     df_msd <- clean_indicator(df_msd)
@@ -97,6 +93,7 @@
       "TX_CURR",            "Age/Sex/HIVStatus",
       "TX_CURR",              "Total Numerator",
       "TX_NEW",              "Total Numerator",
+      "TX_NEW",              "Age/Sex/HIVStatus",
       "TX_PVLS", "Age/Sex/Indication/HIVStatus",
       "TX_PVLS",              "Total Numerator",
       "TX_PVLS_D",            "Total Denominator",
@@ -106,6 +103,10 @@
     #filter to select indicators/disaggs
     df_msd <- df_msd %>% 
       semi_join(df_msd_ind, by = c("indicator", "standardizeddisaggregate"))
+    
+    #resolve known issues
+    df_msd <- resolve_knownissues(df_msd)
+    
   }
 
 # LOAD FSD ----------------------------------------------------------------

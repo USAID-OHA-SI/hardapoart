@@ -188,40 +188,40 @@
 #                               pd_hist = 5)
   
     
-# VIZ ----
-  
-  # Agency
-  prep_varial_load(df = df_psnu, 
-                   fy = metadata_msd$curr_fy, 
-                   agency = agency, 
-                   cntry = cntry,
-                   pd_hist = 5) %>% 
-    viz_viral_load(
-      df = ., 
-      cntry = cntry, 
-      pd = metadata_msd$curr_pd, 
-      src = metadata_msd$source,
-      rid = ref_id,
-      save = F
-    )
-  
-  # All
-  agency <- "PEPFAR"
-  
-  prep_varial_load(df = df_psnu, 
-                   fy = metadata_msd$curr_fy, 
-                   agency = agency, 
-                   cntry = cntry,
-                   pd_hist = 5) %>% 
-    viz_viral_load(
-      df = ., 
-      cntry = cntry, 
-      pd = metadata_msd$curr_pd, 
-      src = metadata_msd$source,
-      rid = ref_id,
-      save = F
-    )
-
-  
-# EXPORT ----
-  
+# # VIZ ----
+#   
+#   # Agency
+#   prep_varial_load(df = df_psnu, 
+#                    fy = metadata_msd$curr_fy, 
+#                    agency = agency, 
+#                    cntry = cntry,
+#                    pd_hist = 5) %>% 
+#     viz_viral_load(
+#       df = ., 
+#       cntry = cntry, 
+#       pd = metadata_msd$curr_pd, 
+#       src = metadata_msd$source,
+#       rid = ref_id,
+#       save = F
+#     )
+#   
+#   # All
+#   agency <- "PEPFAR"
+#   
+#   prep_varial_load(df = df_psnu, 
+#                    fy = metadata_msd$curr_fy, 
+#                    agency = agency, 
+#                    cntry = cntry,
+#                    pd_hist = 5) %>% 
+#     viz_viral_load(
+#       df = ., 
+#       cntry = cntry, 
+#       pd = metadata_msd$curr_pd, 
+#       src = metadata_msd$source,
+#       rid = ref_id,
+#       save = F
+#     )
+# 
+#   
+# # EXPORT ----
+#   

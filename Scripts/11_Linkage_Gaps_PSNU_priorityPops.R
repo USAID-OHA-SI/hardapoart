@@ -14,8 +14,8 @@
   # .ou = a character string in pepfar_country_list$operatingunit
   prep_national_linkage <- function(df, ou, ...){
   
-  prep_national_linkage <- function(.df, .ou, ...){
-    
+    df_reshaped <- df %>% 
+      dplyr::filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
     
     df_linkage_nat <- .df %>% 
       filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
@@ -27,16 +27,22 @@
                standardizeddisaggregate == "Total Numerator" &
                fiscal_year == metadata$curr_fy & 
                funding_agency == "USAID" &
+               operatingunit == ou, 
+               error_fun = err_text(glue::glue("Error: {.df} has not been filtered correctly. 
+                                               Please check the first filter in prep_national_linkage().")), 
+               description = glue::glue("Verify that the filters worked")) %>%
+      dplyr::group_by(indicator, fiscal_year) %>% 
+      dplyr::summarise(across(targets:qtr4, \(x) sum(x, na.rm = T)), 
                 .groups = "drop") %>% 
       reshape_msd(direction ="semi-wide") %>% 
       group_by(indicator) %>% 
       fill(targets, .direction = "down") %>% 
       filter(nchar(period) != 4, 
              period == metadata$curr_pd) %>% 
-      select(-targets) %>% 
-      pivot_wider(names_from = indicator, values_from = results) %>% 
-      mutate(linkage = TX_NEW / HTS_TST_POS, 
-             psnu = "National")
+      assertr::verify(period == metadata$curr_pd & nchar(period) != 4, 
+                      error_fun = err_text(glue::glue("Error: df_linkage_nat has not been filtered correctly. 
+                                               Please check the last filter in prep_national_linkage().")), 
+                      description = glue::glue("Verify that last time period filtering worked")) %>%
     
     return(df_linkage_nat)
     
@@ -44,23 +50,35 @@
   prep_psnu_linkage <- function(.df, .ou, ...){
     
     
-    df_linkage_psnu <- .df %>% 
-      filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
+    df_reshaped <- df %>% 
+      dplyr::filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
              standardizeddisaggregate == "Total Numerator",
              fiscal_year == metadata$curr_fy,
              funding_agency == "USAID",
-             operatingunit == .ou) %>% 
-      group_by(indicator, psnu, fiscal_year) %>% 
-      summarise(across(targets:qtr4, \(x) sum(x, na.rm = T)), 
+             operatingunit == ou) %>% 
+      assertr::verify(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST") &
+                        standardizeddisaggregate == "Total Numerator" &
+                        fiscal_year == metadata$curr_fy & 
+                        funding_agency == "USAID" &
+                        operatingunit == ou, 
+                      error_fun = err_text(glue::glue("Error: {.df} has not been filtered correctly. 
+                                               Please check the first filter in prep_psnu_linkage().")), 
+                      description = glue::glue("Verify that the filters worked")) %>%
+      dplyr::group_by(indicator, psnu, fiscal_year) %>% 
+      dplyr::summarise(across(targets:qtr4, \(x) sum(x, na.rm = T)), 
                 .groups = "drop") %>% 
       reshape_msd(direction ="semi-wide") %>% 
       group_by(indicator) %>% 
       fill(targets, .direction = "down") %>% 
       filter(nchar(period) != 4, 
              period == metadata$curr_pd) %>% 
-      select(-targets) %>% 
-      pivot_wider(names_from = indicator, values_from = results) %>% 
-      mutate(linkage = TX_NEW / HTS_TST_POS)
+      assertr::verify(period == metadata$curr_pd & nchar(period) != 4, 
+                      error_fun = err_text(glue::glue("Error: df_linkage_psnu has not been filtered correctly. 
+                                               Please check the last filter in prep_psnu_linkage().")), 
+                      description = glue::glue("Verify that last time period filtering worked")) %>%
+      dplyr::select(-targets) %>% 
+      tidyr::pivot_wider(names_from = indicator, values_from = results) %>% 
+      dplyr::mutate(linkage = TX_NEW / HTS_TST_POS) %>%
     
     return(df_linkage_psnu)
     

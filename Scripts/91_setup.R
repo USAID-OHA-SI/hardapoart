@@ -72,13 +72,9 @@
       return_latest("PSNU_IM") %>% 
       read_psd()   
     
-    #resolve known issues
-    df_msd <- resolve_knownissues(df_msd)
-    
     #filter to data from last 5 quarters & relevant indicators/disaggs
     df_msd <- df_msd %>% 
       filter(fiscal_year >= 2022)
-    
     
     #add _D to denom variables
     df_msd <- clean_indicator(df_msd)
@@ -98,6 +94,7 @@
       "TX_CURR",            "Age/Sex/HIVStatus",
       "TX_CURR",              "Total Numerator",
       "TX_NEW",              "Total Numerator",
+      "TX_NEW",              "Age/Sex/HIVStatus",
       "TX_PVLS", "Age/Sex/Indication/HIVStatus",
       "TX_PVLS",              "Total Numerator",
       "TX_PVLS_D", "Age/Sex/Indication/HIVStatus",
@@ -108,6 +105,14 @@
     #filter to select indicators/disaggs
     df_msd <- df_msd %>% 
       semi_join(df_msd_ind, by = c("indicator", "standardizeddisaggregate"))
+    
+    #add in PEPFAR "agency"
+    df_msd <- df_msd %>% 
+      bind_rows(df_msd %>% mutate(funding_agency = "PEPFAR"))
+    
+    #resolve known issues
+    df_msd <- resolve_knownissues(df_msd)
+    
   }
 
 # LOAD FSD ----------------------------------------------------------------
@@ -209,25 +214,19 @@
   df_epi_original <- pull_unaids(TRUE, "HIV Estimates")
   
 # LOAD 10-10-10 ------------------------------------------------------------
-  vct_cntry <- pepfar_country_list %>% 
-    pull(country)
-  #TODO
   
   #store meta data
-  metadata_tens <- list(caption = "Source: HIV Policy Lab [2021-11-09]")
+  metadata_pol_lab <- list(caption = "Source: HIV Policy Lab [2021-11-09]")
   
   #read in HIV Policy Lab data export
   df_tens <- googlesheets4::range_speedread(pol_lab_id, "Policy adoption data", 
                                             skip = 6, col_types = "c") %>% 
     janitor::clean_names()
-  #output files
-  reports <- tibble(
-    output_file = glue(here("markdown","{metadata$curr_pd}_{vct_cntry}_cop-support-viz_oha-siei.pptx")),
-    params = map(vct_cntry, ~list(vct_cntry = .))
-  )
+
   
 
 # MARKDOWN ----------------------------------------------------------------
+
 
   # #TODO
   # vct_cntry <- pepfar_country_list %>% 

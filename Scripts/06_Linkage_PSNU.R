@@ -31,6 +31,11 @@
                                                Please check the first filter in prep_psnu_linkage().")), 
                       description = glue::glue("Verify that the filters worked")) 
     
+    #bind in duplicative rows to serve as overall total for plot
+    df_filtered <- df_filtered %>% 
+      dplyr::bind_rows(df_filtered %>% 
+                         dplyr::mutate(psnu = "Overall"))
+      
     #aggregate df tp psnu lvl for plotting
     df_reshaped <- df_filtered %>%
       dplyr::group_by(fiscal_year, country, funding_agency, psnu, indicator) %>% 

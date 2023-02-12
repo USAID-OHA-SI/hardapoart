@@ -19,7 +19,7 @@ prep_txcoverage_age_sex <- function(df, cntry) {
   
   df_gap <- df %>% 
     dplyr::filter(country %in% cntry,
-           fiscal_year == 2022,
+           fiscal_year == max(fiscal_year),
            indicator %in% ind_sel,
            standardizeddisaggregate == "Age/Sex/HIVStatus") %>% 
     dplyr::count(country, indicator, ageasentered, sex, wt = targets, name = "value") %>% 
@@ -54,17 +54,19 @@ prep_txnew_age_sex <- function(df, cntry, agency) {
                      TRUE ~ glue("{x}"))
   }
   
-  df_viz <- df %>% 
+  df <- df %>% 
     dplyr::filter(country %in% cntry,
-                  fiscal_year == 2022,
+                  fiscal_year == max(fiscal_year),
                   indicator == "TX_NEW",
                   funding_agency == agency,
                   standardizeddisaggregate == "Age/Sex/HIVStatus") %>% 
     dplyr::group_by(country, fiscal_year, funding_agency, indicator, ageasentered, sex) %>% 
     dplyr::summarise(across(starts_with("qtr"), sum, na.rm = TRUE),
                      .groups = "drop") %>%
-    gophr::reshape_msd() %>% 
-    dplyr::mutate(ctry_name = glue::glue("{country}/{funding_agency}<br> ")) %>%
+    gophr::reshape_msd() 
+  
+  df_viz <- df %>% 
+    dplyr::mutate(ctry_name = glue::glue("{unique(df$funding_agency)}/{unique(df$country)}<br>")) %>%
     dplyr::mutate(fill_color = ifelse(sex == "Male", glitr::genoa_light, glitr::moody_blue_light)) %>% 
     dplyr::rename(cntry = country) %>% 
     dplyr::group_by(cntry, period, indicator, ageasentered, sex) %>% 

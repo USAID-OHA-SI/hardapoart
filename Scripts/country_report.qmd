@@ -16,6 +16,7 @@ editor:
 ```{r}
 # | label: setup
 # | include: FALSE
+# | cache: TRUE
 
 # DEPENDENCIES ------------------------------------------------------------
   
@@ -63,6 +64,14 @@ editor:
   err_text <- function(msg) stop(msg, call = FALSE)
 
 ```
+```{r}
+# | label: load_data
+# | include: FALSE
+# | cache: TRUE
+
+  source(here("Scripts/91_setup.R"))
+
+```
 
 ## Purpose
 
@@ -79,7 +88,7 @@ data sources, and calculations for anything included here to make this a
 jumping off point to delve into any software and explore further. If you
 have questions, please contact your SIEI backstop for assistance.
 
-## 1. Are there any major gaps in achievement as of `params$curr_pd`?
+## 1. Are there any major gaps in achievement as of `r params$curr_pd`?
 
 ```{r}
 # | label: achievement

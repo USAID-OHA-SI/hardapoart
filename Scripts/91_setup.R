@@ -107,6 +107,8 @@
     df_msd <- df_msd %>%
       semi_join(df_msd_ind, by = c("indicator", "standardizeddisaggregate"))
     
+      rm(df_msd_ind)
+      
     #add in PEPFAR "agency"
     df_msd <- df_msd %>% 
       bind_rows(df_msd %>% mutate(funding_agency = "PEPFAR"))

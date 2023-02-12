@@ -25,19 +25,22 @@ prep_pop_pyramid <- function(df, cntry){
     dplyr::filter(
       fiscal_year == max(fiscal_year),
       country == cntry,
-      indicator == "PLHIV") %>%
+      indicator == "PLHIV")
+  
+  df_filt %>%
     assertr::verify(indicator == "PLHIV" &
                     fiscal_year == max(fiscal_year) & 
                       country == cntry, 
                     error_fun = err_text(glue::glue("Error: {df} has not been filtered correctly. 
                                                Please check the first filter in prep_pop_pyramid().")), 
-                    description = glue::glue("Verify that the filters worked")) %>%
+                    description = glue::glue("Verify that the filters worked")) 
+  
+  df_filt <- df_filt %>%
     dplyr::select(fiscal_year, country, indicator, sex, ageasentered, targets) %>%
     dplyr::group_by(fiscal_year, country, indicator, sex, ageasentered) %>%
     dplyr::summarise(targets = sum(targets, na.rm = TRUE),
                      .groups = "drop") %>%
-    dplyr::mutate(
-      population = if_else(sex == "Male", -targets, targets))
+    dplyr::mutate(population = if_else(sex == "Male", -targets, targets))
   
   unknown <- df_filt  %>%
     dplyr::filter(is.na(sex) & is.na(ageasentered)) %>%

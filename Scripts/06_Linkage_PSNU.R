@@ -12,12 +12,16 @@
 
   prep_psnu_linkage <- function(df, cntry, agency, ...){
     
-    df_reshaped <- df %>% 
+    #limit dataset to relevant indicators
+    df_filtered <- df %>% 
       dplyr::filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
              standardizeddisaggregate == "Total Numerator",
              fiscal_year == metadata_msd$curr_fy,
              funding_agency == agency,
-             country == cntry) %>% 
+             country == cntry) 
+    
+    #verify filter worked
+    df_filtered %>% 
       assertr::verify(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST") &
                         standardizeddisaggregate == "Total Numerator" &
                         fiscal_year == metadata_msd$curr_fy & 
@@ -25,7 +29,10 @@
                         country == cntry, 
                       error_fun = err_text(glue::glue("Error: {.df} has not been filtered correctly. 
                                                Please check the first filter in prep_psnu_linkage().")), 
-                      description = glue::glue("Verify that the filters worked")) %>%
+                      description = glue::glue("Verify that the filters worked")) 
+    
+    #aggregate df tp psnu lvl for plotting
+    df_filtered <- df_filtered %>%
       dplyr::group_by(indicator, psnu, fiscal_year) %>% 
       dplyr::summarise(across(targets:qtr4, \(x) sum(x, na.rm = T)), 
                 .groups = "drop") %>% 

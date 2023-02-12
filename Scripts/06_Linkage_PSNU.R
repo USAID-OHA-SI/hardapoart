@@ -73,57 +73,8 @@
   
 # VIZ --------------------------------------------------------------------------
   
-  viz_linkage_psnu <- function(df_nat, df_psnu){
+  viz_linkage_psnu <- function(df){
     
-    
-    
-  # National level viz -------
-    
-  psnu_var_nat <- df_nat$psnu
-  nat_linkage_pct <- df_nat$linkage
-  
-  # df_nat is national level linkage data from prep_national_linkage
-  # for df_nat psnu var nat = "National"
-  # linkage percent is a number from 0-1
-    
-  viz_link_nat <- function(df_nat, psnu_var_nat, nat_linkage_pct, ...){
-    
-    df_nat %>% 
-      ggplot2::ggplot(aes(x = reorder(psnu_var_nat, nat_linkage_pct))) +
-      ggplot2::geom_col(aes(y = nat_linkage_pct), fill = scooter_light,
-                        position = position_nudge(x = 0.1), width = 0.5) +
-      ggplot2::geom_text(aes(y = nat_linkage_pct, label = percent(nat_linkage_pct, 1)), 
-                         size = 9/.pt,
-                         family = "Source Sans Pro",
-                         fontface = "bold", 
-                         color = scooter, 
-                         vjust = 0) +
-      glitr::si_style_ygrid() +
-      ggplot2::coord_flip() +
-      ggplot2::scale_y_continuous(labels = comma) +
-      ggplot2::labs(x = NULL, y = NULL, 
-                    subtitle = glue("Linkage | {metadata_msd$curr_pd_lab}")) +
-      ggplot2::expand_limits(x = c(0, 9)) +
-      ggplot2::theme(
-        legend.position = "none",
-        plot.title = element_markdown(),
-        strip.text = element_markdown(), 
-        axis.text.x = element_blank())
-    
-  }
-  
-  nat <- viz_link_nat(df_nat, psnu_var_nat, nat_linkage_pct)
-  
-  # PSNU level viz -------
-  
-  psnu_var_psnu <- df_psnu$psnu
-  psnu_linkage_pct <- df_psnu$linkage
-  
-  # df_psnu is psnu level linkage data from prep_psnu_linkage
-  # for df_psnu psnu var is the actual PSNU
-  # linkage percent is a number from 0-1
-  
-  viz_link_psnu <- function(df_psnu, psnu_var_psnu, psnu_linkage_pct){
     
     ref_id <- "f6f26589"
     
@@ -145,13 +96,6 @@
            x = NULL, y = NULL, 
            caption = glue("{metadata_msd$caption}")) +
       expand_limits(x = c(0, 9)) 
-  }
-  
-  psnu <- viz_link_psnu(df_psnu, psnu_var_psnu, psnu_linkage_pct)
-  
-  # Combined viz -------
-  
-  # each figure could be used individually but for this visual they're combined
-  nat / psnu + plot_layout(heights = c(1, 4))
+ 
   
   }

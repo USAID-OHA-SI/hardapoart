@@ -37,7 +37,7 @@ prep_pop_pyramid <- function(df, cntry){
     dplyr::summarise(targets = sum(targets, na.rm = TRUE),
                      .groups = "drop") %>%
     dplyr::mutate(
-      population = if_else(sex == "Male", targets*(-1), targets*1))
+      population = if_else(sex == "Male", -targets, targets))
   
   unknown <- df_filt  %>%
     dplyr::filter(is.na(sex) & is.na(ageasentered)) %>%
@@ -95,15 +95,8 @@ prep_pop_pyramid <- function(df, cntry){
       ggplot2::scale_fill_manual(values = c("Male" = glitr::genoa, 
                                             "Female" = glitr::moody_blue)) +
       ggplot2::scale_x_continuous(
-        # would be great to have it 
-        # dynamically choose a scale 
-        # based on the length of "value" since this can vary by OU 
-        limits = c(min(df$population), max(df$population)),
-        # labels = function(x) {glue("{comma(abs(x))}")}, 
-        labels = label_number(scale_cut = cut_short_scale())(abs(x)), 
-        # would like it to be able to use this ideally but
-        # can't figure out how to use this and abs together
-        # label_number(scale_cut = cut_short_scale())
+        limits = c(-max(df$targets), max(df$targets)),
+        labels = function(x) {glue("{label_number(scale_cut = cut_short_scale())(abs(x))}")}, 
       ) +
       ggplot2::labs(title = glue("{unique(df$country)} - {unique(df$fiscal_year)} PLHIV Pyramid") %>% toupper,
                     subtitle =  glue::glue("Comparison between <span style='color:{genoa}'>Male</span> & <span style='color:{moody_blue}'>Female</span> PLHIV by age band"),

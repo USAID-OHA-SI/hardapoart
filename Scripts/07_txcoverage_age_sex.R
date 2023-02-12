@@ -19,7 +19,7 @@ prep_txcoverage_age_sex <- function(df, cntry) {
   
   df_gap <- df %>% 
     dplyr::filter(country %in% cntry,
-           fiscal_year == 2022,
+           fiscal_year == max(fiscal_year),
            indicator %in% ind_sel,
            standardizeddisaggregate == "Age/Sex/HIVStatus") %>% 
     dplyr::count(country, indicator, ageasentered, sex, wt = targets, name = "value") %>% 
@@ -32,7 +32,7 @@ prep_txcoverage_age_sex <- function(df, cntry) {
     dplyr::mutate(plhiv_marker = dplyr::case_when(tx_curr_subnat > plhiv ~ plhiv),
            fill_color = ifelse(sex == "Male", glitr::genoa, glitr::moody_blue)) %>% 
     dplyr::group_by(country) %>% 
-    dplyr::mutate(ctry_name = glue::glue("{country}<br>{label_number_si(accuracy = .1)(sum(tx_curr_subnat, na.rm = TRUE))}/{label_number_si(accuracy = .1)(sum(plhiv, na.rm = TRUE))}"),
+    dplyr::mutate(ctry_name = glue::glue("{unique(df_gap$country)}<br>{label_number_si(accuracy = .1)(sum(tx_curr_subnat, na.rm = TRUE))}/{label_number_si(accuracy = .1)(sum(plhiv, na.rm = TRUE))}"),
            lab_gap = scales::percent(cov_tx, 1)) %>% 
     dplyr::ungroup() %>% 
     dplyr::rename(cntry = country)
@@ -54,17 +54,19 @@ prep_txnew_age_sex <- function(df, cntry, agency) {
                      TRUE ~ glue("{x}"))
   }
   
-  df_viz <- df %>% 
+  df <- df %>% 
     dplyr::filter(country %in% cntry,
-                  fiscal_year == 2022,
+                  fiscal_year == max(fiscal_year),
                   indicator == "TX_NEW",
                   funding_agency == agency,
                   standardizeddisaggregate == "Age/Sex/HIVStatus") %>% 
     dplyr::group_by(country, fiscal_year, funding_agency, indicator, ageasentered, sex) %>% 
     dplyr::summarise(across(starts_with("qtr"), sum, na.rm = TRUE),
                      .groups = "drop") %>%
-    gophr::reshape_msd() %>% 
-    dplyr::mutate(ctry_name = glue::glue("{country}/{funding_agency}<br> ")) %>%
+    gophr::reshape_msd() 
+  
+  df_viz <- df %>% 
+    dplyr::mutate(ctry_name = glue::glue("{unique(df$funding_agency)}/{unique(df$country)}<br>")) %>%
     dplyr::mutate(fill_color = ifelse(sex == "Male", glitr::genoa_light, glitr::moody_blue_light)) %>% 
     dplyr::rename(cntry = country) %>% 
     dplyr::group_by(cntry, period, indicator, ageasentered, sex) %>% 
@@ -103,9 +105,9 @@ viz_txcoverage_age_sex <- function(df) {
                        expand = c(.005, .005)) +
     ggplot2::scale_fill_identity(aesthetics = c("fill", "color")) +
     ggplot2::labs(x = NULL, y = NULL,
-         title = glue::glue("{metadata_natsubnat$curr_fy_lab} {unique(df$country)} Treatment coverage gaps") %>% toupper,
+         title = glue::glue("{metadata_natsubnat$curr_fy_lab} {unique(df$cntry)} Treatment coverage gaps") %>% toupper,
          subtitle = "TX_CURR_SUBNAT coverage of PLHIV by age and sex",
-         caption = glue::glue(" ")) +
+         caption = " ") +
     ggplot2::coord_cartesian(clip = "off") +
     glitr::si_style_xgrid() +
     ggplot2::theme(strip.text.y = element_text(hjust = .5),
@@ -126,7 +128,7 @@ viz_txnew_age_sex <- function(df) {
   
   df %>% 
     dplyr::filter(ageasentered != "Unknown Age",
-           period == metadata_natsubnat$curr_pd) %>% 
+           period == metadata_msd$curr_pd) %>% 
     ggplot2::ggplot(aes(value, ageasentered, fill = fill_color, color = fill_color)) +
     ggplot2::geom_col(aes(fill = fill_color), width = .8, alpha = .8) +
     #facet_wrap(~sex, switch = "y", scales = "free_x") +
@@ -141,7 +143,7 @@ viz_txnew_age_sex <- function(df) {
                        expand = c(.005, .005)) +
     glitr::si_style_xgrid() +
     ggplot2::labs(x = NULL, y = NULL,
-         title = glue::glue("{metadata_msd$curr_pd} {unique(df$funding_agency)/{unique(df$country)} treatment initations") %>% toupper,
+         title = glue::glue("{metadata_msd$curr_pd} {unique(df$funding_agency)}/{unique(df$cntry)} treatment initations") %>% toupper,
          subtitle = "TX_NEW by age and sex",
          caption = glue::glue("{metadata_msd$caption} | USAID | Ref Id: {ref_id}")) +
     ggplot2::coord_cartesian(clip = "off") +

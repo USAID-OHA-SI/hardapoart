@@ -111,9 +111,9 @@ viz_epi_control <- function(df) {
     ggplot2::geom_blank(aes(y = -max_plot_pt)) +
     ggplot2::geom_area(aes(y = number_new_hiv_infections), fill = "#C6D5E9", alpha = 0.95) +
     ggplot2::geom_area(aes(y = -number_total_deaths_hiv_pop), fill = "#F1CED2",  alpha = 0.95) +
-    ggplot2::geom_line(aes(y = number_new_hiv_infections), color = glitr::denim, size = 1) +
-    ggplot2::geom_line(aes(y = -number_total_deaths_hiv_pop), color = glitr::old_rose, size = 1) +
-    ggplot2::geom_line(aes(y = epi_gap), color = "white", size = 0.25) +
+    ggplot2::geom_line(aes(y = number_new_hiv_infections), color = glitr::denim, linewidth = 1) +
+    ggplot2::geom_line(aes(y = -number_total_deaths_hiv_pop), color = glitr::old_rose, linewidth = 1) +
+    ggplot2::geom_line(aes(y = epi_gap), color = "white", linewidth = 0.25) +
     ggplot2::geom_text(data = . %>% dplyr::filter(year == 2020),
               aes(y = epi_gap, label = paste("Epi Gap"),
                   x = year, color = glitr::trolley_grey), size = 12 / .pt, family = "Source Sans Pro Light",

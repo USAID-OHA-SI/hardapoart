@@ -13,7 +13,7 @@
 prep_undiagnosed <- function(cntry) {
   
   #clean exit if no data
-  if(cntry %ni% unique(df$country))
+  if(cntry %ni% unique(df_unaids_tt$country))
     return(NULL)
   
   clean_number <- function(x, digits = 0){
@@ -70,9 +70,9 @@ prep_undiagnosed <- function(cntry) {
      #  str_detect(modality, "SNSMod") ~ "Community SNS",
        TRUE ~ "Case Finding")
      ) %>%
-     dplyr::group_by(fiscal_year, mod_type, ...) %>%
-     dplyr::summarise(across(starts_with("qtr"), sum, na.rm = TRUE)) %>%
-     dplyr::ungroup() %>%
+     dplyr::group_by(fiscal_year, funding_agency, mod_type, ...) %>%
+     dplyr::summarise(across(starts_with("qtr"), sum, na.rm = TRUE),
+                      .groups = "drop") %>%
      gophr::reshape_msd() %>%
      dplyr::select(-period_type) %>%
      dplyr::group_by(period, ...) %>%
@@ -120,6 +120,8 @@ prep_undiagnosed <- function(cntry) {
    
    ref_id <- "cc4f6cf7"
    
+   pd_brks <- unique(df$period) %>% str_replace(".*(2|3|4)$", "")
+   
    df %>% 
      dplyr::filter(trendscoarse != "Unknown Age") %>% 
      ggplot2::ggplot(aes(x = period)) +
@@ -127,7 +129,7 @@ prep_undiagnosed <- function(cntry) {
      ggplot2::geom_col(aes(y = value, fill = mod_color)) +
      ggplot2::geom_text(data = . %>% filter(trendscoarse == "15+", period == min(period)),
                aes(y = pd_tot, label = paste("Total\nTests")), color = glitr::trolley_grey,
-               size = 9 / .pt, family = "Source Sans Pro", vjust = 1.2) +
+               size = 9 / .pt, family = "Source Sans Pro", vjust = 1.2, na.rm = TRUE) +
      ggplot2::geom_errorbar(aes(ymin = pd_25, ymax = pd_25), 
                    size = 0.25, color = "white", 
                    linetype = "dotted") +
@@ -139,22 +141,20 @@ prep_undiagnosed <- function(cntry) {
                    linetype = "dotted") +
      ggplot2::scale_fill_identity() +
      ggplot2::facet_grid(mod_order ~ forcats::fct_reorder(age_facet, value, na.rm = TRUE, .desc = TRUE), scales = "free_y") +
-     ggplot2::geom_text(aes(y = value, label = scales::percent(start, 1)), size = 7/.pt, vjust = -0.5, family = "Source Sans Pro") +
-     ggplot2::geom_text(aes(y = value, label = scales::percent(end, 1)), size = 7/.pt,  vjust = -0.5, family = "Source Sans Pro") +
+     ggplot2::geom_text(aes(y = value, label = scales::percent(start, 1)), size = 7/.pt, vjust = -0.5, family = "Source Sans Pro", na.rm = TRUE) +
+     ggplot2::geom_text(aes(y = value, label = scales::percent(end, 1)), size = 7/.pt,  vjust = -0.5, family = "Source Sans Pro", na.rm = TRUE) +
      ggplot2::geom_text(data = . %>% dplyr::filter(trendscoarse == "15+", period == min(period)),
                aes(y = value, label = paste("modality\nshare")),
-               size = 6.5/.pt, vjust = 1.5, family = "Source Sans Pro", color = "white") +
+               size = 6.5/.pt, vjust = 1.5, family = "Source Sans Pro", color = "white", na.rm = TRUE) +
      # geom_text(aes(y = pd_tot, label = note), size = 8/.pt, color = "#7C7C7C",
      #           hjust = 0.2, vjust = -0.25) +
      ggplot2::labs(x = NULL, y = NULL,
-          title = glue::glue("PEPFAR/{unique(df$country) %>% toupper} HTS_TST MODALITY SUMMARY BY AGE"),
+          title = glue::glue("{unique(df$funding_agency)}/{unique(df$country) %>% toupper} HTS_TST MODALITY SUMMARY BY AGE GROUP"),
           caption = glue::glue("Note: Undiagnosed PLHIV proxy calculated as the number of PLHIV minus PLHIV who know their status (UNAIDS 2022 Data)
                                Source: UNAIDS 2022 Epidemiology Data & {metadata_msd$source} | USAID | Ref id:{ref_id}")) +
      ggplot2::theme(legend.position = "none") +
      ggplot2::scale_y_continuous(label = label_number(scale_cut = cut_short_scale())) +
-     ggplot2::scale_x_discrete(labels = c("FY20Q1", "", "", "",
-                                 "FY21Q1", "", "", "",
-                                 "FY22Q1", "", "", "")) +
+     ggplot2::scale_x_discrete(labels = pd_brks) +
      glitr::si_style_ygrid(facet_space = 0.5)   
    
  }

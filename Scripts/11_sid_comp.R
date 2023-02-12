@@ -68,6 +68,8 @@ viz_sid <- function(df){
   
   ref_id <- "79fe7ff5" 
   
+  sel_cntry <- df %>% filter(!is.na(val_cntry)) %>% pull(country) %>% unique()
+  
   df %>% 
     ggplot2::ggplot(aes(avg_sid_score_weighted, 
                         forcats::fct_reorder(sid_area, val_cntry, mean, .na_rm = TRUE))) +
@@ -85,7 +87,8 @@ viz_sid <- function(df){
     ggplot2::scale_fill_identity() +
     ggplot2::scale_color_identity() +
     ggplot2::labs(x = NULL, y = NULL,
-         subtitle = glue("{unique(df$fiscal_year)} SID Average Scores | large points represent {unique(df$cntry)}'s score compared with other PEPFAR countries (smaller points) and PEPFAR average (line)"),
+                  title = glue("{sel_cntry} {unique(df$fiscal_year)} SID Scores") %>% toupper,
+                  subtitle = glue("Large points represent {sel_cntry}'s score compared with other PEPFAR countries (smaller points) and PEPFAR average (line)"),
          caption = glue("{metadata_sid$caption} | USAID | Ref id: {ref_id}")) +
     si_style_xgrid(facet_space = .5) +
     ggplot2::theme(axis.text.x = element_blank())

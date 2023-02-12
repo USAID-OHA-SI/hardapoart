@@ -3,190 +3,220 @@
 ##  PURPOSE: HIV Prevalence by geographies and gender
 ##  REF. ID: 29675452
 ##  LICENCE: MIT
-##  DATE:    2023-02-12
-##  UPDATE:  2023-02-12
+##  DATE:    2023-02-02
+##  UPDATE:  2023-02-10
 
 # LIBRARIES ----
   
-  library(tidyverse)
-  library(glamr)
-  library(gophr)
-  library(grabr)
-  library(glitr)
-  library(extrafont)
-  library(scales)
-  library(tidytext)
-  library(ggtext)
-  library(patchwork)
+  # library(tidyverse)
+  # library(glamr)
+  # library(gophr)
+  # library(grabr)
+  # library(glitr)
+  # library(extrafont)
+  # library(scales)
+  # library(tidytext)
+  # library(ggtext)
+  # library(patchwork)
   
 # NOTES ----
 
 # DISCLAIMERS ----
 
 # GLOBAL PARAMS ----
-  
-  ## Script Reference
-  ref_id <- "29675452"
-  
-  authors <- c("A.Chatfez",
-               "B.Kagniniwa", 
-               "J.Hoehner",
-               "K.Srikanth", 
-               "N.Petrovic",
-               "T.Essam")
-  
-  # SI Backstop Coverage
-  
-  cntry <- "Nigeria"
-  
-  agency <- "USAID"
-  
-  ## Dirs 
-  
-  dir_mer <- si_path(type = "path_msd")
-  dir_out <- "./Dataout"
-  dir_imagess <- "./Images"
-  dir_graphics <- "./Graphics"
-  
-  ## Files
-  
-  file_psnu <- dir_mer %>% 
-    return_latest("PSNU_IM")
-  
-  ## Info
-  
-  src_msd <- source_info(file_psnu)
-  
-  curr_fy <- source_info(file_psnu, return = "fiscal_year")
-  curr_qtr <- source_info(file_psnu, return = "quarter")
-  curr_pd <- source_info(file_psnu, return = "period")
-  
-  ## Tech Areas / Disaggs
-  
-  inds_vl <- c("TX_CURR", "TX_PVLS")
-  disaggs_vl <- c("Age/Sex/HIVStatus", "Age/Sex/Indication/HIVStatus")
+  # 
+  # ## Script Reference
+  # ref_id <- "29675452"
+  # 
+  # # SI Backstop Coverage
+  # 
+  # cntry <- "Nigeria"
+  # 
+  # agency <- "USAID"
+  # 
+  # ## Dirs 
+  # 
+  # dir_mer <- si_path(type = "path_msd")
+  # dir_out <- "./Dataout"
+  # dir_imagess <- "./Images"
+  # dir_graphics <- "./Graphics"
+  # 
+  # ## Files
+  # 
+  # # file_psnu <- dir_mer %>% 
+  # #   return_latest("PSNU_IM")
+  # 
+  # ## Info
+  # 
+  # # src_msd <- source_info(file_psnu)
+  # # 
+  # # curr_fy <- source_info(file_psnu, return = "fiscal_year")
+  # # curr_qtr <- source_info(file_psnu, return = "quarter")
+  # # curr_pd <- source_info(file_psnu, return = "period")
+  # 
+  # ## Tech Areas / Disaggs
+  # 
+  # inds_vl <- c("TX_CURR", "TX_PVLS", "TX_PVLS_D")
+  # disaggs_vl <- c("Age/Sex/HIVStatus", "Age/Sex/Indication/HIVStatus")
   
 # FUNCTIONS ----
 
-# DATA IMPORT ----
-  
-  # PEPFAR Program Data
-  
-  df_psnu <- file_psnu %>% read_msd()
-  
-# MUNGING ----
-  
-  ## TX Indicators
-  
-  df_tx <- df_psnu %>% 
-    filter(
-      fiscal_year %in% c(curr_fy, curr_fy - 1),
-      funding_agency != "Dedup", 
-      indicator %in% inds_vl,
-      standardizeddisaggregate %in% disaggs_vl
-    ) %>% 
-    mutate(indicator = case_when(
-        indicator == "TX_PVLS" & numeratordenom == "D" ~ paste0(indicator, "_D"),
-        TRUE ~ indicator)
-    ) 
-  
-  df_tx <- df_tx %>%
-    select(-cumulative, -targets) %>% 
-    group_by(fiscal_year, funding_agency, operatingunit, indicator, snu1) %>%
-    #summarise(across(starts_with("qtr"), sum, na.rm = TRUE), .groups = "drop") %>%
-    #summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = "drop") %>%
-    summarise(qtr1 = sum(qtr1, na.rm = TRUE), 
-              qtr2 = sum(qtr2, na.rm = TRUE),
-              qtr3 = sum(qtr3, na.rm = TRUE),
-              qtr4 = sum(qtr4, na.rm = TRUE),
-              .groups = "drop") 
-  
-  df_tx <- df_tx %>% reshape_msd()
-  
-  
-  ## VL Calculation
-  
-  df_vl <- df_tx %>% 
-    select(-period_type) %>% 
-    pivot_wider(names_from = indicator, values_from = value) %>% 
-    rename_with(str_to_lower) %>% 
-    group_by(funding_agency, operatingunit, snu1) %>% 
-    mutate(
-      vlc = tx_pvls_d / dplyr::lag(tx_curr, 2, order_by = period),
-      vls = tx_pvls / tx_pvls_d
-    ) %>% 
-    ungroup()
-  
-  ## Limits history to last 5
-  
-  hist_pds <- df_vl %>% 
-    distinct(period) %>% 
-    arrange(desc(period)) %>% 
-    pull() %>% 
-    magrittr::extract(1:5) %>% 
-    sort()
-  
-  df_vl <- df_vl %>% filter(period %in% hist_pds)
-  
+  #' @title Prep TX VL Datasets
+  #' 
+  prep_viral_load_psnu <- function(df, cntry, agency,
+                                    pd_hist = 5) {
     
-# VIZ ----
-
-  df_vl %>% 
-    filter(funding_agency == agency, 
-           operatingunit == cntry) %>% 
-    ggplot(aes(x = period, group = 1)) +
-    geom_line(aes(y = vlc), color = burnt_sienna, linewidth = 1) +
-    geom_point(aes(y = vlc), fill = burnt_sienna, color = grey10k, shape = 21, size = 4) +
-    geom_text(aes(y = vlc, label = percent(vlc, 1)), vjust = -1.5, color = burnt_sienna) +
-    geom_line(aes(y = vls), color = genoa, linewidth = 1) +
-    geom_point(aes(y = vls), fill = genoa, color = grey10k, shape = 21, size = 4) +
-    geom_text(aes(y = vls, label = percent(vls, 1)), vjust = 1.8, color = genoa) +
-    scale_y_continuous(labels = percent) +
-    labs(x = "", y = "",
-         title = glue::glue("{toupper(cntry)} - VIRAL LOAD TRENDS"),
-         subtitle = glue::glue("<span style='color:{burnt_sienna}'>Coverage</span> & <span style='color:{genoa}'>Supression</span>"),
-         caption = glue::glue("Source: {src_msd} - Created by OHA/SIEI | Ref. ID #{ref_id}")) +
-    facet_wrap(~snu1) +
-    si_style_nolines() +
-    theme(plot.title = element_markdown(),
-          plot.subtitle = element_markdown(),
-          axis.text.y = element_blank(),
-          strip.text = element_text(size = 12, face = "bold"))
+    # Filter
+    df_tx <- df %>% 
+      filter(
+        funding_agency == agency, 
+        country == cntry,
+        indicator %in% c("TX_CURR", "TX_PVLS", "TX_PVLS_D"),
+        standardizeddisaggregate %in% c("Age/Sex/HIVStatus", 
+                                        "Age/Sex/Indication/HIVStatus")
+      ) 
+    
+    # Summarise results by age - bands
+    df_tx <- df_tx %>%
+      select(-cumulative, -targets) %>% 
+      group_by(fiscal_year, funding_agency, operatingunit, country, snu1, indicator) %>%
+      #summarise(across(starts_with("qtr"), sum, na.rm = TRUE), .groups = "drop") %>%
+      #summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = "drop") %>%
+      summarise(qtr1 = sum(qtr1, na.rm = TRUE), 
+                qtr2 = sum(qtr2, na.rm = TRUE),
+                qtr3 = sum(qtr3, na.rm = TRUE),
+                qtr4 = sum(qtr4, na.rm = TRUE),
+                .groups = "drop") 
+    
+    # Reshape long and calculate VLC/S
+    df_vl <- df_tx %>% 
+      reshape_msd() %>% 
+      select(-period_type) %>% 
+      pivot_wider(names_from = indicator, values_from = value) %>% 
+      rename_with(str_to_lower) %>% 
+      group_by(funding_agency, operatingunit, country, snu1) %>% 
+      mutate(
+        vlc = tx_pvls_d / dplyr::lag(tx_curr, 2, order_by = period),
+        vls = tx_pvls / tx_pvls_d
+      ) %>% 
+      ungroup()
+    
+    ## Limits history to last 5 quaters
+    
+    hist_pds <- df_vl %>% 
+      distinct(period) %>% 
+      arrange(desc(period)) %>% 
+      pull() 
+    
+    # reset pd hisory to 4 for anything outside of 2:8
+    if (pd_hist <= 1 | pd_hist > length(hist_pds)) {
+      usethis::ui_warn(glue::glue("History length ({pd_hist}) is behind 1 and {length(hist_pds)}. Value was reset to 4."))
+      pd_hist <- 4
+    }
+    
+    hist_pds <- hist_pds %>% 
+      magrittr::extract(1:pd_hist) %>% 
+      sort()
+    
+    df_vl %>% 
+      filter(period %in% hist_pds)
+  }
   
-  df_vl %>% 
-    filter(funding_agency == agency,
-           str_detect(operatingunit, "Region$", negate = T)) %>% 
-    distinct(operatingunit) %>% 
-    pull() %>% 
-    last() %>% 
-    walk(function(.ou) {
-      viz <- df_vl %>% 
-        filter(funding_agency == agency,
-               operatingunit == .ou) %>% 
-        ggplot(aes(x = period, group = 1)) +
-        geom_line(aes(y = vlc), color = burnt_sienna, linewidth = 1) +
-        geom_point(aes(y = vlc), fill = burnt_sienna, color = grey10k, shape = 21, size = 4) +
-        geom_text(aes(y = vlc, label = percent(vlc, 1)), vjust = 2, color = burnt_sienna) +
-        geom_line(aes(y = vls), color = genoa, linewidth = 1) +
-        geom_point(aes(y = vls), fill = genoa, color = grey10k, shape = 21, size = 4) +
-        geom_text(aes(y = vls, label = percent(vls, 1)), vjust = -2, color = genoa) +
-        scale_y_continuous(labels = percent) +
-        labs(x = "", y = "",
-             title = glue::glue("{toupper(.ou)} - VIRAL LOAD TRENDS"),
-             subtitle = glue::glue("<span style='color:{burnt_sienna}'>Coverage</span> & <span style='color:{genoa}'>Supression</span>"),
-             caption = glue::glue("Source: {src_msd} - Created by OHA/SIEI | Ref. ID #{ref_id}")) +
-        facet_wrap(~snu1) +
-        si_style_nolines() +
-        theme(plot.title = element_markdown(),
-              plot.subtitle = element_markdown(),
-              axis.text.y = element_blank(),
-              strip.text = element_text(size = 12, face = "bold"))
+  
+  #' @title Viz TX VL
+  #' 
+  viz_viral_load_psnu <- function(df,
+                                  save = F) {
+    
+    ref_id <- "29675452"
+    
+    # Filter all SNUs with > 95% VLS
+    n_snu <- df %>% 
+      distinct(snu1) %>% 
+      pull() %>% 
+      length()
+    
+    if (n_snu > 12) {
+      snus <- df %>% 
+        filter(period == max(period), vls < .95) %>% 
+        distinct(snu1) %>% 
+        pull()
       
-      print(viz)
-      
-      si_save(plot = viz,
-              filename = glue::glue("./Graphics/{curr_pd} - {toupper(.ou)} VLCS Trends by SNU1"))
-    })
+      df <- df %>% 
+        filter(snu1 %in% snus)
+    }
+    
+    # Generate the plot
+    viz <- df %>% 
+      ggplot(aes(x = period, group = 1)) +
+      geom_line(aes(y = vlc), color = burnt_sienna, linewidth = 1) +
+      geom_point(aes(y = vlc), fill = burnt_sienna, color = grey10k, 
+                 shape = 21, size = 3.5) +
+      geom_text(aes(y = vlc, label = percent(vlc, 1)), family = "Source Sans Pro",
+                size = 3, vjust = 2, color = burnt_sienna) +
+      geom_line(aes(y = vls), color = genoa, linewidth = 1) +
+      geom_point(aes(y = vls), fill = genoa, color = grey10k, 
+                 shape = 21, size = 3.5) +
+      geom_text(aes(y = vls, label = percent(vls, 1)), family = "Source Sans Pro",
+                size = 3, vjust = -1.8, color = genoa) +
+      scale_y_continuous(labels = percent) +
+      labs(x = "", y = "",
+           title = glue::glue("{toupper(unique(df$funding_agency))}/{toupper(unique(df$country))} - VIRAL LOAD TRENDS"),
+           subtitle = glue::glue("VL <span style='color:{burnt_sienna}'>Coverage</span> & <span style='color:{genoa}'>Supression</span> for the last 5 quarters"),
+           caption = glue::glue("{metadata_msd$caption} | USAID | Ref id: {ref_id}")) +
+      coord_cartesian(clip = "off") +
+      facet_wrap(~snu1, ncol = 4) +
+      si_style_nolines() +
+      theme(plot.title = element_markdown(),
+            plot.subtitle = element_markdown(),
+            axis.text.y = element_blank(),
+            strip.text = element_text(size = 12, face = "bold"),
+            strip.clip = "off",
+            strip.placement = "outside",
+            panel.spacing = unit(0, "lines"))
+    
+    print(viz)
+    
+    if (save) {
+      glitr::si_save(
+        plot = viz,
+        filename = glue::glue("./Graphics/{max(df$period)} - {toupper(unique(df$country)} VLCS Trends by PSNU.png"))
+    }
+  }
   
-# EXPORT ----
-  
+# DATA IMPORT ----
+#   
+#   # PEPFAR Program Data
+#   
+#   #df_psnu <- file_psnu %>% read_msd()
+#   df_psnu <- df_msd
+#   
+# # MUNGING ----
+#   
+#   
+#   df_vlcs <- prep_varial_load_psnu(df = df_psnu, 
+#                               fy = metadata_msd$curr_fy, 
+#                               agency = agency, 
+#                               cntry = cntry,
+#                               pd_hist = 5)
+#   
+# # VIZ ----
+# 
+#   agency <- "USAID"
+#   
+#   prep_varial_load_psnu(df = df_psnu, 
+#                         fy = metadata_msd$curr_fy, 
+#                         agency = agency, 
+#                         cntry = cntry,
+#                         pd_hist = 5) %>% 
+#     viz_viral_load_psnu(
+#       df = ., 
+#       cntry = cntry, 
+#       pd = metadata_msd$curr_pd, 
+#       src = metadata_msd$source,
+#       rid = ref_id,
+#       save = F
+#     )
+#   
+# # EXPORT ----
+#   

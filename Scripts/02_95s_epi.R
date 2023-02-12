@@ -137,7 +137,7 @@ viz_epi_control <- function(df) {
     glitr::si_style_ygrid(text_scale = 1.15) +
     ggplot2::labs(x = NULL, y = NULL,
          title = glue::glue("{unique(df$cntry) %>% toupper()}: NUMBER OF <span style= 'color:#2057a7;'> 
-  NEW HIV INFECTIONS</span> AND <span style = 'color:#c43d4d;'> TOTAL PLHIV DEATHS </span> AND PROGRESS TO 95S")) +
+  NEW HIV INFECTIONS</span> AND <span style = 'color:#c43d4d;'> TOTAL PLHIV DEATHS </span> AND PROGRESS TO <span style = 'color:#1e87a5;'>95S</span>")) +
     ggplot2::coord_cartesian(expand = T, clip = "off") +
     ggplot2::theme(plot.title = ggtext::element_markdown())
   
@@ -183,7 +183,7 @@ viz_95s <- function(df) {
     #scale_y_reordered() +
     coord_cartesian(clip = "off") +
     labs(x = NULL, y = NULL,
-         caption =  glue("{metadata_unaids$caption} | Ref id: {ref_id}")) +
+         caption =  glue("{metadata_unaids$caption} | USAID | Ref id: {ref_id}")) +
     si_style_nolines() +
     theme(axis.text.y = ggtext::element_markdown(),
           strip.text.y = ggplot2::element_blank(),

@@ -136,9 +136,9 @@ prep_undiagnosed <- function(cntry) {
      # geom_text(aes(y = pd_tot, label = note), size = 8/.pt, color = "#7C7C7C",
      #           hjust = 0.2, vjust = -0.25) +
      ggplot2::labs(x = NULL, y = NULL,
-          title = glue::glue("{unique(df$country) %>% toupper} HTS_TST MODALITY SUMMARY BY AGE"),
-          subtitle = "Undiagnosed PLHIV proxy calculated as the number of PLHIV minus PLHIV who know their status (UNAIDS 2022 Data)",
-          caption = glue::glue("Source: UNAIDS 2022 Epidemiology Data & {metadata_msd$source} | Ref id:{ref_id}")) +
+          title = glue::glue("PEPFAR/{unique(df$country) %>% toupper} HTS_TST MODALITY SUMMARY BY AGE"),
+          caption = glue::glue("Note: Undiagnosed PLHIV proxy calculated as the number of PLHIV minus PLHIV who know their status (UNAIDS 2022 Data)
+                               Source: UNAIDS 2022 Epidemiology Data & {metadata_msd$source} | USAID | Ref id:{ref_id}")) +
      ggplot2::theme(legend.position = "none") +
      ggplot2::scale_y_continuous(label = label_number(scale_cut = cut_short_scale())) +
      ggplot2::scale_x_discrete(labels = c("FY20Q1", "", "", "",

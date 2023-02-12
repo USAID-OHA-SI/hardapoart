@@ -7,7 +7,7 @@
 # UPDATED:  2023-02-10
 
 # DEPENDENCIES -----------------------------------------------------------------
-  source("Scripts/91_setup.R")
+  # source("Scripts/91_setup.R")
 
   # .df is the PSNUxIM MSD df_msd
   # .ou = a character string in pepfar_country_list$operatingunit
@@ -173,8 +173,10 @@
       si_style_ygrid() +
       coord_flip() +
       scale_y_continuous(labels = comma) +
-      labs(x = NULL, y = NULL, 
-           caption = glue("Source: {metadata_msd$curr_pd} MSD | Ref id: {ref_id} | US Agency for International Development")) +
+      labs(title = "Linkage, National and by PSNU",
+           subtitle = glue("{metadata_msd$curr_fy_lab} | Q{metadata_msd$curr_qtr}"),
+           x = NULL, y = NULL, 
+           caption = glue("{metadata_msd$caption}")) +
       expand_limits(x = c(0, 9)) 
   }
   

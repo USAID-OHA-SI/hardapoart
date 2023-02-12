@@ -7,7 +7,7 @@
 # UPDATED:  
 
 # DEPENDENCIES -----------------------------------------------------------------
-  source("Scripts/91_setup.R")
+  # source("Scripts/91_setup.R")
 
 # PREP -------------------------------------------------------------------------
 
@@ -15,22 +15,23 @@
   # it is actually natsubnat data
   # ou is a string, could add a unit test to make sure it's a valid OU
 
-  prep_pop_pyramid <- function(df, ou){
+prep_pop_pyramid <- function(df, cntry){
   
   df_filt <- df %>%
     dplyr::filter(
-      fiscal_year == metadata_natsubnat$curr_fy,
-      operatingunit == ou,
+      fiscal_year == max(fiscal_year),
+      country == cntry,
       indicator == "PLHIV") %>%
     assertr::verify(indicator == "PLHIV" &
-                    fiscal_year == metadata_natsubnat$curr_fy & 
-                      operatingunit == ou, 
+                    fiscal_year == max(fiscal_year) & 
+                      country == cntry, 
                     error_fun = err_text(glue::glue("Error: {df} has not been filtered correctly. 
                                                Please check the first filter in prep_pop_pyramid().")), 
                     description = glue::glue("Verify that the filters worked")) %>%
-    dplyr::select(fiscal_year, operatingunit, indicator, sex, ageasentered, targets) %>%
-    dplyr::group_by(fiscal_year, operatingunit, indicator, sex, ageasentered) %>%
-    dplyr::summarise(across(targets, \(x) sum(x, na.rm = TRUE))) %>%
+    dplyr::select(fiscal_year, country, indicator, sex, ageasentered, targets) %>%
+    dplyr::group_by(fiscal_year, country, indicator, sex, ageasentered) %>%
+    dplyr::summarise(targets = sum(targets, na.rm = TRUE),
+                     .groups = "drop") %>%
     dplyr::mutate(
       population = if_else(sex == "Male", targets*(-1), targets*1))
   
@@ -45,14 +46,16 @@
     # so that the note on the viz reads:
     # "Note: There are no PLHIV with unreported age and sex data.
     # otherwise it will show the number
-    full_join(., unknown) %>%
+    full_join(., unknown, 
+              by = join_by(fiscal_year, country, indicator, sex, ageasentered, targets,
+                           population)) %>%
     mutate(n_unknown = if_else(is.na(n_unknown) == TRUE, 
                                "no", n_unknown))
   
   return(df_viz)
   
   }
-
+  
 # VIZ --------------------------------------------------------------------------
   
   # df = df_natsubnat comes from 91_setup.R, could add a test to make sure 
@@ -79,12 +82,12 @@
     }
     
     df %>%
-      ggplot2::ggplot(aes(x = ageasentered, y = population, fill = sex)) +
+      ggplot2::ggplot(aes(population, ageasentered, fill = sex)) +
       ggplot2::geom_col() +
-      ggplot2::coord_flip() +
-      ggplot2::scale_fill_manual(values = c("Male" = genoa, 
-                                            "Female" = moody_blue)) +
-      ggplot2::scale_y_continuous(
+      ggplot2::geom_vline(aes(xintercept = 0), color = "white", linewidth = 1.1)+
+      ggplot2::scale_fill_manual(values = c("Male" = glitr::genoa, 
+                                            "Female" = glitr::moody_blue)) +
+      ggplot2::scale_x_continuous(
         # would be great to have it 
         # dynamically choose a scale 
         # based on the length of "value" since this can vary by OU 
@@ -94,12 +97,12 @@
         # can't figure out how to use this and abs together
         # label_number(scale_cut = cut_short_scale())
       ) +
-      ggplot2::labs(title = glue("Population Pyramid"),
+      ggplot2::labs(title = glue("{unique(df$country)} Population Pyramid") %>% toupper,
                     x = NULL, y = NULL, fill = NULL,
-                    subtitle = glue("{df$indicator[1]} | {metadata_natsubnat$curr_fy_lab}"),
+                    subtitle = glue("{df$indicator[1]} | {unique(df$fiscal_year)}"),
                     caption = 
                       glue("Note: There are {n_PLHIV_unknown} PLHIV with unreported age and sex data.
-                  Source: {metadata_natsubnat$curr_pd} MSD | Ref id: {ref_id} | US Agency for International Development")) +
+                  {metadata_natsubnat$caption} | USAID | Ref id: {ref_id}")) +
       glitr::si_style_yline() +
       ggplot2::theme(
         panel.spacing = unit(.5, "line"),

@@ -87,14 +87,17 @@
     if(is.null(df))
       return(print(paste("No data available.")))
     
-    #limit to 20 PSNUs (overall + 19 psnus)
-      df <- df %>% 
-        dplyr::slice_max(order_by = HTS_TST_POS, n = 20)
-    
     ref_id <- "f6f26589"
+    
+    cap_note <- ifelse(nrow(df) > 21, "Note: Limited to the largest 20 PSNUs\n", "")
+    
+    #limit to 21 bars (overall + 20 psnus)
+      df <- df %>% 
+        dplyr::slice_max(order_by = HTS_TST_POS, n = 21)
     
     df %>%
       ggplot(aes(linkage, forcats::fct_reorder(psnu, linkage), fill = fill_color)) +
+      geom_vline(aes(xintercept = .95), linetype = "dashed", color = glitr::matterhorn) +
       geom_col() +
       geom_text(aes(label = percent(linkage, 1)), 
                 size = 9/.pt, hjust = -.1,
@@ -108,7 +111,7 @@
       si_style_nolines() +
       labs(subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)} {metadata_msd$curr_pd} Proxy Linkage"),
            x = NULL, y = NULL,
-           caption = glue("{metadata_msd$caption} | USAID | Ref id: {ref_id}")) +
+           caption = glue("{cap_note}{metadata_msd$caption} | USAID | Ref id: {ref_id}")) +
       theme(legend.position = "none",
             axis.text.x = element_blank())
  

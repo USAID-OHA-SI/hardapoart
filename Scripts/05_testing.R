@@ -13,7 +13,7 @@
 prep_undiagnosed <- function(cntry) {
   
   #clean exit if no data
-  if(cntry %ni% unique(df$country))
+  if(cntry %ni% unique(df_unaids_tt$country))
     return(NULL)
   
   clean_number <- function(x, digits = 0){

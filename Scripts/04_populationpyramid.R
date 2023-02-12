@@ -99,22 +99,21 @@ prep_pop_pyramid <- function(df, cntry){
         # dynamically choose a scale 
         # based on the length of "value" since this can vary by OU 
         limits = c(min(df$population), max(df$population)),
-        labels = function(x) {glue("{comma(abs(x))}")}, 
+        # labels = function(x) {glue("{comma(abs(x))}")}, 
+        labels = label_number(scale_cut = cut_short_scale())(abs(x)), 
         # would like it to be able to use this ideally but
         # can't figure out how to use this and abs together
         # label_number(scale_cut = cut_short_scale())
       ) +
-      ggplot2::labs(title = glue("{unique(df$country)} Population Pyramid") %>% toupper,
+      ggplot2::labs(title = glue("{unique(df$country)} - {unique(df$fiscal_year)} PLHIV Pyramid") %>% toupper,
+                    subtitle =  glue::glue("Comparison between <span style='color:{genoa}'>Male</span> & <span style='color:{moody_blue}'>Female</span> PLHIV by age band"),
                     x = NULL, y = NULL, fill = NULL,
-                    subtitle = glue("{df$indicator[1]} | {unique(df$fiscal_year)}"),
                     caption = 
                       glue("Note: There are {n_PLHIV_unknown} PLHIV with unreported age and sex data.
                   {metadata_natsubnat$caption} | USAID | Ref id: {ref_id}")) +
       glitr::si_style_yline() +
       ggplot2::theme(
-        panel.spacing = unit(.5, "line"),
         legend.position = "none",
-        plot.title = element_markdown(),
-        strip.text = element_markdown())
+        plot.subtitle = element_markdown())
     
   }

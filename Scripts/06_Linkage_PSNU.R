@@ -12,6 +12,10 @@
 
   prep_linkage_psnu <- function(df, cntry, agency, ...){
     
+    #clean exit if no data
+    if(cntry %ni% unique(df$country) | agency %ni% unique(df$funding_agency))
+      return(NULL)
+    
     #limit dataset to relevant indicators
     df_filtered <- df %>% 
       dplyr::filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
@@ -79,6 +83,13 @@
   
   viz_linkage_psnu <- function(df){
     
+    
+    if(is.null(df))
+      return(print(paste("No data available.")))
+    
+    #limit to 20 PSNUs (overall + 19 psnus)
+      df <- df %>% 
+        dplyr::slice_max(order_by = HTS_TST_POS, n = 20)
     
     ref_id <- "f6f26589"
     

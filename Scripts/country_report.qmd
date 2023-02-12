@@ -166,7 +166,7 @@ df_msd %>%
 # | label: prep
 
 df_msd %>%
-    prep_prep_disagg(params$cntry,params$agency) %>%
+    prep_prep_disagg(params$cntry, params$agency) %>%
     viz_prep_disagg()
 ```
 
@@ -196,7 +196,7 @@ df_fsd %>%
 #| label: funding_distro
 
 df_fsd %>% 
-  prep_funding_distro(params$cntry, param$agency) %>% 
+  prep_funding_distro(params$cntry, "USAID") %>% 
   viz_funding_distro()
 
 ```
@@ -207,7 +207,7 @@ df_fsd %>%
 #| label: staffing_footprint
 
 df_hrh %>% 
-  prep_hrh_footprint(params$cntry, param$agency) %>% 
+  prep_hrh_footprint(params$cntry, params$agency) %>% 
   viz_hrh_footprint()
 ```
 

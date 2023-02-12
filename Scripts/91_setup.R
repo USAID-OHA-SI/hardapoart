@@ -82,6 +82,7 @@
       "TX_CURR",            "Age/Sex/HIVStatus",
       "TX_CURR",              "Total Numerator",
       "TX_NEW",              "Total Numerator",
+      "TX_NEW",              "Age/Sex/HIVStatus",
       "TX_PVLS", "Age/Sex/Indication/HIVStatus",
       "TX_PVLS",              "Total Numerator",
       "TX_PVLS_D",            "Total Denominator",
@@ -254,6 +255,9 @@
   df_natsubnat_ind <- tibble::tribble(
     ~indicator, ~standardizeddisaggregate,
        "PLHIV",       "Age/Sex/HIVStatus",
+       "DIAGNOSED_SUBNAT",       "Age/Sex/HIVStatus",
+       "TX_CURR_SUBNAT",       "Age/Sex/HIVStatus",
+       "VL_SUPPRESSION_SUBNAT",       "Age/Sex/HIVStatus",
      "POP_EST",                 "Age/Sex"
     )
 

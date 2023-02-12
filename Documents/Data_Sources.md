@@ -1,5 +1,11 @@
 ## Data Sources
 
+**DATIM GENIE MER PSNU By IM**
+  - Date accessed: 2023-02-12
+  - Date on data source: 2023-02-10
+  - Original Location: DATIM GENIE - https://www.datim.org/api/apps/Genie/
+  - Google Drive ID: 1JS4DCk_AOx39BF_WMh1yEl4wvm6HwcDg
+  
 **Financial_Structured_Datasets_COP17-22_20221216**
   - Date accessed: 2023-01-17
   - Date on data source: 2022-12-16
@@ -19,12 +25,6 @@
   - Google Drive ID: 1IhiXVtH0DUofXOXF0KL0ikzfdT0ROmBq
   
 **MER_Structured_Datasets_NAT_SUBNAT_FY15-22_20221216_v2_1**
-  - Date accessed: 2023-01-17
-  - Date on data source: 2022-12-16
-  - Original Location: PEPFAR Panorama - https://pepfar-panorama.org/forms/downloads/
-  - Google Drive ID: NA
-  
-**MER_Structured_Datasets_PSNU_IM_FY20-23_20221216_v2_1**
   - Date accessed: 2023-01-17
   - Date on data source: 2022-12-16
   - Original Location: PEPFAR Panorama - https://pepfar-panorama.org/forms/downloads/

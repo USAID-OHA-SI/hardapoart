@@ -8,35 +8,42 @@
 
 prep_prep_disagg <- function (df, cntry, agency){
 
-      ## Filter for age/sex and KP disaggregates. Trend starts at FY22Q1
-      df_prep<-df %>% 
-      filter(indicator == "PrEP_NEW", 
-             standardizeddisaggregate %in% c("Age/Sex", "KeyPopAbr"),
-             country==cntry,
-             funding_agency==agency) %>% 
-      # Combine age groups above 35+, rename People in Prisons
-      mutate(ageasentered = case_when(ageasentered %in% c("35-39","40-44","45-49","50+") ~ "35+", 
-                            TRUE ~ ageasentered),
-             otherdisaggregate = case_when(otherdisaggregate %in% "People in prisons and other enclosed settings" ~ "Prisoners", 
-                            TRUE ~ otherdisaggregate)) %>%
-      # Create index for faceting - either age or KP group
-      mutate(facet_ind=case_when(standardizeddisaggregate == "Age/Sex" ~ ageasentered, 
-                            TRUE ~ otherdisaggregate)) %>%
-      filter(facet_ind!="Unknown Age") %>%
-      # Fill sex indicator with "KP" value for KP - will be used for color
-      mutate(sex = case_when(is.na(sex)==TRUE  ~ "KP", TRUE ~ sex)) %>%
-      group_by(fiscal_year, country, funding_agency, standardizeddisaggregate, sex, ageasentered, otherdisaggregate, facet_ind) %>% 
-      summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE)),
-                .groups = "drop") %>% 
-      reshape_msd() %>% 
-      select(-period_type) %>% 
-      arrange(period) 
-      
-      return(df_prep)
+  #clean exit if no data
+  if(cntry %ni% unique(df$country) | agency %ni% unique(df$funding_agency))
+    return(NULL)
+  
+  ## Filter for age/sex and KP disaggregates. Trend starts at FY22Q1
+  df_prep<- df %>% 
+    filter(indicator == "PrEP_NEW", 
+           standardizeddisaggregate %in% c("Age/Sex", "KeyPopAbr"),
+           country==cntry,
+           funding_agency==agency) %>% 
+    # Combine age groups above 35+, rename People in Prisons
+    mutate(ageasentered = case_when(ageasentered %in% c("35-39","40-44","45-49","50+") ~ "35+", 
+                                    TRUE ~ ageasentered),
+           otherdisaggregate = case_when(otherdisaggregate %in% "People in prisons and other enclosed settings" ~ "Prisoners", 
+                                         TRUE ~ otherdisaggregate)) %>%
+    # Create index for faceting - either age or KP group
+    mutate(facet_ind=case_when(standardizeddisaggregate == "Age/Sex" ~ ageasentered, 
+                               TRUE ~ otherdisaggregate)) %>%
+    filter(facet_ind!="Unknown Age") %>%
+    # Fill sex indicator with "KP" value for KP - will be used for color
+    mutate(sex = case_when(is.na(sex)==TRUE  ~ "KP", TRUE ~ sex)) %>%
+    group_by(fiscal_year, country, funding_agency, standardizeddisaggregate, sex, ageasentered, otherdisaggregate, facet_ind) %>% 
+    summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE)),
+              .groups = "drop") %>% 
+    reshape_msd() %>% 
+    select(-period_type) %>% 
+    arrange(period) 
+  
+  return(df_prep)
 
 }
 
 viz_prep_disagg <-function (df){
+  
+  if(is.null(df))
+    return(print(paste("No data available.")))
   
   # Reference ID to be used for searching GitHub
   ref_id <- "0530547f"

@@ -15,6 +15,10 @@
 # prepare epi control df
 prep_epi_control <- function(df, cntry) {
   
+  #clean exit if no data
+  if(cntry %ni% unique(df$country))
+    return(NULL)
+  
   epi_viz <- df %>% 
     dplyr::filter(indicator %in% c("Number Total Deaths HIV Pop", "Number New HIV Infections"),
            age == "all",
@@ -32,6 +36,10 @@ prep_epi_control <- function(df, cntry) {
 
 #prepare 95s df
 prep_95s <- function(df, cntry) {
+  
+  #clean exit if no data
+  if(cntry %ni% unique(df$country))
+    return(NULL)
   
   goal <- 95
  
@@ -81,6 +89,9 @@ prep_95s <- function(df, cntry) {
 
 # plot epi curves
 viz_epi_control <- function(df) {
+  
+  if(is.null(df))
+    return(print(paste("No data available.")))
   
   clean_number <- function(x, digits = 0){
     dplyr::case_when(x >= 1e9 ~ glue("{round(x/1e9, digits)}B"),
@@ -147,6 +158,9 @@ viz_epi_control <- function(df) {
 
 #plot 95s progress
 viz_95s <- function(df) {
+  
+  if(is.null(df))
+    return(print(paste("No data available.")))
   
   ref_id <- "02e4fc9c" 
   

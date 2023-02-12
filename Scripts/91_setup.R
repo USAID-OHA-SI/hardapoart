@@ -4,7 +4,7 @@
 # REF ID:   3fa8f096 
 # LICENSE:  MIT
 # DATE:     2023-02-06
-# UPDATED:  2023-02-09
+# UPDATED:  2023-02-12
 
 # DEPENDENCIES ------------------------------------------------------------
   
@@ -28,22 +28,6 @@
   library(rcartocolor)
   library(here)
   library(assertr)
-
-# SOURCE LOCAL FUNCTIONS --------------------------------------------------
-
-  source("Scripts/01_achievement_indicator-psnu.R")
-  source("Scripts/03_prevalence-gaps_gp-psnu-sex.R")
-  source("Scripts/08_vl-coverage-and-suppression_gp-age.R")
-  source("Scripts/09_vl-coverage-and-suppression_gp-psnu.R")
-  source("Scripts/10_PrEP-trends_age-sex-KP.R")
-  source("Scripts/11_sid_comp.R")
-  source("Scripts/12_budget-trends_agency.R")
-  source("Scripts/13_funding-distro_funding-flavors.R")
-  source("Scripts/14_hrh-footprint-various.R")
-  source("Scripts/16_hrh-titles.R")
-
-  # Helper function for assertr::verify() to show more descriptive error messages
-  err_text <- function(msg) stop(msg, call = FALSE)
 
 # GLOBAL VARIABLES --------------------------------------------------------
   

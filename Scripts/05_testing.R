@@ -12,6 +12,10 @@
   #NUmber PLHIV - Number who know status
 prep_undiagnosed <- function(cntry) {
   
+  #clean exit if no data
+  if(cntry %ni% unique(df$country))
+    return(NULL)
+  
   clean_number <- function(x, digits = 0){
     dplyr::case_when(x >= 1e9 ~ glue("{round(x/1e9, digits)}B"),
                      x >= 1e6 ~ glue("{round(x/1e6, digits)}M"),
@@ -46,14 +50,18 @@ prep_undiagnosed <- function(cntry) {
  }
   
  #munge modalities into case-finding and prevention (prevention = PMTCT, ANC, VMMC)
- prep_modality_age <- function(df, cntry, ...){   
+ prep_modality_age <- function(df, cntry, agency, ...){   
+   
+   #clean exit if no data
+   if(cntry %ni% unique(df$country) | agency %ni% unique(df$funding_agency))
+     return(NULL)
    
    df_hts_full <- df %>% 
      dplyr::filter(indicator == "HTS_TST",
             country == cntry,
             standardizeddisaggregate == "Modality/Age/Sex/Result",
-            fiscal_year <= metadata_msd$curr_fy) %>%  
-     #funding_agency == "USAID", ...) %>% 
+            fiscal_year <= metadata_msd$curr_fy,
+            funding_agency == agency) %>%  
      dplyr::mutate(mod_type = case_when(
        stringr::str_detect(modality, "PMTCT ANC") ~ "Prevention",
        stringr::str_detect(modality, "Post ANC1") ~ "Prevention",
@@ -106,6 +114,9 @@ prep_undiagnosed <- function(cntry) {
 # VIZ -----------------------------------------------------------------------
  
  viz_modality_age <- function(df) {
+   
+   if(is.null(df))
+     return(print(paste("No data available.")))
    
    ref_id <- "cc4f6cf7"
    

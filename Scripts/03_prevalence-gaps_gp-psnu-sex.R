@@ -70,6 +70,10 @@
   prep_hiv_prevalence <- function(df, cntry,
                                   add_style = T) {
     
+    #clean exit if no data
+    if(cntry %ni% unique(df$country))
+      return(NULL)
+    
     ## PSNU/Age/Sex Summaries
     df_pops <- df %>% 
       dplyr::filter(fiscal_year == max(fiscal_year),
@@ -169,6 +173,9 @@
   #' 
   viz_hiv_prevalence <- function(df,
                                  save = F) {
+    
+    if(is.null(df))
+      return(print(paste("No data available.")))
     
     # OU/Country Reference line
     

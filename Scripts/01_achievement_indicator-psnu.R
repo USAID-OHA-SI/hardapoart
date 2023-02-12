@@ -8,6 +8,10 @@
 
 prep_achv_psnu <- function (df, cntry, agency){
   
+    #clean exit if no data
+    if(cntry %ni% unique(df$country) | agency %ni% unique(df$funding_agency))
+      return(NULL)
+  
     #select indicators
     ind_sel <- c("HTS_TST","HTS_TST_POS", "TX_NEW", "TX_CURR", 
                  "TX_PVLS_D", "TX_PVLS", "PrEP_NEW", "VMMC_CIRC", 
@@ -64,12 +68,18 @@ prep_achv_psnu <- function (df, cntry, agency){
          ungroup() %>% 
          arrange(indicator) %>% 
          mutate(ind_w_glob_vals = fct_inorder(ind_w_glob_vals))
+  
+    return(df_achv_viz)
+  
    }
 
 # VIZ - ACHIEVEMENT BY COUNTRY -------------------------------------------------------
 
 viz_achv_psnu <- function (df){
 
+  if(is.null(df))
+    return(print(paste("No data available.")))
+    
     #Reference ID to be used for searching GitHub
     ref_id <- "d51dd3f9"
 

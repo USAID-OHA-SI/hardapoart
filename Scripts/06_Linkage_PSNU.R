@@ -32,7 +32,7 @@
     #bind in duplicative rows to serve as overall total for plot
     df_filtered <- df_filtered %>% 
       dplyr::bind_rows(df_filtered %>% 
-                         dplyr::mutate(psnu = "Overall"))
+                         dplyr::mutate(psnu = "OVERALL"))
       
     #aggregate df tp psnu lvl for plotting
     df_reshaped <- df_filtered %>%
@@ -67,6 +67,10 @@
       tidyr::pivot_wider(names_from = indicator, values_from = results) %>% 
       dplyr::mutate(linkage = TX_NEW / HTS_TST_POS)
     
+    
+    #adjust color for plot
+    df_link <- df_link %>% 
+      dplyr::mutate(fill_color = ifelse(psnu == "OVERALL", glitr::scooter, glitr::scooter_med))
     return(df_link)
     
   }
@@ -78,10 +82,9 @@
     
     ref_id <- "f6f26589"
     
-    df_psnu %>%
-      ggplot(aes(x = reorder(psnu_var_psnu, psnu_linkage_pct))) +
-      geom_col(aes(y = psnu_linkage_pct), fill = scooter_light,
-               position = position_nudge(x = 0.1), width = 0.5) +
+    df %>%
+      ggplot(aes(linkage, forcats::fct_reorder(psnu, linkage))) +
+      geom_col(fill = scooter_light) +
       geom_text(aes(y = psnu_linkage_pct, label = percent(psnu_linkage_pct, 1)), 
                 size = 9/.pt,
                 family = "Source Sans Pro",

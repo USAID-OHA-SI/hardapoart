@@ -6,185 +6,114 @@
 # DATE:     2023-02-07
 # UPDATED:  2023-02-10
 
-# DEPENDENCIES -----------------------------------------------------------------
-  # source("Scripts/91_setup.R")
 
-  # .df is the PSNUxIM MSD df_msd
-  # .ou = a character string in pepfar_country_list$operatingunit
-  prep_national_linkage <- function(df, ou, ...){
-  
-    df_reshaped <- df %>% 
+# MUNGE -------------------------------------------------------------------
+
+
+  prep_linkage_psnu <- function(df, cntry, agency, ...){
+    
+    #clean exit if no data
+    if(cntry %ni% unique(df$country) | agency %ni% unique(df$funding_agency))
+      return(NULL)
+    
+    #limit dataset to relevant indicators
+    df_filtered <- df %>% 
       dplyr::filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
              standardizeddisaggregate == "Total Numerator",
-             fiscal_year == metadata_msd$curr_fy,
-             funding_agency == "USAID",
-             operatingunit == ou) %>% 
-      assertr::verify(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST") &
-               standardizeddisaggregate == "Total Numerator" &
-               fiscal_year == metadata_msd$curr_fy & 
-               funding_agency == "USAID" &
-               operatingunit == ou, 
-               error_fun = err_text(glue::glue("Error: {.df} has not been filtered correctly. 
-                                               Please check the first filter in prep_national_linkage().")), 
-               description = glue::glue("Verify that the filters worked")) %>%
-      dplyr::group_by(indicator, fiscal_year) %>% 
-      dplyr::summarise(across(targets:qtr4, \(x) sum(x, na.rm = T)), 
-                .groups = "drop") %>% 
-      gophr::reshape_msd(direction ="semi-wide") 
+             funding_agency == agency,
+             country == cntry) 
     
-    df_linkage_nat  <- df_reshaped %>% 
-      assertr::verify("period" %in% names(df_reshaped), 
-                      error_fun = err_text(glue::glue("Error: {.df} has not been reshaped correctly and the period column does not exist. 
-                                               Please check reshape_msd in prep_national_linkage().")), 
-                      description = glue::glue("Verify that reshape_md worked")) %>%
-      dplyr::group_by(indicator) %>% 
-      tidyr::fill(targets, .direction = "down") %>% 
-      dplyr::filter(nchar(period) != 4, 
-             period == metadata_msd$curr_pd) %>% 
-      assertr::verify(period == metadata_msd$curr_pd & nchar(period) != 4, 
-                      error_fun = err_text(glue::glue("Error: df_linkage_nat has not been filtered correctly. 
-                                               Please check the last filter in prep_national_linkage().")), 
-                      description = glue::glue("Verify that last time period filtering worked")) %>%
-      dplyr::select(-targets) %>% 
-      tidyr::pivot_wider(names_from = indicator, values_from = results) %>% 
-      dplyr::mutate(linkage = TX_NEW / HTS_TST_POS, 
-             psnu = "National") %>%
-    assertr::verify(psnu == "National", 
-                    error_fun = err_text(glue::glue("Error: PSNU in df_linkage_nat has not been assigned correctly. 
-                                               Please check the last mutate() in prep_national_linkage().")), 
-                    description = glue::glue("Verify that PSNU is National for this dataset"))
-    
-    return(df_linkage_nat)
-    
-}
-  prep_psnu_linkage <- function(df, ou, ...){
-    
-    
-    df_reshaped <- df %>% 
-      dplyr::filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
-             standardizeddisaggregate == "Total Numerator",
-             fiscal_year == metadata_msd$curr_fy,
-             funding_agency == "USAID",
-             operatingunit == ou) %>% 
+    #verify filter worked
+    df_filtered %>% 
       assertr::verify(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST") &
                         standardizeddisaggregate == "Total Numerator" &
-                        fiscal_year == metadata_msd$curr_fy & 
-                        funding_agency == "USAID" &
-                        operatingunit == ou, 
+                        funding_agency == agency &
+                        country == cntry, 
                       error_fun = err_text(glue::glue("Error: {.df} has not been filtered correctly. 
                                                Please check the first filter in prep_psnu_linkage().")), 
-                      description = glue::glue("Verify that the filters worked")) %>%
-      dplyr::group_by(indicator, psnu, fiscal_year) %>% 
+                      description = glue::glue("Verify that the filters worked")) 
+    
+    #bind in duplicative rows to serve as overall total for plot
+    df_filtered <- df_filtered %>% 
+      dplyr::bind_rows(df_filtered %>% 
+                         dplyr::mutate(psnu = "OVERALL"))
+      
+    #aggregate df tp psnu lvl for plotting
+    df_reshaped <- df_filtered %>%
+      dplyr::group_by(fiscal_year, country, funding_agency, psnu, indicator) %>% 
       dplyr::summarise(across(targets:qtr4, \(x) sum(x, na.rm = T)), 
                 .groups = "drop") %>% 
       gophr::reshape_msd(direction ="semi-wide") 
     
-    df_linkage_psnu <- df_reshaped %>% 
+    #verify reshape
+    df_reshaped %>% 
       assertr::verify("period" %in% names(df_reshaped), 
                       error_fun = err_text(glue::glue("Error: {.df} has not been reshaped correctly and the period column does not exist. 
                                                Please check reshape_msd in prep_psnu_linkage().")), 
-                      description = glue::glue("Verify that reshape_md worked")) %>%
+                      description = glue::glue("Verify that reshape_md worked"))
+    
+    #fill targets and remove 
+    df_reshaped <- df_reshaped %>%
       dplyr::group_by(indicator) %>% 
       tidyr::fill(targets, .direction = "down") %>% 
-      dplyr::filter(nchar(period) != 4, 
-             period == metadata_msd$curr_pd) %>% 
+      dplyr::filter(period == metadata_msd$curr_pd) %>% 
+      dplyr::select(-targets)
+    
+    #verify filter to last period
+    df_reshaped %>% 
       assertr::verify(period == metadata_msd$curr_pd & nchar(period) != 4, 
                       error_fun = err_text(glue::glue("Error: df_linkage_psnu has not been filtered correctly. 
                                                Please check the last filter in prep_psnu_linkage().")), 
-                      description = glue::glue("Verify that last time period filtering worked")) %>%
-      dplyr::select(-targets) %>% 
-      tidyr::pivot_wider(names_from = indicator, values_from = results) %>% 
-      dplyr::mutate(linkage = TX_NEW / HTS_TST_POS) %>%
-      assertr::verify(psnu != "National" & is.na(psnu) == FALSE,
-      error_fun = err_text(glue::glue("Error: PSNU in df_linkage_psnu has not been assigned correctly. 
-                                      Please check the values of psnu in df_reshaped in prep_psnu_linkage().")), 
-                           description = glue::glue("Verify that PSNU is not National or missing for this dataset"))
+                      description = glue::glue("Verify that last time period filtering worked")) 
     
-    return(df_linkage_psnu)
+    #create proxy linkage
+    df_link <- df_reshaped %>%
+      tidyr::pivot_wider(names_from = indicator, values_from = results) %>% 
+      dplyr::mutate(linkage = TX_NEW / HTS_TST_POS)
+    
+    
+    #adjust color for plot
+    df_link <- df_link %>% 
+      dplyr::mutate(fill_color = ifelse(psnu == "OVERALL", glitr::scooter, glitr::scooter_med))
+    return(df_link)
     
   }
   
 # VIZ --------------------------------------------------------------------------
   
-  viz_linkage <- function(df_nat, df_psnu){
+  viz_linkage_psnu <- function(df){
     
     
-    
-  # National level viz -------
-    
-  psnu_var_nat <- df_nat$psnu
-  nat_linkage_pct <- df_nat$linkage
-  
-  # df_nat is national level linkage data from prep_national_linkage
-  # for df_nat psnu var nat = "National"
-  # linkage percent is a number from 0-1
-    
-  viz_link_nat <- function(df_nat, psnu_var_nat, nat_linkage_pct, ...){
-    
-    df_nat %>% 
-      ggplot2::ggplot(aes(x = reorder(psnu_var_nat, nat_linkage_pct))) +
-      ggplot2::geom_col(aes(y = nat_linkage_pct), fill = scooter_light,
-                        position = position_nudge(x = 0.1), width = 0.5) +
-      ggplot2::geom_text(aes(y = nat_linkage_pct, label = percent(nat_linkage_pct, 1)), 
-                         size = 9/.pt,
-                         family = "Source Sans Pro",
-                         fontface = "bold", 
-                         color = scooter, 
-                         vjust = 0) +
-      glitr::si_style_ygrid() +
-      ggplot2::coord_flip() +
-      ggplot2::scale_y_continuous(labels = comma) +
-      ggplot2::labs(x = NULL, y = NULL, 
-                    subtitle = glue("Linkage | {metadata_msd$curr_pd_lab}")) +
-      ggplot2::expand_limits(x = c(0, 9)) +
-      ggplot2::theme(
-        legend.position = "none",
-        plot.title = element_markdown(),
-        strip.text = element_markdown(), 
-        axis.text.x = element_blank())
-    
-  }
-  
-  nat <- viz_link_nat(df_nat, psnu_var_nat, nat_linkage_pct)
-  
-  # PSNU level viz -------
-  
-  psnu_var_psnu <- df_psnu$psnu
-  psnu_linkage_pct <- df_psnu$linkage
-  
-  # df_psnu is psnu level linkage data from prep_psnu_linkage
-  # for df_psnu psnu var is the actual PSNU
-  # linkage percent is a number from 0-1
-  
-  viz_link_psnu <- function(df_psnu, psnu_var_psnu, psnu_linkage_pct){
+    if(is.null(df))
+      return(print(paste("No data available.")))
     
     ref_id <- "f6f26589"
     
-    df_psnu %>%
-      ggplot(aes(x = reorder(psnu_var_psnu, psnu_linkage_pct))) +
-      geom_col(aes(y = psnu_linkage_pct), fill = scooter_light,
-               position = position_nudge(x = 0.1), width = 0.5) +
-      geom_text(aes(y = psnu_linkage_pct, label = percent(psnu_linkage_pct, 1)), 
-                size = 9/.pt,
-                family = "Source Sans Pro",
-                fontface = "bold", 
-                color = scooter, 
+    cap_note <- ifelse(nrow(df) > 21, "Note: Limited to the largest 20 PSNUs\n", "")
+    
+    #limit to 21 bars (overall + 20 psnus)
+      df <- df %>% 
+        dplyr::slice_max(order_by = HTS_TST_POS, n = 21)
+    
+    df %>%
+      ggplot(aes(linkage, forcats::fct_reorder(psnu, linkage), fill = fill_color)) +
+      geom_vline(aes(xintercept = .95), linetype = "dashed", color = glitr::matterhorn) +
+      geom_col() +
+      geom_text(aes(label = percent(linkage, 1)), 
+                size = 9/.pt, hjust = -.1,
+                family = "Source Sans Pro", 
+                color = glitr::matterhorn, 
                 vjust = 0) +
-      si_style_ygrid() +
-      coord_flip() +
-      scale_y_continuous(labels = comma) +
-      labs(title = "Linkage, National and by PSNU",
-           subtitle = glue("{metadata_msd$curr_fy_lab} | Q{metadata_msd$curr_qtr}"),
-           x = NULL, y = NULL, 
-           caption = glue("{metadata_msd$caption}")) +
-      expand_limits(x = c(0, 9)) 
-  }
-  
-  psnu <- viz_link_psnu(df_psnu, psnu_var_psnu, psnu_linkage_pct)
-  
-  # Combined viz -------
-  
-  # each figure could be used individually but for this visual they're combined
-  nat / psnu + plot_layout(heights = c(1, 4))
+      expand_limits(x = c(0, 1.1)) + 
+      coord_cartesian(clip = "off") +
+      scale_x_continuous(expand = c(.005, .005)) +
+      scale_fill_identity() +
+      si_style_nolines() +
+      labs(subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)} {metadata_msd$curr_pd} Proxy Linkage"),
+           x = NULL, y = NULL,
+           caption = glue("{cap_note}{metadata_msd$caption} | USAID | Ref id: {ref_id}")) +
+      theme(legend.position = "none",
+            axis.text.x = element_blank())
+ 
   
   }

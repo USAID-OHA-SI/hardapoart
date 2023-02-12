@@ -84,7 +84,7 @@ These supporting visuals are intended to help create and inform initial discussi
 ```{r}
 # | label: epi_95s
 
-viz_unaids_all(params$cntry, params$agency)
+viz_unaids_all(params$cntry)
 
 ```
 ## 3. What does HIV prevalence look like across sex / SNUs? by age/sex bands?

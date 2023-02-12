@@ -292,9 +292,6 @@
 
 # LOAD SID ----------------------------------------------------------------
 
-  #store meta data
-  metadata_sid <- list(caption = "Source: FY21 SID Global Dataset")
-
   #import
   df_sid <- range_speedread(sid_gs_id,
                             col_types = c(
@@ -305,6 +302,8 @@
   #filter to max year
   df_sid <- filter(df_sid, fiscal_year == max(fiscal_year))
 
+  #store meta data
+  metadata_sid <- list(caption = glue("Source: FY{max(df_sid$fiscal_year) %>% str_sub(-2)} SID Global Dataset"))
 
 # LOAD UNAIDS -------------------------------------------------------------
 

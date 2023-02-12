@@ -32,17 +32,20 @@
                       description = glue::glue("Verify that the filters worked")) 
     
     #aggregate df tp psnu lvl for plotting
-    df_filtered <- df_filtered %>%
-      dplyr::group_by(indicator, psnu, fiscal_year) %>% 
+    df_reshaped <- df_filtered %>%
+      dplyr::group_by(fiscal_year, country, funding_agency, psnu, indicator) %>% 
       dplyr::summarise(across(targets:qtr4, \(x) sum(x, na.rm = T)), 
                 .groups = "drop") %>% 
       gophr::reshape_msd(direction ="semi-wide") 
     
-    df_linkage_psnu <- df_reshaped %>% 
+    #verify reshape
+    df_reshaped %>% 
       assertr::verify("period" %in% names(df_reshaped), 
                       error_fun = err_text(glue::glue("Error: {.df} has not been reshaped correctly and the period column does not exist. 
                                                Please check reshape_msd in prep_psnu_linkage().")), 
-                      description = glue::glue("Verify that reshape_md worked")) %>%
+                      description = glue::glue("Verify that reshape_md worked"))
+    
+    df_linkage_psnu <- df_reshaped %>%
       dplyr::group_by(indicator) %>% 
       tidyr::fill(targets, .direction = "down") %>% 
       dplyr::filter(nchar(period) != 4, 

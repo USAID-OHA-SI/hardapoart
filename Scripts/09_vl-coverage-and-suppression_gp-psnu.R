@@ -156,16 +156,16 @@
     # Generate the plot
     viz <- df %>% 
       ggplot(aes(x = period, group = 1)) +
-      geom_line(aes(y = vlc), color = burnt_sienna, linewidth = 1) +
+      geom_line(aes(y = vlc), color = burnt_sienna, linewidth = 1, na.rm = TRUE) +
       geom_point(aes(y = vlc), fill = burnt_sienna, color = grey10k, 
-                 shape = 21, size = 3.5) +
+                 shape = 21, size = 3.5, na.rm = TRUE) +
       geom_text(aes(y = vlc, label = percent(vlc, 1)), family = "Source Sans Pro",
-                size = 3, vjust = 2, color = burnt_sienna) +
-      geom_line(aes(y = vls), color = genoa, linewidth = 1) +
+                size = 3, vjust = 2, color = burnt_sienna, na.rm = TRUE) +
+      geom_line(aes(y = vls), color = genoa, linewidth = 1, na.rm = TRUE) +
       geom_point(aes(y = vls), fill = genoa, color = grey10k, 
-                 shape = 21, size = 3.5) +
+                 shape = 21, size = 3.5, na.rm = TRUE) +
       geom_text(aes(y = vls, label = percent(vls, 1)), family = "Source Sans Pro",
-                size = 3, vjust = -1.8, color = genoa) +
+                size = 3, vjust = -1.8, color = genoa, na.rm = TRUE) +
       scale_y_continuous(labels = percent) +
       labs(x = "", y = "",
            title = glue::glue("{toupper(unique(df$funding_agency))}/{toupper(unique(df$country))} - VIRAL LOAD TRENDS"),

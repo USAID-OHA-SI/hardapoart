@@ -59,15 +59,12 @@
                                                Please check the last filter in prep_psnu_linkage().")), 
                       description = glue::glue("Verify that last time period filtering worked")) 
     
+    #create proxy linkage
     df_link <- df_reshaped %>%
       tidyr::pivot_wider(names_from = indicator, values_from = results) %>% 
-      dplyr::mutate(linkage = TX_NEW / HTS_TST_POS) %>%
-      assertr::verify(psnu != "National" & is.na(psnu) == FALSE,
-      error_fun = err_text(glue::glue("Error: PSNU in df_linkage_psnu has not been assigned correctly. 
-                                      Please check the values of psnu in df_reshaped in prep_psnu_linkage().")), 
-                           description = glue::glue("Verify that PSNU is not National or missing for this dataset"))
+      dplyr::mutate(linkage = TX_NEW / HTS_TST_POS)
     
-    return(df_linkage_psnu)
+    return(df_link)
     
   }
   

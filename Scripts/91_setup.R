@@ -70,6 +70,7 @@
     df_msd_ind <- tibble::tribble(
       ~indicator,      ~standardizeddisaggregate,
       "HTS_TST",              "Total Numerator",
+      "HTS_TST",       "Modality/Age/Sex/Result",
       "HTS_TST_POS",              "Total Numerator",
       "KP_PREV",              "Total Numerator",
       "OVC_SERV",              "Total Numerator",

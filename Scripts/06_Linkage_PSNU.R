@@ -16,7 +16,6 @@
     df_filtered <- df %>% 
       dplyr::filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
              standardizeddisaggregate == "Total Numerator",
-             fiscal_year == metadata_msd$curr_fy,
              funding_agency == agency,
              country == cntry) 
     
@@ -24,7 +23,6 @@
     df_filtered %>% 
       assertr::verify(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST") &
                         standardizeddisaggregate == "Total Numerator" &
-                        fiscal_year == metadata_msd$curr_fy & 
                         funding_agency == agency &
                         country == cntry, 
                       error_fun = err_text(glue::glue("Error: {.df} has not been filtered correctly. 

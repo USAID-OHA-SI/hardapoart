@@ -10,7 +10,7 @@
 # MUNGE -------------------------------------------------------------------
 
 
-  prep_psnu_linkage <- function(df, cntry, agency, ...){
+  prep_linkage_psnu <- function(df, cntry, agency, ...){
     
     #limit dataset to relevant indicators
     df_filtered <- df %>% 
@@ -73,7 +73,7 @@
   
 # VIZ --------------------------------------------------------------------------
   
-  viz_linkage <- function(df_nat, df_psnu){
+  viz_linkage_psnu <- function(df_nat, df_psnu){
     
     
     

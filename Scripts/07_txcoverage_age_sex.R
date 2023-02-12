@@ -128,7 +128,7 @@ viz_txnew_age_sex <- function(df) {
   
   df %>% 
     dplyr::filter(ageasentered != "Unknown Age",
-           period == metadata_natsubnat$curr_pd) %>% 
+           period == metadata_msd$curr_pd) %>% 
     ggplot2::ggplot(aes(value, ageasentered, fill = fill_color, color = fill_color)) +
     ggplot2::geom_col(aes(fill = fill_color), width = .8, alpha = .8) +
     #facet_wrap(~sex, switch = "y", scales = "free_x") +

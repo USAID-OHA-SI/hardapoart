@@ -70,9 +70,9 @@ prep_undiagnosed <- function(cntry) {
      #  str_detect(modality, "SNSMod") ~ "Community SNS",
        TRUE ~ "Case Finding")
      ) %>%
-     dplyr::group_by(fiscal_year, mod_type, ...) %>%
-     dplyr::summarise(across(starts_with("qtr"), sum, na.rm = TRUE)) %>%
-     dplyr::ungroup() %>%
+     dplyr::group_by(fiscal_year, funding_agency, mod_type, ...) %>%
+     dplyr::summarise(across(starts_with("qtr"), sum, na.rm = TRUE),
+                      .groups = "drop") %>%
      gophr::reshape_msd() %>%
      dplyr::select(-period_type) %>%
      dplyr::group_by(period, ...) %>%

@@ -66,6 +66,10 @@
   prep_viral_load_psnu <- function(df, cntry, agency,
                                     pd_hist = 5) {
     
+    #clean exit if no data
+    if(cntry %ni% unique(df$country) | agency %ni% unique(df$funding_agency))
+      return(NULL)
+    
     # Filter
     df_tx <- df %>% 
       filter(
@@ -127,6 +131,9 @@
   #' 
   viz_viral_load_psnu <- function(df,
                                   save = F) {
+    
+    if(is.null(df))
+      return(print(paste("No data available.")))
     
     ref_id <- "29675452"
     

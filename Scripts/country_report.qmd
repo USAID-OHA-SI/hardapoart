@@ -109,7 +109,7 @@ df_natsubnat %>%
 ```{r}
 # | label: testing
 
- prep_modality_age(df_msd, params$cntry, trendscoarse) %>% 
+ prep_modality_age(df_msd, params$cntry, "PEPFAR", trendscoarse) %>% 
    viz_modality_age()
 
 ```
@@ -119,8 +119,9 @@ df_natsubnat %>%
 ```{r}
 # | label: linkage
 
-viz_linkage(prep_national_linkage(df_msd, params$cntry),
-            prep_psnu_linkage(df_msd, params$cntry))
+df_msd %>% 
+  prep_linkage_psnu(params$cntry, params$agency) %>% 
+  viz_linkage_psnu()
 
 ```
 

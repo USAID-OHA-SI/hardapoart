@@ -17,6 +17,10 @@
 
 prep_pop_pyramid <- function(df, cntry){
   
+  #clean exit if no data
+  if(cntry %ni% unique(df$country))
+    return(NULL)
+  
   df_filt <- df %>%
     dplyr::filter(
       fiscal_year == max(fiscal_year),
@@ -67,6 +71,9 @@ prep_pop_pyramid <- function(df, cntry){
   # ref_id is an image reference id
   
   viz_pop_pyramid <- function(df){
+    
+    if(is.null(df))
+      return(print(paste("No data available.")))
     
     ref_id <- "aa8bd5b4"
     

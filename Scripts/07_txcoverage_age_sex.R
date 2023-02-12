@@ -11,6 +11,10 @@
 
 prep_txcoverage_age_sex <- function(df, cntry) {
   
+  #clean exit if no data
+  if(cntry %ni% unique(df$country))
+    return(NULL)
+  
   ind_sel <- c("PLHIV", "DIAGNOSED_SUBNAT" ,"TX_CURR_SUBNAT", "VL_SUPPRESSION_SUBNAT")
   
   df_gap <- df %>% 
@@ -38,6 +42,10 @@ prep_txcoverage_age_sex <- function(df, cntry) {
 } 
 
 prep_txnew_age_sex <- function(df, cntry, agency) {
+  
+  #clean exit if no data
+  if(cntry %ni% unique(df$country) | agency %ni% unique(df$funding_agency))
+    return(NULL)
   
   clean_number <- function(x, digits = 0){
     dplyr::case_when(x >= 1e9 ~ glue("{round(x/1e9, digits)}B"),
@@ -73,6 +81,9 @@ prep_txnew_age_sex <- function(df, cntry, agency) {
 
 viz_txcoverage_age_sex <- function(df) {
   
+  if(is.null(df))
+    return(print(paste("No data available.")))
+  
   ref_id <- "725ebd70"
   
   df %>% 
@@ -92,7 +103,7 @@ viz_txcoverage_age_sex <- function(df) {
                        expand = c(.005, .005)) +
     ggplot2::scale_fill_identity(aesthetics = c("fill", "color")) +
     ggplot2::labs(x = NULL, y = NULL,
-         title = glue::glue("{metadata_natsubnat$curr_fy_lab} Treatment coverage gaps") %>% toupper,
+         title = glue::glue("{metadata_natsubnat$curr_fy_lab} {unique(df$country)} Treatment coverage gaps") %>% toupper,
          subtitle = "TX_CURR_SUBNAT coverage of PLHIV by age and sex",
          caption = glue::glue(" ")) +
     ggplot2::coord_cartesian(clip = "off") +
@@ -107,6 +118,9 @@ viz_txcoverage_age_sex <- function(df) {
 }
 
 viz_txnew_age_sex <- function(df) {
+  
+  if(is.null(df))
+    return(print(paste("No data available.")))
   
   ref_id <- "725ebd70"
   
@@ -127,7 +141,7 @@ viz_txnew_age_sex <- function(df) {
                        expand = c(.005, .005)) +
     glitr::si_style_xgrid() +
     ggplot2::labs(x = NULL, y = NULL,
-         title = glue::glue("{metadata_msd$curr_pd} treatment initations") %>% toupper,
+         title = glue::glue("{metadata_msd$curr_pd} {unique(df$funding_agency)/{unique(df$country)} treatment initations") %>% toupper,
          subtitle = "TX_NEW by age and sex",
          caption = glue::glue("{metadata_msd$caption} | USAID | Ref Id: {ref_id}")) +
     ggplot2::coord_cartesian(clip = "off") +

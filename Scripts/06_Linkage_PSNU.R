@@ -6,71 +6,23 @@
 # DATE:     2023-02-07
 # UPDATED:  2023-02-10
 
-# DEPENDENCIES -----------------------------------------------------------------
-  # source("Scripts/91_setup.R")
 
-  # .df is the PSNUxIM MSD df_msd
-  # .ou = a character string in pepfar_country_list$operatingunit
-  prep_national_linkage <- function(df, ou, ...){
-  
-    df_reshaped <- df %>% 
-      dplyr::filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
-             standardizeddisaggregate == "Total Numerator",
-             fiscal_year == metadata_msd$curr_fy,
-             funding_agency == "USAID",
-             operatingunit == ou) %>% 
-      assertr::verify(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST") &
-               standardizeddisaggregate == "Total Numerator" &
-               fiscal_year == metadata_msd$curr_fy & 
-               funding_agency == "USAID" &
-               operatingunit == ou, 
-               error_fun = err_text(glue::glue("Error: {.df} has not been filtered correctly. 
-                                               Please check the first filter in prep_national_linkage().")), 
-               description = glue::glue("Verify that the filters worked")) %>%
-      dplyr::group_by(indicator, fiscal_year) %>% 
-      dplyr::summarise(across(targets:qtr4, \(x) sum(x, na.rm = T)), 
-                .groups = "drop") %>% 
-      gophr::reshape_msd(direction ="semi-wide") 
-    
-    df_linkage_nat  <- df_reshaped %>% 
-      assertr::verify("period" %in% names(df_reshaped), 
-                      error_fun = err_text(glue::glue("Error: {.df} has not been reshaped correctly and the period column does not exist. 
-                                               Please check reshape_msd in prep_national_linkage().")), 
-                      description = glue::glue("Verify that reshape_md worked")) %>%
-      dplyr::group_by(indicator) %>% 
-      tidyr::fill(targets, .direction = "down") %>% 
-      dplyr::filter(nchar(period) != 4, 
-             period == metadata_msd$curr_pd) %>% 
-      assertr::verify(period == metadata_msd$curr_pd & nchar(period) != 4, 
-                      error_fun = err_text(glue::glue("Error: df_linkage_nat has not been filtered correctly. 
-                                               Please check the last filter in prep_national_linkage().")), 
-                      description = glue::glue("Verify that last time period filtering worked")) %>%
-      dplyr::select(-targets) %>% 
-      tidyr::pivot_wider(names_from = indicator, values_from = results) %>% 
-      dplyr::mutate(linkage = TX_NEW / HTS_TST_POS, 
-             psnu = "National") %>%
-    assertr::verify(psnu == "National", 
-                    error_fun = err_text(glue::glue("Error: PSNU in df_linkage_nat has not been assigned correctly. 
-                                               Please check the last mutate() in prep_national_linkage().")), 
-                    description = glue::glue("Verify that PSNU is National for this dataset"))
-    
-    return(df_linkage_nat)
-    
-}
-  prep_psnu_linkage <- function(df, ou, ...){
-    
+# MUNGE -------------------------------------------------------------------
+
+
+  prep_psnu_linkage <- function(df, cntry, agency, ...){
     
     df_reshaped <- df %>% 
       dplyr::filter(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST"), 
              standardizeddisaggregate == "Total Numerator",
              fiscal_year == metadata_msd$curr_fy,
-             funding_agency == "USAID",
-             operatingunit == ou) %>% 
+             funding_agency == agency,
+             country == cntry) %>% 
       assertr::verify(indicator %in% c("HTS_TST_POS", "TX_NEW", "HTS_TST") &
                         standardizeddisaggregate == "Total Numerator" &
                         fiscal_year == metadata_msd$curr_fy & 
-                        funding_agency == "USAID" &
-                        operatingunit == ou, 
+                        funding_agency == agency &
+                        country == cntry, 
                       error_fun = err_text(glue::glue("Error: {.df} has not been filtered correctly. 
                                                Please check the first filter in prep_psnu_linkage().")), 
                       description = glue::glue("Verify that the filters worked")) %>%

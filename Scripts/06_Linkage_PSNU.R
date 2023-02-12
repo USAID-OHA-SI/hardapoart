@@ -45,16 +45,21 @@
                                                Please check reshape_msd in prep_psnu_linkage().")), 
                       description = glue::glue("Verify that reshape_md worked"))
     
-    df_linkage_psnu <- df_reshaped %>%
+    #fill targets and remove 
+    df_reshaped <- df_reshaped %>%
       dplyr::group_by(indicator) %>% 
       tidyr::fill(targets, .direction = "down") %>% 
-      dplyr::filter(nchar(period) != 4, 
-             period == metadata_msd$curr_pd) %>% 
+      dplyr::filter(period == metadata_msd$curr_pd) %>% 
+      dplyr::select(-targets)
+    
+    #verify filter to last period
+    df_reshaped %>% 
       assertr::verify(period == metadata_msd$curr_pd & nchar(period) != 4, 
                       error_fun = err_text(glue::glue("Error: df_linkage_psnu has not been filtered correctly. 
                                                Please check the last filter in prep_psnu_linkage().")), 
-                      description = glue::glue("Verify that last time period filtering worked")) %>%
-      dplyr::select(-targets) %>% 
+                      description = glue::glue("Verify that last time period filtering worked")) 
+    
+    df_link <- df_reshaped %>%
       tidyr::pivot_wider(names_from = indicator, values_from = results) %>% 
       dplyr::mutate(linkage = TX_NEW / HTS_TST_POS) %>%
       assertr::verify(psnu != "National" & is.na(psnu) == FALSE,

@@ -163,7 +163,7 @@ df_msd %>%
 
 df_msd %>%
     prep_prep_disagg(params$cntry,params$agency) %>%
-    viz_prep_disagg(params$cntry,params$agency)
+    viz_prep_disagg()
 ```
 
 ## 11. Are there key gaps identified by the SID for the country to prioritize?

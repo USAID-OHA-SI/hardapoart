@@ -25,7 +25,7 @@ prep_prep_disagg <- function (df, cntry, agency){
       filter(facet_ind!="Unknown Age") %>%
       # Fill sex indicator with "KP" value for KP - will be used for color
       mutate(sex = case_when(is.na(sex)==TRUE  ~ "KP", TRUE ~ sex)) %>%
-      group_by(fiscal_year, standardizeddisaggregate, sex, ageasentered, otherdisaggregate, facet_ind) %>% 
+      group_by(fiscal_year, country, funding_agency, standardizeddisaggregate, sex, ageasentered, otherdisaggregate, facet_ind) %>% 
       summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE)),
                 .groups = "drop") %>% 
       reshape_msd() %>% 
@@ -36,7 +36,7 @@ prep_prep_disagg <- function (df, cntry, agency){
 
 }
 
-viz_prep_disagg <-function (df, cntry, agency){
+viz_prep_disagg <-function (df){
   
   # Reference ID to be used for searching GitHub
   ref_id <- "0530547f"
@@ -60,8 +60,8 @@ viz_prep_disagg <-function (df, cntry, agency){
     theme(legend.position = "none") + 
     coord_cartesian(clip="off")+
     labs(x = NULL, y = NULL,
-         title = glue("PREP_NEW DISAGGREGATED BY AGE/SEX (<span style = 'color: #8980cb;'>FEMALE</span><span style = 'color: #287c6f;'>/MALE</span>) 
-       AND <span style = 'color: #e07653;'>KEY POPULATIONS</span> IN {toupper(cntry)} <br />"),  
+         title = glue("{toupper(unique(df$funding_agency))}/{toupper(unique(df$country))} PREP_NEW DISAGGREGATED BY AGE/SEX (<span style = 'color: #8980cb;'>FEMALE</span><span style = 'color: #287c6f;'>/MALE</span>) 
+       AND <span style = 'color: #e07653;'>KEY POPULATIONS</span> <br />"),  
          caption = glue("{metadata_msd$caption} | USAID | Ref ID: {ref_id}"))+
     theme(plot.title = element_markdown())
 } 

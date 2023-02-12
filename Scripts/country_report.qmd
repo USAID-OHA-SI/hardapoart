@@ -58,6 +58,9 @@ params:
   source("Scripts/15_10s_barriers.R")
   source("Scripts/16_hrh-titles.R")
 
+# Helper function for assertr::verify() to show more descriptive error messages
+  err_text <- function(msg) stop(msg, call = FALSE)
+
 ```
 
 ## Purpose

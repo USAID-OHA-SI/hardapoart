@@ -24,7 +24,7 @@ prep_hrh_footprint <- function(df, cntry, agency){
   
   #total staff count
   df_total <- df_int %>% 
-    dplyr::group_by(fiscal_year) %>% 
+    dplyr::group_by(country, funding_agency, fiscal_year) %>% 
     dplyr::summarise(dplyr::across(c(individual_count, annual_fte, actual_annual_spend),
                                    \(x) sum(x, na.rm = TRUE)),
                      .groups = "drop") %>% 
@@ -35,7 +35,7 @@ prep_hrh_footprint <- function(df, cntry, agency){
   
   #staff count by SD vs NSD
   df_sd <- df_int %>% 
-    dplyr::group_by(fiscal_year, funding_type) %>% 
+    dplyr::group_by(country, funding_agency, fiscal_year, funding_type) %>% 
     dplyr::summarise(dplyr::across(c(individual_count, annual_fte, actual_annual_spend),
                                    \(x) sum(x, na.rm = TRUE)),
                      .groups = "drop") %>% 
@@ -46,7 +46,7 @@ prep_hrh_footprint <- function(df, cntry, agency){
   
   #staff count by work location 
   df_loc <- df_int %>% 
-    dplyr::group_by(fiscal_year, work_location) %>% 
+    dplyr::group_by(country, funding_agency, fiscal_year, work_location) %>% 
     dplyr::summarise(dplyr::across(c(individual_count, annual_fte, actual_annual_spend),
                                    \(x) sum(x, na.rm = TRUE)),
                      .groups = "drop") %>% 
@@ -59,7 +59,7 @@ prep_hrh_footprint <- function(df, cntry, agency){
   
   #staff count by ER category
   df_er <- df_int %>% 
-    dplyr::group_by(fiscal_year, er_category) %>% 
+    dplyr::group_by(country, funding_agency, fiscal_year, er_category) %>% 
     dplyr::summarise(dplyr::across(c(individual_count, annual_fte, actual_annual_spend),
                                    \(x) sum(x, na.rm = TRUE)),
                      .groups = "drop") %>% 
@@ -127,7 +127,7 @@ viz_hrh_footprint <- function(df){
     ggplot2::scale_fill_identity() +
     ggplot2::scale_color_identity() +
     ggplot2::labs(x = NULL, y = NULL,
-                  subtitle = glue("{metadata_hrh$curr_fy_lab} HRH Staffing Footprint in {unique(df$cntry)} Broken Down By FTEs"),
+                  subtitle = glue("{metadata_hrh$curr_fy_lab} HRH Staffing Footprint in {unique(df$funding_agency)}/{unique(df$country)} Broken Down By FTEs"),
                   caption = glue("{metadata_hrh$caption} Structured Dataset (not redacted) | USAID | Ref id: {ref_id}")) + 
     glitr::si_style_nolines() +
     ggplot2::theme(legend.position = "none",

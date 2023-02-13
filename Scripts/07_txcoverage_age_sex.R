@@ -171,7 +171,10 @@ viz_tx_all <- function(cntry, agency) {
   v2 <- prep_txnew_age_sex(df_msd, cntry, agency) %>% 
     viz_txnew_age_sex()
   
-  viz_tx <- cowplot::plot_grid(v1, v2, ncol = 2, align = 'v')
+  suppressWarnings(
+    viz_tx <- cowplot::plot_grid(v1, v2, ncol = 2, align = 'v')
+  )
+
   
   return(viz_tx)
   

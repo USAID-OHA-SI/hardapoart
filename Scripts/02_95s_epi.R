@@ -242,7 +242,7 @@ viz_unaids_all <- function(cntry) {
   } else {
     viz <- v1 + v2 + plot_layout(widths = c(2, 1), heights = c(10))
   }
-
+  
   return(viz)
   
 }

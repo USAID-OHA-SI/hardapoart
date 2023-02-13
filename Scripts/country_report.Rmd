@@ -43,7 +43,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ```
 
-## Purpose
+### Purpose
 
 In advance of the PLLs and COP meetings starting the week of February
 13, the OHA/SIEI division wanted to provide some useful data points that
@@ -58,7 +58,7 @@ data sources, and calculations for anything included here to make this a
 jumping off point to delve into any software and explore further. If you
 have questions, please contact your SIEI backstop for assistance.
 
-## 1. Are there any major gaps in achievement as of `r params$curr_pd`?
+### 1. Are there any major gaps in achievement as of `r params$curr_pd`?
 
 ```{r achievement}
 
@@ -68,7 +68,7 @@ df_msd %>%
 
 ```
 
-## 2. Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
+### 2. Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
 
 ```{r epi_95s}
 
@@ -76,7 +76,7 @@ viz_unaids_all(params$cntry)
 
 ```
 
-## 3. What does HIV prevalence look like across sex / SNUs? by age/sex bands?
+### 3. What does HIV prevalence look like across sex / SNUs? by age/sex bands?
 
 ```{r prevalence}
 
@@ -86,7 +86,7 @@ df_natsubnat %>%
   
 ```
 
-## 4. Is there a youth buldge of PLHIV we need to plan for?
+### 4. Is there a youth buldge of PLHIV we need to plan for?
 
 ```{r youth_bulge}
 
@@ -96,7 +96,7 @@ df_natsubnat %>%
 
 ```
 
-## 5. Does testing favor prevention or case finding and does this fit with where `r params$cntry` is in the epidemic?
+### 5. Does testing favor prevention or case finding and does this fit with where `r params$cntry` is in the epidemic?
 
 ```{r testing}
 
@@ -105,7 +105,7 @@ df_natsubnat %>%
 
 ```
 
-## 6. Are there any major issues with proxy linkage by geography/population that can be targeted?
+### 6. Are there any major issues with proxy linkage by geography/population that can be targeted?
 
 ```{r linkage}
 
@@ -115,7 +115,7 @@ df_msd %>%
 
 ```
 
-## 7. Are new patients being added to the areas with the largest gaps in treatment coverage?
+### 7. Are new patients being added to the areas with the largest gaps in treatment coverage?
 
 ```{r tx_gap, warning=FALSE}
 
@@ -123,7 +123,7 @@ viz_tx_all(params$cntry, params$agency)
 
 ```
 
-## 8. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
+### 8. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
 
 ```{r vlsc_pop}
 
@@ -133,7 +133,7 @@ df_msd %>%
 
 ```
 
-## 9. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
+### 9. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
 
 ```{r vlsc_geo}
 
@@ -143,7 +143,7 @@ df_msd %>%
 
 ```
 
-## 10. Is PrEP uptake relatively consistent across demographics?
+### 10. Is PrEP uptake relatively consistent across demographics?
 
 ```{r prep}
 
@@ -152,7 +152,7 @@ df_msd %>%
     viz_prep_disagg()
 ```
 
-## 11. Are there key gaps identified by the SID for the country to prioritize?
+### 11. Are there key gaps identified by the SID for the country to prioritize?
 
 ```{r sid}
 
@@ -162,7 +162,7 @@ df_sid %>%
 
 ```
 
-## 12. Have COP budgets been flatlining or changing in a similar manner across agencies?
+### 12. Have COP budgets been flatlining or changing in a similar manner across agencies?
 
 ```{r budget_share}
 
@@ -172,7 +172,7 @@ df_fsd %>%
 
 ```
 
-## 13. Does the country have the optimal mix of PEPFAR spending when thinking about sustainability?
+### 13. Does the country have the optimal mix of PEPFAR spending when thinking about sustainability?
 
 ```{r funding_distro}
 
@@ -182,7 +182,7 @@ df_fsd %>%
 
 ```
 
-## 14. What does the current staffing footprint look like in country? How do they align with sustainability and leveraging our assets?
+### 14. What does the current staffing footprint look like in country? How do they align with sustainability and leveraging our assets?
 
 ```{r staffing_footprint}
 
@@ -192,7 +192,7 @@ df_hrh %>%
 
 ```
 
-## 15. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
+### 15. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
 
 ```{r staffing_titles}
 
@@ -202,7 +202,7 @@ df_hrh %>%
 
 ```
 
-## 16. What are the gaps in adopting structural laws and policies towards the UNAIDS 10-10-10 goals?
+### 16. What are the gaps in adopting structural laws and policies towards the UNAIDS 10-10-10 goals?
 
 ```{r 10s_barriers}
 
@@ -213,7 +213,7 @@ df_tens %>%
 ```
 
 
-## Calculations Used
+### Calculations Used
 
 *Calculations*
 
@@ -258,7 +258,7 @@ Non-SD = interaction_type either Non Service Delivery or Non-Service
 Delivery - Service Delivery = interaction_type == Direct Service
 Delivery - All others are their program type -
 
-## Data Sources
+### Data Sources
 
 **DATIM GENIE MER PSNU By IM** - Date accessed: 2023-02-12 - Date on
 data source: 2023-02-10 - Original Location: DATIM GENIE -

@@ -74,7 +74,7 @@ editor:
 
 ```
 
-## Purpose
+### Purpose
 
 In advance of the PLLs and COP meetings starting the week of February
 13, the OHA/SIEI division wanted to provide some useful data points that
@@ -89,7 +89,7 @@ data sources, and calculations for anything included here to make this a
 jumping off point to delve into any software and explore further. If you
 have questions, please contact your SIEI backstop for assistance.
 
-## 1. Are there any major gaps in achievement as of `r params$curr_pd`?
+### 1. Are there any major gaps in achievement as of `r params$curr_pd`?
 
 ```{r}
 # | label: achievement
@@ -99,7 +99,7 @@ have questions, please contact your SIEI backstop for assistance.
     viz_achv_psnu()
 ```
 
-## 2. Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
+### 2. Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
 
 ```{r}
 # | label: epi_95s
@@ -108,7 +108,7 @@ have questions, please contact your SIEI backstop for assistance.
 
 ```
 
-## 3. What does HIV prevalence look like across sex / SNUs? by age/sex bands?
+### 3. What does HIV prevalence look like across sex / SNUs? by age/sex bands?
 
 ```{r}
 #| label: prevalence
@@ -118,7 +118,7 @@ df_natsubnat %>%
   
 ```
 
-## 4. Is there a youth buldge of PLHIV we need to plan for?
+### 4. Is there a youth buldge of PLHIV we need to plan for?
 
 ```{r}
 # | label: youth_bulge
@@ -129,7 +129,7 @@ df_natsubnat %>%
 
 ```
 
-## 5. Does testing favor prevention or case finding and does this fit with where `r `params$cntry` is in the epidemic?
+### 5. Does testing favor prevention or case finding and does this fit with where `r `params$cntry` is in the epidemic?
 
 ```{r}
 # | label: testing
@@ -139,7 +139,7 @@ df_natsubnat %>%
 
 ```
 
-## 6. Are there any major issues with proxy linkage by geography/population that can be targeted?
+### 6. Are there any major issues with proxy linkage by geography/population that can be targeted?
 
 ```{r}
 # | label: linkage
@@ -150,111 +150,112 @@ df_msd %>%
 
 ```
 
-## 7. Are new patients being added to the areas with the largest gaps in treatment coverage?
+### 7. Are new patients being added to the areas with the largest gaps in treatment coverage?
 
 ```{r}
 # | label: tx_gap
+# | execute: warning: FALSE
 
-#viz_tx_all(params$cntry, params$agency) #wrapper function for tx_coverage and tx_new
+viz_tx_all(params$cntry, params$agency) #wrapper function for tx_coverage and tx_new
 
 
 ```
 
-## 8. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
+### 8. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
 
 ```{r}
 # | label: vlsc_pop
 
-# df_msd %>% 
-#   prep_viral_load(params$cntry, params$agency) %>% 
-#   viz_viral_load()
+df_msd %>%
+  prep_viral_load(params$cntry, params$agency) %>%
+  viz_viral_load()
 
 ```
 
-## 9. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
+### 9. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
 
 ```{r}
 # | label: vlsc_geo
 
-# df_msd %>% 
-#   prep_viral_load_psnu(params$cntry, params$agency) %>% 
-#   viz_viral_load_psnu()
+df_msd %>%
+  prep_viral_load_psnu(params$cntry, params$agency) %>%
+  viz_viral_load_psnu()
 
 ```
 
-## 10. Is PrEP uptake relatively consistent across demographics?
+### 10. Is PrEP uptake relatively consistent across demographics?
 
 ```{r}
 # | label: prep
 
-# df_msd %>%
-#     prep_prep_disagg(params$cntry, params$agency) %>%
-#     viz_prep_disagg()
+df_msd %>%
+    prep_prep_disagg(params$cntry, params$agency) %>%
+    viz_prep_disagg()
 ```
 
-## 11. Are there key gaps identified by the SID for the country to prioritize?
+### 11. Are there key gaps identified by the SID for the country to prioritize?
 
 ```{r}
 # | label: sid
 
-# df_sid %>% 
-#   prep_sid(params$cntry) %>% 
-#   viz_sid()
+df_sid %>%
+  prep_sid(params$cntry) %>%
+  viz_sid()
 ```
 
-## 12. Have COP budgets been flatlining or changing in a similar manner across agencies?
+### 12. Have COP budgets been flatlining or changing in a similar manner across agencies?
 
 ```{r}
 # | label: budget_share
 
-# df_fsd %>% 
-#   prep_budget_trends(params$cntry) %>% 
-#   viz_budget_trends()
+df_fsd %>%
+  prep_budget_trends(params$cntry) %>%
+  viz_budget_trends()
 
 ```
 
-## 13. Does the country have the optimal mix of PEPFAR spending when thinking about sustainability?
+### 13. Does the country have the optimal mix of PEPFAR spending when thinking about sustainability?
 
 ```{r}
 #| label: funding_distro
 
-# df_fsd %>% 
-#   prep_funding_distro(params$cntry, "USAID") %>% 
-#   viz_funding_distro()
+df_fsd %>%
+  prep_funding_distro(params$cntry, "USAID") %>%
+  viz_funding_distro()
 
 ```
 
-## 14. What does the current staffing footprint look like in country? How do they align with sustainability and leveraging our assets?
+### 14. What does the current staffing footprint look like in country? How do they align with sustainability and leveraging our assets?
 
 ```{r}
 #| label: staffing_footprint
 
-# df_hrh %>% 
-#   prep_hrh_footprint(params$cntry, params$agency) %>% 
-#   viz_hrh_footprint()
+df_hrh %>%
+  prep_hrh_footprint(params$cntry, params$agency) %>%
+  viz_hrh_footprint()
 ```
 
-## 15. What are the gaps in adopting structural laws and policies towards the UNAIDS 10-10-10 goals?
-
-```{r}
-#| label: 10-10-10 barriers
-
-# df_tens %>% 
-#   prep_10s_barriers(params$cntry) %>% 
-#   viz_10s_barriers()
-```
-
-## 16. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
+### 15. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
 
 ```{r}
 #| label: staffing_titles
 
-# df_hrh %>% 
-#   prep_hrh_titles(params$cntry, params$agency) %>% 
-#   viz_hrh_titles()
+df_hrh %>%
+  prep_hrh_titles(params$cntry, params$agency) %>%
+  viz_hrh_titles()
 ```
 
-## Calculations Used
+### 16. What are the gaps in adopting structural laws and policies towards the UNAIDS 10-10-10 goals?
+
+```{r}
+#| label: 10-10-10 barriers
+
+df_tens %>%
+  prep_10s_barriers(params$cntry) %>%
+  viz_10s_barriers()
+```
+
+### Calculations Used
 
 Calculations
 
@@ -299,7 +300,7 @@ Non-SD = interaction_type either Non Service Delivery or Non-Service
 Delivery - Service Delivery = interaction_type == Direct Service
 Delivery - All others are their program type -
 
-## Data Sources
+### Data Sources
 
 **DATIM GENIE MER PSNU By IM** - Date accessed: 2023-02-12 - Date on
 data source: 2023-02-10 - Original Location: DATIM GENIE -

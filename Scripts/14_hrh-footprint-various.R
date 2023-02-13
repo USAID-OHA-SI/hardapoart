@@ -11,13 +11,16 @@
   
 prep_hrh_footprint <- function(df, cntry, agency){
  
-  if(cntry %ni% unique(df$country) | agency %ni% unique(df$funding_agency))
+  if(cntry %ni% unique(df$country) || agency %ni% unique(df$funding_agency))
     return(NULL)
   
   #limit to just the country/agency selected
   df <- df %>% 
     filter(country == cntry,
            funding_agency == agency)
+  
+  if(nrow(df) == 0)
+    return(NULL)
   
   #assign funding type
   df_int <- gophr::apply_funding_type(df) 
@@ -114,11 +117,12 @@ prep_hrh_footprint <- function(df, cntry, agency){
 # VIZ ---------------------------------------------------------------------
 
 viz_hrh_footprint <- function(df){
-  
-  if(is.null(df))
+ 
+   if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   ref_id <- "d98b536f" #id for adorning to plots, making it easier to find on GH
+  vrsn <- 1
   
   df %>% 
     ggplot2::ggplot(aes(annual_fte, cat, fill = fill_color, group = subcat)) +
@@ -134,7 +138,7 @@ viz_hrh_footprint <- function(df){
     ggplot2::scale_color_identity() +
     ggplot2::labs(x = NULL, y = NULL,
                   subtitle = glue("{metadata_hrh$curr_fy_lab} HRH Staffing Footprint in {unique(df$funding_agency)}/{unique(df$country)} Broken Down By FTEs"),
-                  caption = glue("{metadata_hrh$caption} Structured Dataset (not redacted) | USAID | Ref id: {ref_id}")) + 
+                  caption = glue("{metadata_hrh$caption} Structured Dataset (not redacted) | USAID | Ref id: {ref_id} v{vrsn}")) + 
     ggplot2::coord_cartesian(clip = "off") +
     glitr::si_style_nolines() +
     ggplot2::theme(legend.position = "none",

@@ -19,10 +19,8 @@ prep_budget_trends <- function(df, cntry){
     dplyr::filter(country == cntry,
                   cop_budget_total != 0)
   
-  #remove M&O and supply chain
-  df_int <- df_int %>% 
-    gophr::remove_mo() %>% 
-    gophr::remove_sch()
+  if(nrow(df_int) == 0)
+    return(NULL)
   
   #agency and PEPFAR total
   df_int_agg <- df_int %>% 
@@ -49,10 +47,11 @@ prep_budget_trends <- function(df, cntry){
 
 viz_budget_trends <- function(df){
   
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   ref_id <- "11a316e1"
+  vrsn <- 1 
   
   df %>% 
     ggplot2::ggplot(aes(fiscal_year, cop_budget_total, fill = funding_agency)) +
@@ -70,7 +69,7 @@ viz_budget_trends <- function(df){
     ggplot2::labs(x = NULL, y = NULL,
          subtitle = glue("{unique(df$country)}'s annual budget shifts by agency (fiscal year)"),
          caption = glue("Note: M&O and supply chain excluded
-                        {metadata_fsd$caption} | USAID | Ref id: {ref_id}")) +
+                        {metadata_fsd$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
     si_style_ygrid() +
     ggplot2::theme(legend.position = "none")
 }

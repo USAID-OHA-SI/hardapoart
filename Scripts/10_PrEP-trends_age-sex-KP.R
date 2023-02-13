@@ -17,7 +17,12 @@ prep_prep_disagg <- function (df, cntry, agency){
     filter(indicator == "PrEP_NEW", 
            standardizeddisaggregate %in% c("Age/Sex", "KeyPopAbr"),
            country==cntry,
-           funding_agency==agency) %>% 
+           funding_agency==agency)
+  
+  if(nrow(df_prep) == 0)
+    return(NULL)
+  
+  df_prep <- df_prep %>% 
     # Combine age groups above 35+, rename People in Prisons
     mutate(ageasentered = case_when(ageasentered %in% c("35-39","40-44","45-49","50+") ~ "35+", 
                                     TRUE ~ ageasentered),
@@ -42,11 +47,12 @@ prep_prep_disagg <- function (df, cntry, agency){
 
 viz_prep_disagg <-function (df){
   
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   # Reference ID to be used for searching GitHub
   ref_id <- "0530547f"
+  vrsn <- 1 
   
   pd_brks <- unique(df$period) %>% str_replace(".*(2|4)$", "")
 
@@ -69,7 +75,7 @@ viz_prep_disagg <-function (df){
     labs(x = NULL, y = NULL,
          title = glue("{toupper(unique(df$funding_agency))}/{toupper(unique(df$country))} PREP_NEW DISAGGREGATED BY AGE/SEX (<span style = 'color: #8980cb;'>FEMALE</span><span style = 'color: #287c6f;'>/MALE</span>) 
        AND <span style = 'color: #e07653;'>KEY POPULATIONS</span> <br />"),  
-         caption = glue("{metadata_msd$caption} | USAID | Ref ID: {ref_id}"))+
+         caption = glue("{metadata_msd$caption} | USAID | Ref ID: {ref_id} v{vrsn}"))+
     theme(plot.title = element_markdown())
 } 
 

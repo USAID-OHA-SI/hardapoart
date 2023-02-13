@@ -80,6 +80,9 @@
                                         "Age/Sex/Indication/HIVStatus")
       ) 
     
+    if(nrow(df_tx) == 0)
+      return(NULL)
+             
     # Summarise results by age - bands
     df_tx <- df_tx %>%
       select(-cumulative, -targets) %>% 
@@ -137,10 +140,11 @@
   #' 
   viz_viral_load <- function(df, save = F) {
     
-    if(is.null(df))
+    if(is.null(df) || nrow(df) == 0)
       return(print(paste("No data available.")))
     
     ref_id <- "29675452"
+    vrsn <- 1 
     
     viz <- df %>% 
       ggplot(aes(x = period, group = 1)) +
@@ -156,7 +160,7 @@
       labs(x = "", y = "",
            title = glue::glue("{toupper(unique(df$funding_agency))}/{toupper(unique(df$country))} - VIRAL LOAD TRENDS"),
            subtitle = glue::glue("<span style='color:{burnt_sienna}'>Coverage</span> & <span style='color:{genoa}'>Supression</span>"),
-           caption = glue::glue("{metadata_msd$caption} | USAID | Ref id: {ref_id}")) +
+           caption = glue::glue("{metadata_msd$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
       coord_cartesian(clip = "off") +
       facet_wrap(~age) +
       si_style_nolines() +

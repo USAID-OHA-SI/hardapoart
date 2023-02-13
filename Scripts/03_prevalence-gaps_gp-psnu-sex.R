@@ -83,6 +83,10 @@
       dplyr::summarise(value = sum(targets, na.rm = T), .groups = "drop") %>% 
       gophr::clean_psnu()
     
+    #clean exit if no data
+    if(nrow(df_pops) == 0)
+      return(NULL)
+    
     ## Add OU/Country Summary
     
     df_pops <- df_pops %>% 
@@ -174,13 +178,14 @@
   viz_hiv_prevalence <- function(df,
                                  save = F) {
     
-    if(is.null(df))
+    if(is.null(df) || nrow(df) == 0)
       return(print(paste("No data available.")))
     
     # OU/Country Reference line
     
     ref_id <- "8fb89847"
     ref_psnu <- "OU"
+    vrsn <- 1 
     
     if (all(na.omit(df$country) %in% df$operatingunit)) {
       df <- df %>% filter(psnu != "COUNTRY")
@@ -209,9 +214,9 @@
       geom_hline(yintercept = seq(from = 0, 
                                   to = gap_max, 
                                   by = gap_step),
-                 size = .8, linetype = "dashed", color = grey20k) +
+                 linewidth = .8, linetype = "dashed", color = grey20k) +
       geom_vline(xintercept = ref_psnu,
-                 size = .8, linetype = "dashed", color = usaid_darkgrey) +
+                 linewidth = .8, linetype = "dashed", color = usaid_darkgrey) +
       geom_segment(aes(xend = reorder(psnu, female),
                        y = female, 
                        yend = male,
@@ -225,7 +230,7 @@
       labs(x = "", y = "", 
            title = glue::glue("{toupper(unique(df$country))} - {unique(df$fiscal_year)} HIV PREVALANCE"),
            subtitle = glue::glue("HIV Prevalence Gap between <span style='color:{genoa}'>Male</span> & <span style='color:{moody_blue}'>Female</span> by PSNU"),
-           caption = glue::glue("{metadata_natsubnat$caption} | USAID | Ref id: {ref_id}")) +
+           caption = glue::glue("{metadata_natsubnat$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
       si_style_nolines() +
       theme(plot.subtitle = element_markdown(),
             axis.text.y = element_markdown())

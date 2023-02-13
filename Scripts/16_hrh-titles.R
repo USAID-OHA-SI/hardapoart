@@ -19,6 +19,9 @@
       filter(country == cntry,
              funding_agency == agency)
     
+    if(nrow(df) == 0)
+      return(NULL)
+    
     #top staff by title
     df <- df %>%
       dplyr::group_by(country, funding_agency, fiscal_year, employment_title) %>%
@@ -39,10 +42,11 @@
 
  viz_hrh_titles <- function(df){
 
-   if(is.null(df))
+   if(is.null(df) || nrow(df) == 0)
      return(print(paste("No data available.")))
 
    ref_id <- "9831a46a" #id for adorning to plots, making it easier to find on GH
+   vrsn <- 1
    
    df %>%
      ggplot2::ggplot(aes(annual_fte, forcats::fct_reorder(lab_val, annual_fte))) +
@@ -50,7 +54,7 @@
      ggplot2::scale_x_continuous(expand = c(.005, .005), label = comma) +
      ggplot2::labs(x = NULL, y = NULL,
                    subtitle = glue::glue("Top FTEs Position Titles in {unique(df$funding_agency)}/{unique(df$country)}"),
-                   caption = glue::glue("{metadata_hrh$caption} Structured Dataset (not redacted) | USAID | Ref id: {ref_id}")) +
+                   caption = glue::glue("{metadata_hrh$caption} Structured Dataset (not redacted) | USAID | Ref id: {ref_id} v{vrsn}")) +
      glitr::si_style_xgrid() +
      ggplot2::theme(axis.text.y = element_markdown())
    

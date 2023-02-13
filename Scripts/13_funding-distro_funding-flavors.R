@@ -36,9 +36,11 @@ prep_funding_distro <- function(df, cntry, agency){
     dplyr::mutate(exp_total = sum(exp_amt, na.rm = TRUE)) %>% 
     dplyr::ungroup() 
   
+  if(nrow(df_int_agg) > 0){
   #labels for each type's share of the total
   df_int_agg <- df_int_agg %>% 
     dplyr::mutate(lab = dplyr::case_when(fiscal_year == max(fiscal_year) ~ percent(exp_amt/exp_total, 1)))
+  }
   
   return(df_int_agg)
 }
@@ -49,7 +51,7 @@ prep_funding_distro <- function(df, cntry, agency){
 
 viz_funding_distro <- function(df){
   
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   ref_id <- "e258e5d3" #id for adorning to plots, making it easier to find on GH

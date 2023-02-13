@@ -17,6 +17,8 @@ prep_achv_psnu <- function (df, cntry, agency){
                  "TX_PVLS_D", "TX_PVLS", "PrEP_NEW", "VMMC_CIRC", 
                  "OVC_SERV", "KP_PREV", "PMTCT_EID", "TB_PREV")
 
+    semi_annual <- c("OVC_SERV", "KP_PREV", "TB_PREV")
+    
     #function used to clean number format later
     clean_number <- function(x, digits = 0){
                    dplyr::case_when((x >= 1e9 & x < 1e10) ~ glue("{round(x/1e9, digits+1)}B"),
@@ -46,9 +48,15 @@ prep_achv_psnu <- function (df, cntry, agency){
                summarize(across(c(targets, cumulative), \(x) sum(x, na.rm = TRUE)), 
                .groups = "drop")
 
+    #remove data points at Q1 for semi-annual indicators
+    if(metadata_msd$curr_qtr == 1){
+      df_achv <- df_achv %>%
+        dplyr::mutate(cumulative = ifelse(indicator %in% semi_annual, 
+                                          NA_real_, cumulative))
+    }
+    
    #calculate achievement and add colors 
-   df_achv <- df_achv %>% 
-              adorn_achievement(metadata_msd$curr_qtr)
+   df_achv <- adorn_achievement(df_achv, metadata_msd$curr_qtr)
 
    #viz adjustments
    df_achv_viz <- df_achv %>% 

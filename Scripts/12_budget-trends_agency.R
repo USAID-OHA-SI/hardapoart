@@ -19,10 +19,8 @@ prep_budget_trends <- function(df, cntry){
     dplyr::filter(country == cntry,
                   cop_budget_total != 0)
   
-  #remove M&O and supply chain
-  df_int <- df_int %>% 
-    gophr::remove_mo() %>% 
-    gophr::remove_sch()
+  if(nrow(df_int) == 0)
+    return(NULL)
   
   #agency and PEPFAR total
   df_int_agg <- df_int %>% 

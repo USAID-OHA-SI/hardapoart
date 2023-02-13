@@ -235,6 +235,11 @@
     df_fsd <- si_path() %>%
       return_latest("Financial") %>%
       read_psd()
+    
+    #remove M&O and supply chain
+    df_fsd <- df_fsd %>% 
+      remove_mo() %>% 
+      remove_sch()
 
   }
 

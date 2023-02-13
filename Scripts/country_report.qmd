@@ -127,7 +127,7 @@ df_natsubnat %>%
 
 ```
 
-## 5. Does testing favor prevention or case finding and does this fit with where `params$cntry` is in the epidemic?
+## 5. Does testing favor prevention or case finding and does this fit with where `r params$cntry` is in the epidemic?
 
 ```{r}
 # | label: testing
@@ -228,11 +228,21 @@ df_fsd %>%
 #| label: staffing_footprint
 
 df_hrh %>% 
-  prep_hrh_footprint(params$cntry, params$agency) %>% 
+  prep_hrh_footprint(params$cntry, "USAID") %>% 
   viz_hrh_footprint()
 ```
 
-## 15. What are the gaps in adopting structural laws and policies towards the UNAIDS 10-10-10 goals?
+## 15. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
+
+```{r}
+#| label: staffing_titles
+
+df_hrh %>% 
+  prep_hrh_titles(params$cntry, "USAID") %>% 
+  viz_hrh_titles()
+```
+
+## 16. What are the gaps in adopting structural laws and policies towards the UNAIDS 10-10-10 goals?
 
 ```{r}
 #| label: 10-10-10 barriers
@@ -240,16 +250,6 @@ df_hrh %>%
 df_tens %>% 
   prep_10s_barriers(params$cntry) %>% 
   viz_10s_barriers()
-```
-
-## 16. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
-
-```{r}
-#| label: staffing_titles
-
-df_hrh %>% 
-  prep_hrh_titles(params$cntry, params$agency) %>% 
-  viz_hrh_titles()
 ```
 
 ## Calculations Used

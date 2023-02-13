@@ -60,7 +60,7 @@
 
     #filter to data from last 5 quarters & relevant indicators/disaggs
     df_msd <- df_msd %>%
-      filter(fiscal_year >= 2022)
+      filter(fiscal_year >= 2021)
 
 
     #add _D to denom variables

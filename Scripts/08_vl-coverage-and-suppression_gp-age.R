@@ -4,7 +4,7 @@
 ##  REF. ID: 29675452
 ##  LICENCE: MIT
 ##  DATE:    2023-02-12
-##  UPDATE:  2023-02-12
+##  UPDATE:  2023-02-13
 
 # LIBRARIES ----
   
@@ -28,37 +28,6 @@
   ## Script Reference
   # ref_id <- "29675452"
   
-  # # SI Backstop Coverage
-  # 
-  # cntry <- "Nigeria"
-  # 
-  # agency <- "USAID"
-  # 
-  # ## Dirs 
-  # 
-  # dir_mer <- si_path(type = "path_msd")
-  # dir_out <- "./Dataout"
-  # dir_imagess <- "./Images"
-  # dir_graphics <- "./Graphics"
-  # 
-  # ## Files
-  # 
-  # # file_psnu <- dir_mer %>%
-  # #   return_latest("PSNU_IM")
-  # 
-  # ## Info
-  # 
-  # # src_msd <- source_info(file_psnu)
-  # # 
-  # # curr_fy <- source_info(file_psnu, return = "fiscal_year")
-  # # curr_qtr <- source_info(file_psnu, return = "quarter")
-  # # curr_pd <- source_info(file_psnu, return = "period")
-  # 
-  # ## Tech Areas / Disaggs
-  # 
-  # inds_vl <- c("TX_CURR", "TX_PVLS", "TX_PVLS_D")
-  # disaggs_vl <- c("Age/Sex/HIVStatus", "Age/Sex/Indication/HIVStatus")
-  # 
 # FUNCTIONS ----
 
   #' @title Prep TX VL Datasets
@@ -132,8 +101,7 @@
       magrittr::extract(1:pd_hist) %>% 
       sort()
     
-    df_vl %>% 
-      filter(period %in% hist_pds)
+    df_vl %>% filter(period %in% hist_pds)
   }
   
   #' @title Viz TX VL
@@ -150,12 +118,14 @@
       ggplot(aes(x = period, group = 1)) +
       geom_line(aes(y = vlc), color = burnt_sienna, linewidth = 1, na.rm = TRUE) +
       geom_point(aes(y = vlc), fill = burnt_sienna, color = grey10k, shape = 21, size = 4, na.rm = TRUE) +
-      geom_text(aes(y = vlc, label = percent(vlc, 1)), vjust = 2, color = burnt_sienna,
-                family = "Source Sans Pro", na.rm = TRUE) +
+      geom_text_repel(aes(y = vlc, label = percent(vlc, 1)), 
+                      color = burnt_sienna, max.overlaps = 50, force = 10,
+                      family = "Source Sans Pro", na.rm = TRUE) +
       geom_line(aes(y = vls), color = genoa, linewidth = 1, na.rm = TRUE) +
       geom_point(aes(y = vls), fill = genoa, color = grey10k, shape = 21, size = 4, na.rm = TRUE) +
-      geom_text(aes(y = vls, label = percent(vls, 1)), vjust = -1.8, color = genoa,
-                family = "Source Sans Pro", na.rm = TRUE) +
+      geom_text_repel(aes(y = vls, label = percent(vls, 1)), 
+                      color = genoa, max.overlaps = 50, force = 10,
+                      family = "Source Sans Pro", na.rm = TRUE) +
       scale_y_continuous(labels = percent) +
       labs(x = "", y = "",
            title = glue::glue("{toupper(unique(df$funding_agency))}/{toupper(unique(df$country))} - VIRAL LOAD TRENDS"),
@@ -185,53 +155,29 @@
 # DATA IMPORT ----
   
   # PEPFAR Program Data
-  
-  #df_psnu <- si_path() %>% return_latest("PSNU_IM") %>% read_msd()
-#   df_psnu <- df_msd
-#   
-#   
-# # MUNGING ----
-#   
-#   df_vlcs <- prep_varial_load(df = df_psnu, 
-#                               fy = metadata_msd$curr_fy, 
-#                               agency = agency, 
-#                               cntry = cntry,
-#                               pd_hist = 5)
-  
     
 # # VIZ ----
-#   
-#   # Agency
-#   prep_varial_load(df = df_psnu, 
-#                    fy = metadata_msd$curr_fy, 
-#                    agency = agency, 
-#                    cntry = cntry,
-#                    pd_hist = 5) %>% 
-#     viz_viral_load(
-#       df = ., 
-#       cntry = cntry, 
-#       pd = metadata_msd$curr_pd, 
-#       src = metadata_msd$source,
-#       rid = ref_id,
-#       save = F
-#     )
-#   
-#   # All
-#   agency <- "PEPFAR"
-#   
-#   prep_varial_load(df = df_psnu, 
-#                    fy = metadata_msd$curr_fy, 
-#                    agency = agency, 
-#                    cntry = cntry,
-#                    pd_hist = 5) %>% 
-#     viz_viral_load(
-#       df = ., 
-#       cntry = cntry, 
-#       pd = metadata_msd$curr_pd, 
-#       src = metadata_msd$source,
-#       rid = ref_id,
-#       save = F
-#     )
+
+  # Agency
+  # pepfar_country_list %>% 
+  #   pull(country) %>% 
+  #   #first() %>% 
+  #   nth(26) %>% 
+  #   #nth(28) %>% 
+  #   #nth(46) %>% 
+  #   prep_viral_load(df = df_msd,
+  #                   agency = "USAID",
+  #                   cntry = .,
+  #                   pd_hist = 5) %>%
+  #     viz_viral_load()
+  # 
+  # # All "PEPFAR"
+  # 
+  # prep_viral_load(df = df_msd,
+  #                 agency = "PEPFAR",
+  #                 cntry = "Nigeria",
+  #                 pd_hist = 5) %>%
+  #   viz_viral_load()
 # 
 #   
 # # EXPORT ----

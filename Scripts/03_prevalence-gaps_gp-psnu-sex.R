@@ -1,64 +1,18 @@
-##  PROJECT: <Project covered by this repository>
+##  PROJECT: hardapoart
 ##  AUTHOR:  Baboyma Kagniniwa | USAID
 ##  PURPOSE: HIV Prevalence by geographies and gender
 ##  REF. ID: 8fb89847
 ##  LICENCE: MIT
 ##  DATE:    2023-02-02
-##  UPDATE:  2023-02-02
+##  UPDATE:  2023-02-13
 
 # # LIBRARIES ----
-#   
-#   library(tidyverse)
-#   library(glamr)
-#   library(gophr)
-#   library(grabr)
-#   library(mindthegap)
-#   library(glitr)
-#   library(extrafont)
-#   library(scales)
-#   library(tidytext)
-#   library(ggtext)
-#   library(patchwork)
-#   
+  
+  # Libraries are pre-loaded  
+  
 # # NOTES ----
-# 
-# # DISCLAIMERS ----
-# 
-# # GLOBAL PARAMS ----
-#   
-#   ## Script Reference
-#   ref_id <- "8fb89847"
-#   
-#   # SI Backstop Coverage
-#   cntry = "Nigeria"
   
-  ## Dirs 
-  
-  # dir_mer <- si_path(type = "path_msd")
-  # dir_out <- "./Dataout"
-  # dir_imagess <- "./Images"
-  # dir_graphics <- "./Graphics"
-  
-  ## Files
-  
-  # file_subnat <- dir_mer %>% 
-  #   return_latest("NAT_SUBNAT")
-  # 
-  # file_psnu <- dir_mer %>% 
-  #   return_latest("PSNU_IM")
-  
-  ## Info
-  
-  # src_msd <- source_info(file_psnu)
-  # 
-  # curr_fy <- source_info(file_psnu, return = "fiscal_year")
-  # curr_qtr <- source_info(file_psnu, return = "quarter")
-  # curr_pd <- source_info(file_psnu, return = "period")
-  
-  ## Tech Areas / Disaggs
-  
-  # inds_pops <- c("POP_EST", "PLHIV")
-  # disaggs_pops <- c("Age/Sex", "Age/Sex/HIVStatus")
+  # Data is pre-loaded
   
 # FUNCTIONS ----
 
@@ -95,12 +49,13 @@
       mutate(psnu = "COUNTRY") %>% 
       bind_rows(df_pops, .)
     
-    df_pops <- df_pops %>% 
-      filter(psnu != "COUNTRY") %>% 
-      group_by(fiscal_year, operatingunit, indicator, ageasentered, sex) %>% 
-      summarise(value = sum(value, na.rm = T), .groups = "drop") %>% 
-      mutate(psnu = "OU") %>% 
-      bind_rows(df_pops, .)
+    # NOTE - Keep only Country Summaries
+    # df_pops <- df_pops %>% 
+    #   filter(psnu != "COUNTRY") %>% 
+    #   group_by(fiscal_year, operatingunit, indicator, ageasentered, sex) %>% 
+    #   summarise(value = sum(value, na.rm = T), .groups = "drop") %>% 
+    #   mutate(psnu = "OU") %>% 
+    #   bind_rows(df_pops, .)
     
     # PSNU Only Summaries
     df_pops_psnu <- df_pops %>%
@@ -160,7 +115,7 @@
         group_by(operatingunit) %>% 
         mutate(
           threshold = case_when(
-            psnu_prev < prevalence[psnu == "OU"] ~ .3,
+            psnu_prev < prevalence[psnu == "COUNTRY"] ~ .3,
             TRUE ~ 1
           )
         ) %>% 
@@ -175,8 +130,7 @@
   #' 
   #' 
   #' 
-  viz_hiv_prevalence <- function(df,
-                                 save = F) {
+  viz_hiv_prevalence <- function(df, save = F) {
     
     if(is.null(df) || nrow(df) == 0)
       return(print(paste("No data available.")))
@@ -184,30 +138,43 @@
     # OU/Country Reference line
     
     ref_id <- "8fb89847"
-    ref_psnu <- "OU"
+    ref_psnu <- "COUNTRY"
     vrsn <- 1 
     
-    if (all(na.omit(df$country) %in% df$operatingunit)) {
-      df <- df %>% filter(psnu != "COUNTRY")
-    } else {
-      ref_psnu <- c("OU", "COUNTRY")
-    }
+    # if (all(na.omit(df$country) %in% df$operatingunit)) {
+    #   df <- df %>% filter(psnu != "COUNTRY")
+    # } else {
+    #   ref_psnu <- c("OU", "COUNTRY")
+    # }
     
     # Guides
     gap_max <- df %>% 
-      filter(psnu != "COUNTRY" & psnu != "OU") %>% 
+      filter(psnu %ni% c("COUNTRY", "OU")) %>% 
       pull(prevalence) %>%
       max() %>%
       round(2)
     
     gap_step <- .01
     
-    if (gap_max > .01) {
+    # Control the number of vlines
+    if (gap_max > .10) {
       gap_step <- .05
+    } else if (gap_max <= .02) {
+      gap_step <- .005
+    }
+    
+    # Display only a subset
+    df_viz <- df %>% 
+      dplyr::slice_max(order_by = psnu_prev, n = 21 * 2) 
+    
+    if ("COUNTRY" %ni% df_viz$psnu) {
+      df_viz <- df %>% 
+        filter(psnu == "COUNTRY") %>% 
+        bind_rows(df_viz, .)
     }
     
     # Viz
-    viz <- df %>% 
+    viz <- df_viz %>% 
       ggplot(aes(x = reorder(psnu, female), 
                  y = prevalence,
                  fill = color_sex)) +
@@ -246,28 +213,33 @@
   
 # DATA IMPORT ----
   
-  # PEPFAR Program Data
-  
-  #df_subnat <- file_subnat %>% read_msd()
+  # PEPFAR Nat-Subnat MSD
   
 # MUNGING ----
   
-  # Test Munge
+  # Test Prep
   
-  # df_prev <- prep_hiv_prevalence(df = df_natsubnat, 
-  #                                 cntry = cntry,
-  #                                 fy = metadata_natsubnat$curr_fy,
-  #                                 add_style = T)
+  # df_prev <- pepfar_country_list %>% 
+  #   pull(country) %>% 
+  #   nth(26) %>% 
+  #   prep_hiv_prevalence(df = df_natsubnat,
+  #                       cntry = .,
+  #                       add_style = T)
   
 # VIZ ----
 
   # Test Viz
   
-  # viz_hiv_prevalence(df = df_prev, cntry = cntry,
-  #                    fy = metadata_natsubnat$curr_fy,
-  #                    pd = metadata_natsubnat$curr_pd,
-  #                    src = metadata_natsubnat$source,
-  #                    rid = ref_id)
+  pepfar_country_list %>% 
+    pull(country) %>% 
+    #first() %>% 
+    #nth(26) %>% 
+    #nth(28) %>% 
+    nth(46) %>% 
+    prep_hiv_prevalence(df = df_natsubnat,
+                        cntry = .,
+                        add_style = T) %>% 
+    viz_hiv_prevalence()
 
   
 # EXPORT ----

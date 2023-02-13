@@ -163,13 +163,15 @@
       geom_line(aes(y = vlc), color = burnt_sienna, linewidth = 1, na.rm = TRUE) +
       geom_point(aes(y = vlc), fill = burnt_sienna, color = grey10k, 
                  shape = 21, size = 3.5, na.rm = TRUE) +
-      geom_text(aes(y = vlc, label = percent(vlc, 1)), family = "Source Sans Pro",
-                size = 3, vjust = 2, color = burnt_sienna, na.rm = TRUE) +
+      geom_text_repel(aes(y = vlc, label = percent(vlc, 1)), 
+                      family = "Source Sans Pro", max.overlaps = 50, force = 10,
+                      size = 3, color = burnt_sienna, na.rm = TRUE) +
       geom_line(aes(y = vls), color = genoa, linewidth = 1, na.rm = TRUE) +
       geom_point(aes(y = vls), fill = genoa, color = grey10k, 
                  shape = 21, size = 3.5, na.rm = TRUE) +
-      geom_text(aes(y = vls, label = percent(vls, 1)), family = "Source Sans Pro",
-                size = 3, vjust = -1.8, color = genoa, na.rm = TRUE) +
+      geom_text_repel(aes(y = vls, label = percent(vls, 1)), 
+                      family = "Source Sans Pro", max.overlaps = 50, force = 10,
+                      size = 3, color = genoa, na.rm = TRUE) +
       scale_y_continuous(labels = percent) +
       labs(x = "", y = "",
            title = glue::glue("{toupper(unique(df$funding_agency))}/{toupper(unique(df$country))} - VIRAL LOAD TRENDS"),
@@ -196,38 +198,25 @@
   }
   
 # DATA IMPORT ----
-#   
-#   # PEPFAR Program Data
-#   
-#   #df_psnu <- file_psnu %>% read_msd()
-#   df_psnu <- df_msd
-#   
+
+
 # # MUNGING ----
-#   
-#   
-#   df_vlcs <- prep_varial_load_psnu(df = df_psnu, 
-#                               fy = metadata_msd$curr_fy, 
-#                               agency = agency, 
-#                               cntry = cntry,
-#                               pd_hist = 5)
-#   
+  
 # # VIZ ----
-# 
-#   agency <- "USAID"
-#   
-#   prep_varial_load_psnu(df = df_psnu, 
-#                         fy = metadata_msd$curr_fy, 
-#                         agency = agency, 
-#                         cntry = cntry,
-#                         pd_hist = 5) %>% 
-#     viz_viral_load_psnu(
-#       df = ., 
-#       cntry = cntry, 
-#       pd = metadata_msd$curr_pd, 
-#       src = metadata_msd$source,
-#       rid = ref_id,
-#       save = F
-#     )
+
+  # agency <- "USAID"
+  # 
+  # pepfar_country_list %>% 
+  #   pull(country) %>% 
+  #   #first() %>% 
+  #   nth(26) %>% 
+  #   #nth(28) %>% 
+  #   #nth(46) %>% 
+  #   prep_viral_load_psnu(df = df_msd,
+  #                         agency = agency,
+  #                         cntry = .,
+  #                         pd_hist = 5) %>%
+  #     viz_viral_load_psnu()
 #   
 # # EXPORT ----
 #   

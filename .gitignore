@@ -37,11 +37,13 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
 #R basics
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+
 #no data
 *.csv
 *.txt
@@ -58,19 +60,5 @@ AI/*
 GIS/*
 Images/*
 Graphics/*
-#no data
-*.csv
-*.txt
-*.rds
-*.xlsx
-*.xls
-*.zip
-*.png
-*.twbx
-*.pptx
+markdown/*
 
-#nothing from these folders
-AI/*
-GIS/*
-Images/*
-Graphics/*

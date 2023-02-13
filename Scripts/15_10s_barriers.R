@@ -69,10 +69,11 @@ prep_10s_barriers <- function(df, cntry) {
 viz_10s_barriers <- function(df) {
   
 
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   ref_id <- "1e748b9a" #for plot identification
+  vrsn <- 1
   
   df %>% 
     ggplot2::ggplot(ggplot2::aes(n, forcats::fct_reorder(indicator_name, indicator_order, na.rm = TRUE))) +
@@ -84,8 +85,7 @@ viz_10s_barriers <- function(df) {
     ggplot2::labs(x = NULL, y = NULL,
          title = glue::glue("THE LARGEST GAP IN THE 10-10-10 GOALS IN {unique(df$country) %>% toupper()}"),
          subtitle = "Progress towards adopting structural laws/policies towards UNAIDS' 10-10-10 goals",
-         caption = glue::glue("{metadata_pol_lab$caption}",
-                        "{ref_id}", .sep = " | ")) +
+         caption = glue::glue("{metadata_pol_lab$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
     glitr::si_style_nolines() +
     ggplot2::theme(strip.placement = "outside",
           axis.text.x = ggplot2::element_blank())

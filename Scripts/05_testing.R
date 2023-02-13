@@ -31,7 +31,12 @@ prep_undiagnosed <- function(cntry) {
                              "Number PLHIV"),
             country == cntry,
             year == max(year),
-            sex == "All") %>% 
+            sex == "All") 
+   
+   if(nrow(df_undiagnosed) == 0)
+     return(NULL)
+   
+   df_undiagnosed <- df_undiagnosed %>% 
      dplyr::select(year, country, indicator, age, sex, estimate) %>% 
      dplyr::rename(value = estimate) %>% 
      dplyr::mutate(pop = str_c(sex, age, sep = " ")) %>%
@@ -71,8 +76,8 @@ prep_undiagnosed <- function(cntry) {
        TRUE ~ "Case Finding")
      ) %>%
      dplyr::group_by(fiscal_year, funding_agency, mod_type, ...) %>%
-     dplyr::summarise(across(starts_with("qtr"), sum, na.rm = TRUE),
-                      .groups = "drop") %>%
+     dplyr::summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE)),
+                     .groups = "drop") %>% 
      gophr::reshape_msd() %>%
      dplyr::select(-period_type) %>%
      dplyr::group_by(period, ...) %>%
@@ -115,10 +120,11 @@ prep_undiagnosed <- function(cntry) {
  
  viz_modality_age <- function(df) {
    
-   if(is.null(df))
+   if(is.null(df) || nrow(df) == 0)
      return(print(paste("No data available.")))
    
    ref_id <- "cc4f6cf7"
+   vrsn <- 1 
    
    pd_brks <- unique(df$period) %>% str_replace(".*(2|3|4)$", "")
    
@@ -151,7 +157,7 @@ prep_undiagnosed <- function(cntry) {
      ggplot2::labs(x = NULL, y = NULL,
           title = glue::glue("{unique(df$funding_agency)}/{unique(df$country) %>% toupper} HTS_TST MODALITY SUMMARY BY AGE GROUP"),
           caption = glue::glue("Note: Undiagnosed PLHIV proxy calculated as the number of PLHIV minus PLHIV who know their status (UNAIDS 2022 Data)
-                               Source: UNAIDS 2022 Epidemiology Data & {metadata_msd$source} | USAID | Ref id:{ref_id}")) +
+                               Source: UNAIDS 2022 Epidemiology Data & {metadata_msd$source} | USAID | Ref id:{ref_id} v{vrsn}")) +
      ggplot2::theme(legend.position = "none") +
      ggplot2::scale_y_continuous(label = label_number(scale_cut = cut_short_scale())) +
      ggplot2::scale_x_discrete(labels = pd_brks) +

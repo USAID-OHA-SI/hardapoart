@@ -35,6 +35,9 @@ prep_achv_psnu <- function (df, cntry, agency){
                indicator %in% ind_sel,
                fiscal_year==metadata_msd$curr_fy) 
 
+    if(nrow(df_achv) == 0)
+      return(NULL)
+    
     ## Aggregating results & targets at the OU level for each indicator
     df_achv <- df_achv %>% 
                bind_rows(df_achv %>% mutate(psnuuid = "GLOBAL")) %>% 
@@ -77,12 +80,13 @@ prep_achv_psnu <- function (df, cntry, agency){
 
 viz_achv_psnu <- function (df){
 
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
     
     #Reference ID to be used for searching GitHub
     ref_id <- "d51dd3f9"
-
+    vrsn <- 1 
+    
     df %>% 
         ggplot(aes(achievement, indicator, color = achv_color)) +
         geom_blank() + # creates blank canvas +
@@ -107,7 +111,7 @@ viz_achv_psnu <- function (df){
              title = glue("{metadata_msd$curr_pd} {unique(df$funding_agency)}/{unique(df$country)} achievement, year to date") %>% toupper,
              subtitle = glue("Country achievement (large, labeled points) with PSNU achievement reference points <br>"),
              caption = glue("Target achievement capped at 110%
-                              Source: {metadata_msd$source} | USAID | Ref ID: {ref_id}")) +
+                              Source: {metadata_msd$source} | USAID | Ref ID: {ref_id} v{vrsn}")) +
         si_style_nolines() +
         theme(
           axis.text.x = element_blank(),

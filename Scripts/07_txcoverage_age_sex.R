@@ -21,7 +21,12 @@ prep_txcoverage_age_sex <- function(df, cntry) {
     dplyr::filter(country %in% cntry,
            fiscal_year == max(fiscal_year),
            indicator %in% ind_sel,
-           standardizeddisaggregate == "Age/Sex/HIVStatus") %>% 
+           standardizeddisaggregate == "Age/Sex/HIVStatus") 
+  
+  if(nrow(df_gap) == 0)
+    return(NULL)
+  
+  df_gap <- df_gap %>% 
     dplyr::count(country, indicator, ageasentered, sex, wt = targets, name = "value") %>% 
     tidyr::pivot_wider(names_from = indicator,
                 names_glue = "{tolower(indicator)}") %>% 
@@ -32,7 +37,7 @@ prep_txcoverage_age_sex <- function(df, cntry) {
     dplyr::mutate(plhiv_marker = dplyr::case_when(tx_curr_subnat > plhiv ~ plhiv),
            fill_color = ifelse(sex == "Male", glitr::genoa, glitr::moody_blue)) %>% 
     dplyr::group_by(country) %>% 
-    dplyr::mutate(ctry_name = glue::glue("{unique(df_gap$country)}<br>{label_number_si(accuracy = .1)(sum(tx_curr_subnat, na.rm = TRUE))}/{label_number_si(accuracy = .1)(sum(plhiv, na.rm = TRUE))}"),
+    dplyr::mutate(ctry_name = glue::glue("{unique(df_gap$country)}<br>{label_number(accuracy = .1, scale_cut = cut_short_scale())(sum(tx_curr_subnat, na.rm = TRUE))}/{label_number(accuracy = .1, scale_cut = cut_short_scale())(sum(plhiv, na.rm = TRUE))}"),
            lab_gap = scales::percent(cov_tx, 1)) %>% 
     dplyr::ungroup() %>% 
     dplyr::rename(cntry = country)
@@ -83,7 +88,7 @@ prep_txnew_age_sex <- function(df, cntry, agency) {
 
 viz_txcoverage_age_sex <- function(df) {
   
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   ref_id <- "725ebd70"
@@ -121,10 +126,11 @@ viz_txcoverage_age_sex <- function(df) {
 
 viz_txnew_age_sex <- function(df) {
   
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   ref_id <- "725ebd70"
+  vrsn <- 1 
   
   df %>% 
     dplyr::filter(ageasentered != "Unknown Age",
@@ -145,7 +151,7 @@ viz_txnew_age_sex <- function(df) {
     ggplot2::labs(x = NULL, y = NULL,
          title = glue::glue("{metadata_msd$curr_pd} {unique(df$funding_agency)}/{unique(df$cntry)} treatment initations") %>% toupper,
          subtitle = "TX_NEW by age and sex",
-         caption = glue::glue("{metadata_msd$caption} | USAID | Ref Id: {ref_id}")) +
+         caption = glue::glue("{metadata_msd$caption} | USAID | Ref Id: {ref_id} v{vrsn}")) +
     ggplot2::coord_cartesian(clip = "off") +
     ggplot2::theme(
       strip.text.y = element_blank(), #element_text(hjust = .5),

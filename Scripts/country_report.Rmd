@@ -1,45 +1,23 @@
 ---
 title: "country report"
-date: "`r format(Sys.time(), '%Y-%m-%d')`"
-format: pptx
-execute:
-  echo: FALSE
+date: "Generated: `r format(Sys.time(), '%Y-%m-%d')`"
+output: 
+  html_document:
+    fig_width: 10
+    fig_height: 5.625
+    dpi: 330
 params: 
   curr_pd: "FY22Q4"
   cntry: "Malawi"
   agency: "USAID"
-editor: 
-  markdown: 
-    wrap: 72
 ---
 
-```{r}
-# | label: setup
-# | include: FALSE
-# | cache: TRUE
 
-# DEPENDENCIES ------------------------------------------------------------
-  
-  library(tidyverse)
-  library(gagglr)
-  library(glue)
-  library(scales)
-  library(extrafont)
-  library(tidytext)
-  library(patchwork)
-  library(ggtext)
-  library(googlesheets4)
-  library(mindthegap)
-  library(ggrepel)
-  library(janitor)
-  library(sf)
-  library(selfdestructin5)
-  library(gt)
-  library(cascade) # Use dev version
-  library(ggpattern)
-  library(rcartocolor)
-  library(here)
-  library(assertr)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r functions, include=FALSE}
 
 # SOURCE LOCAL FUNCTIONS --------------------------------------------------
 
@@ -65,15 +43,6 @@ editor:
 
 ```
 
-```{r}
-# | label: load_data
-# | include: FALSE
-# | cache: TRUE
-
-  source(here("Scripts/91_setup.R"))
-
-```
-
 ## Purpose
 
 In advance of the PLLs and COP meetings starting the week of February
@@ -91,18 +60,17 @@ have questions, please contact your SIEI backstop for assistance.
 
 ## 1. Are there any major gaps in achievement as of `r params$curr_pd`?
 
-```{r}
-# | label: achievement
-  df_msd %>% glimpse()
-  df_msd %>%
-        prep_achv_psnu(params$cntry,params$agency) %>%
-        viz_achv_psnu()
+```{r achievement}
+
+df_msd %>%
+      prep_achv_psnu(params$cntry,params$agency) %>%
+      viz_achv_psnu()
+
 ```
 
 ## 2. Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
 
-```{r}
-# | label: epi_95s
+```{r epi_95s}
 
 viz_unaids_all(params$cntry)
 
@@ -110,8 +78,8 @@ viz_unaids_all(params$cntry)
 
 ## 3. What does HIV prevalence look like across sex / SNUs? by age/sex bands?
 
-```{r}
-#| label: prevalence
+```{r prevalence}
+
 df_natsubnat %>% 
   prep_hiv_prevalence(params$cntry) %>% 
   viz_hiv_prevalence()
@@ -120,8 +88,7 @@ df_natsubnat %>%
 
 ## 4. Is there a youth buldge of PLHIV we need to plan for?
 
-```{r}
-# | label: youth_bulge
+```{r youth_bulge}
 
 df_natsubnat %>% 
   prep_pop_pyramid(params$cntry) %>% 
@@ -131,8 +98,7 @@ df_natsubnat %>%
 
 ## 5. Does testing favor prevention or case finding and does this fit with where `r params$cntry` is in the epidemic?
 
-```{r}
-# | label: testing
+```{r testing}
 
  prep_modality_age(df_msd, params$cntry, "PEPFAR", trendscoarse) %>% 
    viz_modality_age()
@@ -141,8 +107,7 @@ df_natsubnat %>%
 
 ## 6. Are there any major issues with proxy linkage by geography/population that can be targeted?
 
-```{r}
-# | label: linkage
+```{r linkage}
 
 df_msd %>% 
   prep_linkage_psnu(params$cntry, params$agency) %>% 
@@ -152,18 +117,15 @@ df_msd %>%
 
 ## 7. Are new patients being added to the areas with the largest gaps in treatment coverage?
 
-```{r}
-# | label: tx_gap
+```{r tx_gap}
 
-viz_tx_all(params$cntry, params$agency) #wrapper function for tx_coverage and tx_new
-
+viz_tx_all(params$cntry, params$agency) 
 
 ```
 
 ## 8. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
 
-```{r}
-# | label: vlsc_pop
+```{r vlsc_pop}
 
 df_msd %>% 
   prep_viral_load(params$cntry, params$agency) %>% 
@@ -173,8 +135,7 @@ df_msd %>%
 
 ## 9. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
 
-```{r}
-# | label: vlsc_geo
+```{r vlsc_geo}
 
 df_msd %>% 
   prep_viral_load_psnu(params$cntry, params$agency) %>% 
@@ -184,8 +145,7 @@ df_msd %>%
 
 ## 10. Is PrEP uptake relatively consistent across demographics?
 
-```{r}
-# | label: prep
+```{r prep}
 
 df_msd %>%
     prep_prep_disagg(params$cntry, params$agency) %>%
@@ -194,18 +154,17 @@ df_msd %>%
 
 ## 11. Are there key gaps identified by the SID for the country to prioritize?
 
-```{r}
-# | label: sid
+```{r sid}
 
 df_sid %>% 
   prep_sid(params$cntry) %>% 
   viz_sid()
+
 ```
 
 ## 12. Have COP budgets been flatlining or changing in a similar manner across agencies?
 
-```{r}
-# | label: budget_share
+```{r budget_share}
 
 df_fsd %>% 
   prep_budget_trends(params$cntry) %>% 
@@ -215,8 +174,7 @@ df_fsd %>%
 
 ## 13. Does the country have the optimal mix of PEPFAR spending when thinking about sustainability?
 
-```{r}
-#| label: funding_distro
+```{r funding_distro}
 
 df_fsd %>% 
   prep_funding_distro(params$cntry, "USAID") %>% 
@@ -226,37 +184,38 @@ df_fsd %>%
 
 ## 14. What does the current staffing footprint look like in country? How do they align with sustainability and leveraging our assets?
 
-```{r}
-#| label: staffing_footprint
+```{r staffing_footprint}
 
 df_hrh %>% 
   prep_hrh_footprint(params$cntry, "USAID") %>% 
   viz_hrh_footprint()
+
 ```
 
 ## 15. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
 
-```{r}
-#| label: staffing_titles
+```{r staffing_titles}
 
 df_hrh %>% 
   prep_hrh_titles(params$cntry, "USAID") %>% 
   viz_hrh_titles()
+
 ```
 
 ## 16. What are the gaps in adopting structural laws and policies towards the UNAIDS 10-10-10 goals?
 
-```{r}
-#| label: 10-10-10 barriers
+```{r 10s_barriers}
 
 df_tens %>% 
   prep_10s_barriers(params$cntry) %>% 
   viz_10s_barriers()
+
 ```
+
 
 ## Calculations Used
 
-Calculations
+*Calculations*
 
 **Target Achievement** - Data Source: MSD - FY Cumulative Results / FY
 Targets
@@ -275,7 +234,7 @@ periods prior)
 
 **Viral Load Suppression** - Data Source: MSD - TX_PVLS_D / TX_PVLS_D
 
-Adjustments
+*Adjustments*
 
 **Modality Groupings** - Data Source: MSD - Prevention = PMTCT ANC, Post
 ANC1, VMMC - Case Finding = All other modalities
@@ -316,8 +275,7 @@ data source: 2021-09-17 - Original Location: HIV Policy Lab -
 https://www.hivpolicylab.org/data - Google Drive ID:
 1LadXX9g9D6MCp6M3WD27Js85YE8MHrf_ulJQmRVduCU
 
-**HRH_Structured_Datasets_Site_IM_FY21-22_not_redacted_20230118_PostClean_Adjusted
-(1)** - Date accessed: 2023-02-06 - Date on data source: 2023-01-31 -
+**HRH_Structured_Datasets_Site_IM_FY21-22_not_redacted_20230118_PostClean_Adjusted (1)** - Date accessed: 2023-02-06 - Date on data source: 2023-01-31 -
 Original Location: contact J.Roffenbender & sign terms of use - Google
 Drive ID: 1IhiXVtH0DUofXOXF0KL0ikzfdT0ROmBq
 

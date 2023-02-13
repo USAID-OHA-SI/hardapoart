@@ -26,6 +26,9 @@ prep_sid <- function(df, cntry){
                   sid_score_weighted = SIDweighted_answer) %>% 
     dplyr::filter(!is.na(sid_score_raw))
   
+  if(nrow(df_int) == 0)
+    return(NULL)
+  
   #clean sid area
   df_int <- df_int %>% 
     dplyr::mutate(sid_area = stringr::str_remove_all(sid_area, "^[:digit:]{1,2}\\. |:$") %>% stringr::str_trim())
@@ -63,10 +66,11 @@ prep_sid <- function(df, cntry){
 
 viz_sid <- function(df){
   
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   ref_id <- "79fe7ff5" 
+  vrsn <- 1 
   
   sel_cntry <- df %>% filter(!is.na(val_cntry)) %>% pull(country) %>% unique()
   
@@ -89,7 +93,7 @@ viz_sid <- function(df){
     ggplot2::labs(x = NULL, y = NULL,
                   title = glue("{sel_cntry} {unique(df$fiscal_year)} SID Scores") %>% toupper,
                   subtitle = glue("Large points represent {sel_cntry}'s score compared with other PEPFAR countries (smaller points) and PEPFAR average (line)"),
-         caption = glue("{metadata_sid$caption} | USAID | Ref id: {ref_id}")) +
+         caption = glue("{metadata_sid$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
     si_style_xgrid(facet_space = .5) +
     ggplot2::theme(axis.text.x = element_blank())
   

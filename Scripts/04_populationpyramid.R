@@ -27,6 +27,9 @@ prep_pop_pyramid <- function(df, cntry){
       country == cntry,
       indicator == "PLHIV")
   
+  if(nrow(df_filt) == 0)
+    return(NULL)
+  
   df_filt %>%
     assertr::verify(indicator == "PLHIV" &
                     fiscal_year == max(fiscal_year) & 
@@ -75,10 +78,11 @@ prep_pop_pyramid <- function(df, cntry){
   
   viz_pop_pyramid <- function(df){
     
-    if(is.null(df))
+    if(is.null(df) || nrow(df) == 0)
       return(print(paste("No data available.")))
     
     ref_id <- "aa8bd5b4"
+    vrsn <- 1 
     
     # pull in the number of PLHIV reported with no age or sex data available
     n_PLHIV_unknown <- df$n_unknown[1]
@@ -106,7 +110,7 @@ prep_pop_pyramid <- function(df, cntry){
                     x = NULL, y = NULL, fill = NULL,
                     caption = 
                       glue("Note: There are {n_PLHIV_unknown} PLHIV with unreported age and sex data.
-                  {metadata_natsubnat$caption} | USAID | Ref id: {ref_id}")) +
+                  {metadata_natsubnat$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
       glitr::si_style_yline() +
       ggplot2::theme(
         legend.position = "none",

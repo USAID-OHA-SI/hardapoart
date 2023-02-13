@@ -233,15 +233,17 @@ viz_unaids_all <- function(cntry) {
     viz_95s()
   
   if(is.null(v1) && is.null(v2)){
+    viz <- NULL
     print(paste("No data available."))
-  } else if(is.null(v1)){
-    v2
   } else if(is.null(v2)){
-    v1
+    viz <- v1
+  } else if(is.null(v1)){
+    viz <- v2
   } else {
-    v1 + v2 + plot_layout(widths = c(2, 1), heights = c(10))
+    viz <- v1 + v2 + plot_layout(widths = c(2, 1), heights = c(10))
   }
-
+  
+  return(viz)
   
 }
 

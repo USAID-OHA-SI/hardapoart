@@ -64,6 +64,7 @@ editor:
   err_text <- function(msg) stop(msg, call = FALSE)
 
 ```
+
 ```{r}
 # | label: load_data
 # | include: FALSE
@@ -92,6 +93,7 @@ have questions, please contact your SIEI backstop for assistance.
 
 ```{r}
 # | label: achievement
+  df_msd %>% glimpse()
   df_msd %>%
         prep_achv_psnu(params$cntry,params$agency) %>%
         viz_achv_psnu()

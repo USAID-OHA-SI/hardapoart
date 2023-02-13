@@ -18,6 +18,15 @@ reports <- tibble(
 )
 
 #create reports
+# reports %>%
+#   pwalk(quarto_render,
+#         input = here("Scripts","country_reports.Qmd"))
+
 reports %>%
-  pwalk(quarto_render,
-        input = here("Scripts","reports.Qmd"))
+  pwalk(function(output_file, params) {
+    quarto_render(
+      input = here("Scripts","country_reports.Qmd"),
+      output_file = output_file,
+      execute_params = params
+    )
+  })

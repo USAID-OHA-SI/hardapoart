@@ -181,6 +181,7 @@
     
     ref_id <- "8fb89847"
     ref_psnu <- "OU"
+    vrsn <- 1 
     
     if (all(na.omit(df$country) %in% df$operatingunit)) {
       df <- df %>% filter(psnu != "COUNTRY")
@@ -225,7 +226,7 @@
       labs(x = "", y = "", 
            title = glue::glue("{toupper(unique(df$country))} - {unique(df$fiscal_year)} HIV PREVALANCE"),
            subtitle = glue::glue("HIV Prevalence Gap between <span style='color:{genoa}'>Male</span> & <span style='color:{moody_blue}'>Female</span> by PSNU"),
-           caption = glue::glue("{metadata_natsubnat$caption} | USAID | Ref id: {ref_id}")) +
+           caption = glue::glue("{metadata_natsubnat$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
       si_style_nolines() +
       theme(plot.subtitle = element_markdown(),
             axis.text.y = element_markdown())

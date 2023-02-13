@@ -47,6 +47,7 @@ viz_prep_disagg <-function (df){
   
   # Reference ID to be used for searching GitHub
   ref_id <- "0530547f"
+  vrsn <- 1 
   
   pd_brks <- unique(df$period) %>% str_replace(".*(2|4)$", "")
 
@@ -69,7 +70,7 @@ viz_prep_disagg <-function (df){
     labs(x = NULL, y = NULL,
          title = glue("{toupper(unique(df$funding_agency))}/{toupper(unique(df$country))} PREP_NEW DISAGGREGATED BY AGE/SEX (<span style = 'color: #8980cb;'>FEMALE</span><span style = 'color: #287c6f;'>/MALE</span>) 
        AND <span style = 'color: #e07653;'>KEY POPULATIONS</span> <br />"),  
-         caption = glue("{metadata_msd$caption} | USAID | Ref ID: {ref_id}"))+
+         caption = glue("{metadata_msd$caption} | USAID | Ref ID: {ref_id} v{vrsn}"))+
     theme(plot.title = element_markdown())
 } 
 

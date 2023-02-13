@@ -82,7 +82,8 @@ viz_achv_psnu <- function (df){
     
     #Reference ID to be used for searching GitHub
     ref_id <- "d51dd3f9"
-
+    vrsn <- 1 
+    
     df %>% 
         ggplot(aes(achievement, indicator, color = achv_color)) +
         geom_blank() + # creates blank canvas +
@@ -107,7 +108,7 @@ viz_achv_psnu <- function (df){
              title = glue("{metadata_msd$curr_pd} {unique(df$funding_agency)}/{unique(df$country)} achievement, year to date") %>% toupper,
              subtitle = glue("Country achievement (large, labeled points) with PSNU achievement reference points <br>"),
              caption = glue("Target achievement capped at 110%
-                              Source: {metadata_msd$source} | USAID | Ref ID: {ref_id}")) +
+                              Source: {metadata_msd$source} | USAID | Ref ID: {ref_id} v{vrsn}")) +
         si_style_nolines() +
         theme(
           axis.text.x = element_blank(),

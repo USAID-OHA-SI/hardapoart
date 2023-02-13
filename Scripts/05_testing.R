@@ -119,6 +119,7 @@ prep_undiagnosed <- function(cntry) {
      return(print(paste("No data available.")))
    
    ref_id <- "cc4f6cf7"
+   vrsn <- 1 
    
    pd_brks <- unique(df$period) %>% str_replace(".*(2|3|4)$", "")
    
@@ -151,7 +152,7 @@ prep_undiagnosed <- function(cntry) {
      ggplot2::labs(x = NULL, y = NULL,
           title = glue::glue("{unique(df$funding_agency)}/{unique(df$country) %>% toupper} HTS_TST MODALITY SUMMARY BY AGE GROUP"),
           caption = glue::glue("Note: Undiagnosed PLHIV proxy calculated as the number of PLHIV minus PLHIV who know their status (UNAIDS 2022 Data)
-                               Source: UNAIDS 2022 Epidemiology Data & {metadata_msd$source} | USAID | Ref id:{ref_id}")) +
+                               Source: UNAIDS 2022 Epidemiology Data & {metadata_msd$source} | USAID | Ref id:{ref_id} v{vrsn}")) +
      ggplot2::theme(legend.position = "none") +
      ggplot2::scale_y_continuous(label = label_number(scale_cut = cut_short_scale())) +
      ggplot2::scale_x_discrete(labels = pd_brks) +

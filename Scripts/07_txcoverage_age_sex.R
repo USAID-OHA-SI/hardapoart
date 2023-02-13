@@ -125,6 +125,7 @@ viz_txnew_age_sex <- function(df) {
     return(print(paste("No data available.")))
   
   ref_id <- "725ebd70"
+  vrsn <- 1 
   
   df %>% 
     dplyr::filter(ageasentered != "Unknown Age",
@@ -145,7 +146,7 @@ viz_txnew_age_sex <- function(df) {
     ggplot2::labs(x = NULL, y = NULL,
          title = glue::glue("{metadata_msd$curr_pd} {unique(df$funding_agency)}/{unique(df$cntry)} treatment initations") %>% toupper,
          subtitle = "TX_NEW by age and sex",
-         caption = glue::glue("{metadata_msd$caption} | USAID | Ref Id: {ref_id}")) +
+         caption = glue::glue("{metadata_msd$caption} | USAID | Ref Id: {ref_id} v{vrsn}")) +
     ggplot2::coord_cartesian(clip = "off") +
     ggplot2::theme(
       strip.text.y = element_blank(), #element_text(hjust = .5),

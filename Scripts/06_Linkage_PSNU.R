@@ -88,6 +88,7 @@
       return(print(paste("No data available.")))
     
     ref_id <- "f6f26589"
+    vrsn <- 1 
     
     cap_note <- ifelse(nrow(df) > 21, "Note: Limited to the largest 20 PSNUs\n", "")
     
@@ -111,7 +112,7 @@
       si_style_nolines() +
       labs(subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)} {metadata_msd$curr_pd} Proxy Linkage"),
            x = NULL, y = NULL,
-           caption = glue("{cap_note}{metadata_msd$caption} | USAID | Ref id: {ref_id}")) +
+           caption = glue("{cap_note}{metadata_msd$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
       theme(legend.position = "none",
             axis.text.x = element_blank())
  

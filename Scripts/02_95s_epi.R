@@ -163,6 +163,7 @@ viz_95s <- function(df) {
     return(print(paste("No data available.")))
   
   ref_id <- "02e4fc9c" 
+  vrsn <- 1 
   
   viz_95 <- df %>% 
     ggplot(aes(indicator, pop,
@@ -197,7 +198,7 @@ viz_95s <- function(df) {
     #scale_y_reordered() +
     coord_cartesian(clip = "off") +
     labs(x = NULL, y = NULL,
-         caption =  glue("{metadata_unaids$caption} | USAID | Ref id: {ref_id}")) +
+         caption =  glue("{metadata_unaids$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
     si_style_nolines() +
     theme(axis.text.y = ggtext::element_markdown(),
           strip.text.y = ggplot2::element_blank(),

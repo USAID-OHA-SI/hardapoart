@@ -53,6 +53,7 @@ viz_budget_trends <- function(df){
     return(print(paste("No data available.")))
   
   ref_id <- "11a316e1"
+  vrsn <- 1 
   
   df %>% 
     ggplot2::ggplot(aes(fiscal_year, cop_budget_total, fill = funding_agency)) +
@@ -70,7 +71,7 @@ viz_budget_trends <- function(df){
     ggplot2::labs(x = NULL, y = NULL,
          subtitle = glue("{unique(df$country)}'s annual budget shifts by agency (fiscal year)"),
          caption = glue("Note: M&O and supply chain excluded
-                        {metadata_fsd$caption} | USAID | Ref id: {ref_id}")) +
+                        {metadata_fsd$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
     si_style_ygrid() +
     ggplot2::theme(legend.position = "none")
 }

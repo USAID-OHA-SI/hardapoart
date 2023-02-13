@@ -53,6 +53,7 @@ viz_funding_distro <- function(df){
     return(print(paste("No data available.")))
   
   ref_id <- "e258e5d3" #id for adorning to plots, making it easier to find on GH
+  vrsn <- 1 
   
   df %>% 
     ggplot2::ggplot(aes(fiscal_year, exp_amt, group = funding_type, fill = funding_type)) +
@@ -68,7 +69,7 @@ viz_funding_distro <- function(df){
     ggplot2::labs(x = NULL, y = NULL, fill = NA,
          subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)}'s breakdown of annual expenditures by funding type"),
          caption = glue("Note: M&O and supply chain excluded
-                        {metadata_fsd$caption} | USAID | Ref id: {ref_id}")) +
+                        {metadata_fsd$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
     glitr::si_style_ygrid() +
     ggplot2::theme(legend.position = "none")
   

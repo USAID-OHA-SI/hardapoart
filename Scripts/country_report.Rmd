@@ -7,7 +7,7 @@ output:
     fig_height: 5.625
     dpi: 330
 params: 
-  curr_pd: "FY22Q4"
+  curr_pd: "FY23Q1"
   cntry: "Malawi"
   agency: "USAID"
 ---
@@ -35,8 +35,8 @@ knitr::opts_chunk$set(echo = FALSE)
   source(here("Scripts/12_budget-trends_agency.R"))
   source(here("Scripts/13_funding-distro_funding-flavors.R"))
   source(here("Scripts/14_hrh-footprint-various.R"))
-  source(here("Scripts/15_10s_barriers.R"))
-  source(here("Scripts/16_hrh-titles.R"))
+  source(here("Scripts/15_hrh-titles.R"))
+  source(here("Scripts/16_10s_barriers.R"))
 
 # Helper function for assertr::verify() to show more descriptive error messages
   err_text <- function(msg) stop(msg, call = FALSE)
@@ -76,7 +76,7 @@ viz_unaids_all(params$cntry)
 
 ```
 
-### 3. What does HIV prevalence look like across sex / SNUs? by age/sex bands?
+### 3. What does HIV prevalence look like across sex / SNUs?
 
 ```{r prevalence}
 

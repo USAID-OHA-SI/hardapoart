@@ -29,7 +29,7 @@
                         standardizeddisaggregate == "Total Numerator" &
                         funding_agency == agency &
                         country == cntry, 
-                      error_fun = err_text(glue::glue("Error: {.df} has not been filtered correctly. 
+                      error_fun = err_text(glue::glue("Error: {df} has not been filtered correctly. 
                                                Please check the first filter in prep_psnu_linkage().")), 
                       description = glue::glue("Verify that the filters worked")) 
     
@@ -51,8 +51,8 @@
     #verify reshape
     df_reshaped %>% 
       assertr::verify("period" %in% names(df_reshaped), 
-                      error_fun = err_text(glue::glue("Error: {.df} has not been reshaped correctly and the period column does not exist. 
-                                               Please check reshape_msd in prep_psnu_linkage().")), 
+                      error_fun = err_text(glue::glue("Error: {df} has not been reshaped correctly and the period column does not exist. 
+                                               Please check reshape_msd in prep_linkage_psnu().")), 
                       description = glue::glue("Verify that reshape_md worked"))
     
     #fill targets and remove 
@@ -65,8 +65,8 @@
     #verify filter to last period
     df_reshaped %>% 
       assertr::verify(period == metadata_msd$curr_pd & nchar(period) != 4, 
-                      error_fun = err_text(glue::glue("Error: df_linkage_psnu has not been filtered correctly. 
-                                               Please check the last filter in prep_psnu_linkage().")), 
+                      error_fun = err_text(glue::glue("Error: df_reshaped has not been filtered correctly. 
+                                               Please check the last filter in prep_linkage_psnu().")), 
                       description = glue::glue("Verify that last time period filtering worked")) 
     
     #create proxy linkage

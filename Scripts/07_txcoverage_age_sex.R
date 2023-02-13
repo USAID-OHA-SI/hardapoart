@@ -32,7 +32,7 @@ prep_txcoverage_age_sex <- function(df, cntry) {
     dplyr::mutate(plhiv_marker = dplyr::case_when(tx_curr_subnat > plhiv ~ plhiv),
            fill_color = ifelse(sex == "Male", glitr::genoa, glitr::moody_blue)) %>% 
     dplyr::group_by(country) %>% 
-    dplyr::mutate(ctry_name = glue::glue("{unique(df_gap$country)}<br>{label_number_si(accuracy = .1)(sum(tx_curr_subnat, na.rm = TRUE))}/{label_number_si(accuracy = .1)(sum(plhiv, na.rm = TRUE))}"),
+    dplyr::mutate(ctry_name = glue::glue("{unique(df_gap$country)}<br>{label_number(accuracy = .1, scale_cutcut_short_scale())(sum(tx_curr_subnat, na.rm = TRUE))}/{label_number(accuracy = .1, scale_cutcut_short_scale())(sum(plhiv, na.rm = TRUE))}"),
            lab_gap = scales::percent(cov_tx, 1)) %>% 
     dplyr::ungroup() %>% 
     dplyr::rename(cntry = country)

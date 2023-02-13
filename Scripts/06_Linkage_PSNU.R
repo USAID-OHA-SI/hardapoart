@@ -90,7 +90,7 @@
     ref_id <- "f6f26589"
     vrsn <- 1 
     
-    cap_note <- ifelse(nrow(df) > 21, "Note: Limited to the largest 20 PSNUs\n", "")
+    cap_note <- ifelse(nrow(df) > 21, "Note: Limited to the largest 20 HTS_TST_POS PSNUs\n", "")
     
     #limit to 21 bars (overall + 20 psnus)
       df <- df %>% 
@@ -118,3 +118,4 @@
  
   
   }
+  

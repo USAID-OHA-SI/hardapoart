@@ -83,6 +83,10 @@
       dplyr::summarise(value = sum(targets, na.rm = T), .groups = "drop") %>% 
       gophr::clean_psnu()
     
+    #clean exit if no data
+    if(nrow(df_pops) == 0)
+      return(NULL)
+    
     ## Add OU/Country Summary
     
     df_pops <- df_pops %>% 
@@ -174,7 +178,7 @@
   viz_hiv_prevalence <- function(df,
                                  save = F) {
     
-    if(is.null(df))
+    if(is.null(df) || nrow(df) == 0)
       return(print(paste("No data available.")))
     
     # OU/Country Reference line

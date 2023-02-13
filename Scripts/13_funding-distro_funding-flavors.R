@@ -19,6 +19,9 @@ prep_funding_distro <- function(df, cntry, agency){
     dplyr::filter(country == cntry,
                   expenditure_amt != 0)
   
+  if(nrow(df_int) == 0)
+    return(NULL)
+  
   #assign funding type
   df_int <- gophr::apply_funding_type(df_int) 
   

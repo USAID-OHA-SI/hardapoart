@@ -26,6 +26,9 @@ prep_sid <- function(df, cntry){
                   sid_score_weighted = SIDweighted_answer) %>% 
     dplyr::filter(!is.na(sid_score_raw))
   
+  if(nrow(df_int) == 0)
+    return(NULL)
+  
   #clean sid area
   df_int <- df_int %>% 
     dplyr::mutate(sid_area = stringr::str_remove_all(sid_area, "^[:digit:]{1,2}\\. |:$") %>% stringr::str_trim())
@@ -63,7 +66,7 @@ prep_sid <- function(df, cntry){
 
 viz_sid <- function(df){
   
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   ref_id <- "79fe7ff5" 

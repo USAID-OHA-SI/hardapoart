@@ -69,7 +69,7 @@ prep_10s_barriers <- function(df, cntry) {
 viz_10s_barriers <- function(df) {
   
 
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   ref_id <- "1e748b9a" #for plot identification

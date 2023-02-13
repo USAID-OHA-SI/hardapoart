@@ -35,6 +35,9 @@ prep_achv_psnu <- function (df, cntry, agency){
                indicator %in% ind_sel,
                fiscal_year==metadata_msd$curr_fy) 
 
+    if(nrow(df_achv) == 0)
+      return(NULL)
+    
     ## Aggregating results & targets at the OU level for each indicator
     df_achv <- df_achv %>% 
                bind_rows(df_achv %>% mutate(psnuuid = "GLOBAL")) %>% 
@@ -77,7 +80,7 @@ prep_achv_psnu <- function (df, cntry, agency){
 
 viz_achv_psnu <- function (df){
 
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
     
     #Reference ID to be used for searching GitHub

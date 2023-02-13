@@ -17,7 +17,12 @@ prep_prep_disagg <- function (df, cntry, agency){
     filter(indicator == "PrEP_NEW", 
            standardizeddisaggregate %in% c("Age/Sex", "KeyPopAbr"),
            country==cntry,
-           funding_agency==agency) %>% 
+           funding_agency==agency)
+  
+  if(nrow(df_prep) == 0)
+    return(NULL)
+  
+  df_prep <- df_prep %>% 
     # Combine age groups above 35+, rename People in Prisons
     mutate(ageasentered = case_when(ageasentered %in% c("35-39","40-44","45-49","50+") ~ "35+", 
                                     TRUE ~ ageasentered),
@@ -42,7 +47,7 @@ prep_prep_disagg <- function (df, cntry, agency){
 
 viz_prep_disagg <-function (df){
   
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   # Reference ID to be used for searching GitHub

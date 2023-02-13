@@ -21,7 +21,12 @@ prep_txcoverage_age_sex <- function(df, cntry) {
     dplyr::filter(country %in% cntry,
            fiscal_year == max(fiscal_year),
            indicator %in% ind_sel,
-           standardizeddisaggregate == "Age/Sex/HIVStatus") %>% 
+           standardizeddisaggregate == "Age/Sex/HIVStatus") 
+  
+  if(nrow(df_gap) == 0)
+    return(NULL)
+  
+  df_gap <- df_gap %>% 
     dplyr::count(country, indicator, ageasentered, sex, wt = targets, name = "value") %>% 
     tidyr::pivot_wider(names_from = indicator,
                 names_glue = "{tolower(indicator)}") %>% 
@@ -83,7 +88,7 @@ prep_txnew_age_sex <- function(df, cntry, agency) {
 
 viz_txcoverage_age_sex <- function(df) {
   
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   ref_id <- "725ebd70"
@@ -121,7 +126,7 @@ viz_txcoverage_age_sex <- function(df) {
 
 viz_txnew_age_sex <- function(df) {
   
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   ref_id <- "725ebd70"

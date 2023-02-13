@@ -27,6 +27,9 @@ prep_pop_pyramid <- function(df, cntry){
       country == cntry,
       indicator == "PLHIV")
   
+  if(nrow(df_filt) == 0)
+    return(NULL)
+  
   df_filt %>%
     assertr::verify(indicator == "PLHIV" &
                     fiscal_year == max(fiscal_year) & 
@@ -75,7 +78,7 @@ prep_pop_pyramid <- function(df, cntry){
   
   viz_pop_pyramid <- function(df){
     
-    if(is.null(df))
+    if(is.null(df) || nrow(df) == 0)
       return(print(paste("No data available.")))
     
     ref_id <- "aa8bd5b4"

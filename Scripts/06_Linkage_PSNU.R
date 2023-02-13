@@ -33,6 +33,9 @@
                                                Please check the first filter in prep_psnu_linkage().")), 
                       description = glue::glue("Verify that the filters worked")) 
     
+    if(nrow(df_filtered) == 0)
+      return(NULL)
+    
     #bind in duplicative rows to serve as overall total for plot
     df_filtered <- df_filtered %>% 
       dplyr::bind_rows(df_filtered %>% 
@@ -68,13 +71,20 @@
     
     #create proxy linkage
     df_link <- df_reshaped %>%
-      tidyr::pivot_wider(names_from = indicator, values_from = results) %>% 
-      dplyr::mutate(linkage = TX_NEW / HTS_TST_POS)
+      tidyr::pivot_wider(names_from = indicator, values_from = results) 
+    
+    if("TX_NEW" %ni% names(df_link) || "HTS_TST_POS" %ni% names(df_link))
+      return(NULL)
+      
+    df_link <- df_link %>% 
+      dplyr::mutate(linkage = TX_NEW / HTS_TST_POS) %>% 
+      filter(!is.nan(linkage), !is.na(linkage))
     
     
     #adjust color for plot
     df_link <- df_link %>% 
       dplyr::mutate(fill_color = ifelse(psnu == "OVERALL", glitr::scooter, glitr::scooter_med))
+    
     return(df_link)
     
   }
@@ -84,7 +94,7 @@
   viz_linkage_psnu <- function(df){
     
     
-    if(is.null(df))
+    if(is.null(df) || nrow(df) == 0)
       return(print(paste("No data available.")))
     
     ref_id <- "f6f26589"
@@ -97,7 +107,7 @@
         dplyr::slice_max(order_by = HTS_TST_POS, n = 21)
     
     df %>%
-      ggplot(aes(linkage, forcats::fct_reorder(psnu, linkage), fill = fill_color)) +
+      ggplot(aes(linkage, forcats::fct_reorder(psnu, linkage, .na_rm = TRUE), fill = fill_color)) +
       geom_vline(aes(xintercept = .95), linetype = "dashed", color = glitr::matterhorn) +
       geom_col() +
       geom_text(aes(label = percent(linkage, 1)), 

@@ -80,6 +80,9 @@
                                         "Age/Sex/Indication/HIVStatus")
       ) 
     
+    if(nrow(df_tx) == 0)
+      return(NULL)
+             
     # Summarise results by age - bands
     df_tx <- df_tx %>%
       select(-cumulative, -targets) %>% 
@@ -137,7 +140,7 @@
   #' 
   viz_viral_load <- function(df, save = F) {
     
-    if(is.null(df))
+    if(is.null(df) || nrow(df) == 0)
       return(print(paste("No data available.")))
     
     ref_id <- "29675452"

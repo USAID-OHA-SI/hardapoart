@@ -42,7 +42,7 @@
 
  viz_hrh_titles <- function(df){
 
-   if(is.null(df))
+   if(is.null(df) || nrow(df) == 0)
      return(print(paste("No data available.")))
 
    ref_id <- "9831a46a" #id for adorning to plots, making it easier to find on GH

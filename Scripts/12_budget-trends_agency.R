@@ -49,7 +49,7 @@ prep_budget_trends <- function(df, cntry){
 
 viz_budget_trends <- function(df){
   
-  if(is.null(df))
+  if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   ref_id <- "11a316e1"

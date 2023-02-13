@@ -117,8 +117,8 @@ prep_hrh_footprint <- function(df, cntry, agency){
 # VIZ ---------------------------------------------------------------------
 
 viz_hrh_footprint <- function(df){
-  
-  if(is.null(df))
+ 
+   if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
   
   ref_id <- "d98b536f" #id for adorning to plots, making it easier to find on GH

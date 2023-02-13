@@ -23,10 +23,20 @@ prep_epi_control <- function(df, cntry) {
     dplyr::filter(indicator %in% c("Number Total Deaths HIV Pop", "Number New HIV Infections"),
            age == "all",
            sex == "all",
-           country == cntry) %>% 
+           country == cntry) 
+  
+  if(nrow(epi_viz) == 0)
+    return(NULL)
+  
+  epi_viz <- epi_viz %>% 
     dplyr::select(c(country, year, indicator, estimate)) %>% 
     tidyr::spread(indicator, estimate) %>% 
-    janitor::clean_names()  %>% 
+    janitor::clean_names()  
+  
+  if("number_new_hiv_infections" %ni% names(epi_viz) || "number_total_deaths_hiv_pop" %ni% names(epi_viz))
+    return(NULL)
+  
+  epi_viz <- epi_viz %>% 
     dplyr::mutate(epi_gap = number_new_hiv_infections - number_total_deaths_hiv_pop,
            max_plot_pt = max(number_new_hiv_infections)) %>% 
     dplyr::rename(cntry = country)
@@ -50,7 +60,12 @@ prep_95s <- function(df, cntry) {
                             "Percent on ART of PLHIV",
                             "Percent VLS of PLHIV"),
            country == cntry,
-    ) %>% 
+    ) 
+  
+  if(nrow(df_tt_lim) == 0 || sum(df_tt_lim$estimate, na.rm = TRUE) == 0)
+    return(NULL)
+  
+  df_tt_lim <- df_tt_lim %>% 
     dplyr::select(year, country, indicator, age, sex, estimate) %>% 
     dplyr::rename(value = estimate) %>% 
     dplyr::mutate(pop = stringr::str_c(sex, age, sep = " ")) %>%
@@ -90,8 +105,8 @@ prep_95s <- function(df, cntry) {
 # plot epi curves
 viz_epi_control <- function(df) {
   
-  if(is.null(df))
-    return(print(paste("No data available.")))
+  if(is.null(df) || nrow(df) == 0)
+    return(NULL)
   
   clean_number <- function(x, digits = 0){
     dplyr::case_when(x >= 1e9 ~ glue("{round(x/1e9, digits)}B"),
@@ -159,8 +174,8 @@ viz_epi_control <- function(df) {
 #plot 95s progress
 viz_95s <- function(df) {
   
-  if(is.null(df))
-    return(print(paste("No data available.")))
+  if(is.null(df) || nrow(df) == 0)
+    return(NULL)
   
   ref_id <- "02e4fc9c" 
   vrsn <- 1 
@@ -217,9 +232,16 @@ viz_unaids_all <- function(cntry) {
   v2 <- prep_95s(df_unaids_tt, cntry) %>% 
     viz_95s()
   
-  viz_final <- v1 + v2 + plot_layout(widths = c(2, 1), heights = c(10))
-  
-  return(viz_final)
+  if(is.null(v1) && is.null(v2)){
+    print(paste("No data available."))
+  } else if(!is.null(v1)){
+    v1
+  } else if(!is.null(v2)){
+    v2
+  } else {
+    v1 + v2 + plot_layout(widths = c(2, 1), heights = c(10))
+  }
+
   
 }
 

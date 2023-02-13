@@ -31,7 +31,12 @@ prep_undiagnosed <- function(cntry) {
                              "Number PLHIV"),
             country == cntry,
             year == max(year),
-            sex == "All") %>% 
+            sex == "All") 
+   
+   if(nrow(df_undiagnosed) == 0)
+     return(NULL)
+   
+   df_undiagnosed <- df_undiagnosed %>% 
      dplyr::select(year, country, indicator, age, sex, estimate) %>% 
      dplyr::rename(value = estimate) %>% 
      dplyr::mutate(pop = str_c(sex, age, sep = " ")) %>%
@@ -115,7 +120,7 @@ prep_undiagnosed <- function(cntry) {
  
  viz_modality_age <- function(df) {
    
-   if(is.null(df))
+   if(is.null(df) || nrow(df) == 0)
      return(print(paste("No data available.")))
    
    ref_id <- "cc4f6cf7"

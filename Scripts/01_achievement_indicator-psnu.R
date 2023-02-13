@@ -15,7 +15,7 @@ prep_achv_psnu <- function (df, cntry, agency){
     #select indicators
     ind_sel <- c("HTS_TST","HTS_TST_POS", "TX_NEW", "TX_CURR", 
                  "TX_PVLS_D", "TX_PVLS", "PrEP_NEW", "VMMC_CIRC", 
-                 "OVC_SERV", "KP_PREV", "PMTCT_EID", "TB_PREV")
+                 "PMTCT_EID", "OVC_SERV", "KP_PREV", "TB_PREV")
 
     semi_annual <- c("OVC_SERV", "KP_PREV", "TB_PREV")
     

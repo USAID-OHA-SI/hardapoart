@@ -13,7 +13,8 @@ vct_cntry[1:2]
 
 #output files
 reports <- tibble(
-  output_file = glue(here("markdown","{metadata$curr_pd}_{vct_cntry}_cop-support-viz_oha-siei.pptx")),
+  #output_file = glue(here("markdown","{metadata$curr_pd}_{vct_cntry}_cop-support-viz_oha-siei.pptx")),
+  output_file = glue("{metadata$curr_pd}_{vct_cntry}_cop-support-viz_oha-siei.pptx"),
   params = map(vct_cntry, ~list(curr_pd = metadata$curr_pd, cntry = ., agency = "PEPFAR"))
 )
 
@@ -23,9 +24,11 @@ reports <- tibble(
 #         input = here("Scripts","country_reports.Qmd"))
 
 reports %>%
+  filter(str_detect(output_file, "Nigeria")) %>% 
   pwalk(function(output_file, params) {
     quarto_render(
-      input = here("Scripts","country_reports.Qmd"),
+      #input = here("Scripts", "country_report.qmd"),
+      input = here("hardapoart.qmd"),
       output_file = output_file,
       execute_params = params
     )

@@ -210,9 +210,9 @@
       geom_hline(yintercept = seq(from = 0, 
                                   to = gap_max, 
                                   by = gap_step),
-                 size = .8, linetype = "dashed", color = grey20k) +
+                 linewidth = .8, linetype = "dashed", color = grey20k) +
       geom_vline(xintercept = ref_psnu,
-                 size = .8, linetype = "dashed", color = usaid_darkgrey) +
+                 linewidth = .8, linetype = "dashed", color = usaid_darkgrey) +
       geom_segment(aes(xend = reorder(psnu, female),
                        y = female, 
                        yend = male,

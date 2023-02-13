@@ -137,13 +137,13 @@ prep_undiagnosed <- function(cntry) {
                aes(y = pd_tot, label = paste("Total\nTests")), color = glitr::trolley_grey,
                size = 9 / .pt, family = "Source Sans Pro", vjust = 1.2, na.rm = TRUE) +
      ggplot2::geom_errorbar(aes(ymin = pd_25, ymax = pd_25), 
-                   size = 0.25, color = "white", 
+                   linewidth = 0.25, color = "white", 
                    linetype = "dotted") +
      ggplot2::geom_errorbar(aes(ymin = pd_50, ymax = pd_50), 
-                   size = 0.25, color = "white", 
+                   linewidth = 0.25, color = "white", 
                    linetype = "dotted") +
      geom_errorbar(aes(ymin = pd_75, ymax = pd_75), 
-                   size = 0.25, color = "white", 
+                   linewidth = 0.25, color = "white", 
                    linetype = "dotted") +
      ggplot2::scale_fill_identity() +
      ggplot2::facet_grid(mod_order ~ forcats::fct_reorder(age_facet, value, na.rm = TRUE, .desc = TRUE), scales = "free_y") +

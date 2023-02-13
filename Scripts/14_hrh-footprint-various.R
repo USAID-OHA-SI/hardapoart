@@ -67,7 +67,7 @@ prep_hrh_footprint <- function(df, cntry, agency){
                                    \(x) sum(x, na.rm = TRUE)),
                      .groups = "drop") %>% 
     dplyr::mutate(cat = "ER Category",
-                  er_category = dplyr::recode(er_category,  "Program Management" = "PM"),
+                  er_category = dplyr::recode(er_category,  "Program Management" = "PM."),
                   subcat = er_category,
                   .before = 1) %>% 
     dplyr::select(-er_category)
@@ -86,7 +86,7 @@ prep_hrh_footprint <- function(df, cntry, agency){
   #order categories (and number for color mapping)
   df_viz <- df_viz %>% 
     dplyr::mutate(cat = fct_inorder(cat) %>% fct_rev) %>% 
-    dplyr::arrange(cat, individual_count) %>% 
+    dplyr::arrange(cat, annual_fte) %>% 
     dplyr::mutate(subcat = forcats::fct_inorder(subcat)) %>% 
     dplyr::group_by(cat) %>% 
     dplyr::mutate(row = row_number())

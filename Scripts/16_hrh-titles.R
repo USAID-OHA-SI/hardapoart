@@ -19,6 +19,9 @@
       filter(country == cntry,
              funding_agency == agency)
     
+    if(nrow(df) == 0)
+      return(NULL)
+    
     #top staff by title
     df <- df %>%
       dplyr::group_by(country, funding_agency, fiscal_year, employment_title) %>%

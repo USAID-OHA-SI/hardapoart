@@ -8,7 +8,7 @@ output:
     dpi: 330
 params: 
   curr_pd: "FY22Q4"
-  cntry: "Malawi"
+  cntry: "Brazil"
   agency: "USAID"
 ---
 

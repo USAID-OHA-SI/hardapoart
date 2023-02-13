@@ -11,13 +11,16 @@
   
 prep_hrh_footprint <- function(df, cntry, agency){
  
-  if(cntry %ni% unique(df$country) | agency %ni% unique(df$funding_agency))
+  if(cntry %ni% unique(df$country) || agency %ni% unique(df$funding_agency))
     return(NULL)
   
   #limit to just the country/agency selected
   df <- df %>% 
     filter(country == cntry,
            funding_agency == agency)
+  
+  if(nrow(df) == 0)
+    return(NULL)
   
   #assign funding type
   df_int <- gophr::apply_funding_type(df) 

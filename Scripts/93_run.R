@@ -24,7 +24,7 @@ library(rmarkdown)
 # GLOBAL VARIABLES --------------------------------------------------------
 
   # vct_cntry <- glamr::pepfar_country_list$country
-  vct_cntry <- "Malawi"
+  vct_cntry <- pepfar_country_list%>% filter(operatingunit == "Western Hemisphere Region") %>% pull(country)
   
 # GENERATE REPORTS --------------------------------------------------------
 
@@ -34,7 +34,7 @@ library(rmarkdown)
   #output files
   reports <- tibble(
     output_file = glue(here("markdown","{metadata_msd$curr_pd}_{vct_cntry_clean}_cop-support-viz_oha-siei.html")),
-    params = map(vct_cntry, ~list(cntry = ., agency = "PEPFAR"))
+    params = map(vct_cntry, ~list(curr_pd = metadata_msd$curr_pd, cntry = ., agency = "PEPFAR"))
   )
 
     

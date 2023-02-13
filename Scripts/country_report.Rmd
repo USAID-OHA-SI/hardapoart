@@ -50,7 +50,7 @@ In advance of the PLLs and COP meetings starting the week of February
 may help as a launching point to these discussions and help hasten
 further exploration. The visuals provided here aim to provide a first
 step in identifying gaps and a baseline as they relate to COP priorities
-informed by Dr. Nkengasong's 5x3 pillars.
+informed by Ambassador Nkengasong's 5x3 pillars.
 
 These supporting visuals are intended to help create and inform initial
 discussion and prompt further data exploration. We have provided notes,
@@ -117,7 +117,7 @@ df_msd %>%
 
 ## 7. Are new patients being added to the areas with the largest gaps in treatment coverage?
 
-```{r tx_gap}
+```{r tx_gap, warning=FALSE}
 
 viz_tx_all(params$cntry, params$agency) 
 

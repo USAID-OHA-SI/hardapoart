@@ -18,14 +18,11 @@ library(rmarkdown)
 
 # SETUP DATA --------------------------------------------------------------
 
-source(here("Scripts/91_setup.R"))
-
+# source(here("Scripts/91_setup.R"))
+#run manually metadata causing issues with rmd - cannot change value of locked binding for 'metadata'
 
 # GLOBAL VARIABLES --------------------------------------------------------
 
-  # get_metadata()
-  curr_pd <- "FY23Q1"
-  
   # vct_cntry <- glamr::pepfar_country_list$country
   vct_cntry <- "Malawi"
   
@@ -36,7 +33,7 @@ source(here("Scripts/91_setup.R"))
   
   #output files
   reports <- tibble(
-    output_file = glue(here("markdown","{curr_pd}_{vct_cntry_clean}_cop-support-viz_oha-siei.html")),
+    output_file = glue(here("markdown","{metadata_msd$curr_pd}_{vct_cntry_clean}_cop-support-viz_oha-siei.html")),
     params = map(vct_cntry, ~list(cntry = ., agency = "PEPFAR"))
   )
 
@@ -44,4 +41,4 @@ source(here("Scripts/91_setup.R"))
   #create reports
   reports %>%
     pwalk(render,
-          input = here("Scripts","country_reports.Rmd"))
+          input = here("Scripts","country_report.Rmd"))

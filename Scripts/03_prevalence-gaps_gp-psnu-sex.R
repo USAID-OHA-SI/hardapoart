@@ -230,16 +230,16 @@
 
   # Test Viz
   
-  pepfar_country_list %>% 
-    pull(country) %>% 
-    #first() %>% 
-    #nth(26) %>% 
-    #nth(28) %>% 
-    nth(46) %>% 
-    prep_hiv_prevalence(df = df_natsubnat,
-                        cntry = .,
-                        add_style = T) %>% 
-    viz_hiv_prevalence()
+  # pepfar_country_list %>% 
+  #   pull(country) %>% 
+  #   #first() %>% 
+  #   #nth(26) %>% 
+  #   #nth(28) %>% 
+  #   nth(46) %>% 
+  #   prep_hiv_prevalence(df = df_natsubnat,
+  #                       cntry = .,
+  #                       add_style = T) %>% 
+  #   viz_hiv_prevalence()
 
   
 # EXPORT ----

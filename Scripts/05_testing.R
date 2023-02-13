@@ -71,8 +71,8 @@ prep_undiagnosed <- function(cntry) {
        TRUE ~ "Case Finding")
      ) %>%
      dplyr::group_by(fiscal_year, funding_agency, mod_type, ...) %>%
-     dplyr::summarise(across(starts_with("qtr"),  \(x) sum(.x, na.rm = TRUE)),
-                      .groups = "drop") %>%
+     dplyr::summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE)),
+                     .groups = "drop") %>% 
      gophr::reshape_msd() %>%
      dplyr::select(-period_type) %>%
      dplyr::group_by(period, ...) %>%

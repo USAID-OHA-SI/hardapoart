@@ -24,7 +24,16 @@ library(rmarkdown)
 # GLOBAL VARIABLES --------------------------------------------------------
 
   # vct_cntry <- glamr::pepfar_country_list$country
-  vct_cntry <- pepfar_country_list%>% filter(operatingunit == "Western Hemisphere Region") %>% pull(country)
+  vct_cntry <- pepfar_country_list %>% 
+    filter(operatingunit %in% c("Nigeria", 
+                                "South Sudan",
+                                "Tanzania",
+                                "Mozambique",
+                                "Ethiopia",
+                                "South Africa",
+                                "Western Hemisphere Region")) %>%
+    pull(country)
+  
   
 # GENERATE REPORTS --------------------------------------------------------
 

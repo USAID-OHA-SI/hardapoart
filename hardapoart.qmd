@@ -74,14 +74,14 @@ editor:
 
 ```
 
-## Purpose
+### Purpose
 
 In advance of the PLLs and COP meetings starting the week of February
 13, the OHA/SIEI division wanted to provide some useful data points that
 may help as a launching point to these discussions and help hasten
 further exploration. The visuals provided here aim to provide a first
 step in identifying gaps and a baseline as they relate to COP priorities
-informed by Dr. Nkengasong's 5x3 pillars.
+informed by Ambassador Nkengasong's 5x3 pillars.
 
 These supporting visuals are intended to help create and inform initial
 discussion and prompt further data exploration. We have provided notes,
@@ -89,7 +89,7 @@ data sources, and calculations for anything included here to make this a
 jumping off point to delve into any software and explore further. If you
 have questions, please contact your SIEI backstop for assistance.
 
-## 1. Are there any major gaps in achievement as of `r params$curr_pd`?
+### 1. Are there any major gaps in achievement as of `r params$curr_pd`?
 
 ```{r}
 # | label: achievement
@@ -99,7 +99,7 @@ have questions, please contact your SIEI backstop for assistance.
     viz_achv_psnu()
 ```
 
-## 2. Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
+### 2. Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
 
 ```{r}
 # | label: epi_95s
@@ -108,7 +108,7 @@ have questions, please contact your SIEI backstop for assistance.
 
 ```
 
-## 3. What does HIV prevalence look like across sex / SNUs? by age/sex bands?
+### 3. What does HIV prevalence look like across sex / SNUs? by age/sex bands?
 
 ```{r}
 #| label: prevalence
@@ -118,7 +118,7 @@ df_natsubnat %>%
   
 ```
 
-## 4. Is there a youth buldge of PLHIV we need to plan for?
+### 4. Is there a youth buldge of PLHIV we need to plan for?
 
 ```{r}
 # | label: youth_bulge
@@ -129,7 +129,7 @@ df_natsubnat %>%
 
 ```
 
-## 5. Does testing favor prevention or case finding and does this fit with where `params$cntry` is in the epidemic?
+### 5. Does testing favor prevention or case finding and does this fit with where `r `params$cntry` is in the epidemic?
 
 ```{r}
 # | label: testing
@@ -139,7 +139,7 @@ df_natsubnat %>%
 
 ```
 
-## 6. Are there any major issues with proxy linkage by geography/population that can be targeted?
+### 6. Are there any major issues with proxy linkage by geography/population that can be targeted?
 
 ```{r}
 # | label: linkage
@@ -150,187 +150,213 @@ df_msd %>%
 
 ```
 
-## 7. Are new patients being added to the areas with the largest gaps in treatment coverage?
+### 7. Are new patients being added to the areas with the largest gaps in treatment coverage?
 
 ```{r}
 # | label: tx_gap
+# | execute: warning: FALSE
 
-#viz_tx_all(params$cntry, params$agency) #wrapper function for tx_coverage and tx_new
+viz_tx_all(params$cntry, params$agency) #wrapper function for tx_coverage and tx_new
 
 
 ```
 
-## 8. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
+### 8. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
 
 ```{r}
 # | label: vlsc_pop
 
-# df_msd %>% 
-#   prep_viral_load(params$cntry, params$agency) %>% 
-#   viz_viral_load()
+df_msd %>%
+  prep_viral_load(params$cntry, params$agency) %>%
+  viz_viral_load()
 
 ```
 
-## 9. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
+### 9. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
 
 ```{r}
 # | label: vlsc_geo
 
-# df_msd %>% 
-#   prep_viral_load_psnu(params$cntry, params$agency) %>% 
-#   viz_viral_load_psnu()
+df_msd %>%
+  prep_viral_load_psnu(params$cntry, params$agency) %>%
+  viz_viral_load_psnu()
 
 ```
 
-## 10. Is PrEP uptake relatively consistent across demographics?
+### 10. Is PrEP uptake relatively consistent across demographics?
 
 ```{r}
 # | label: prep
 
-# df_msd %>%
-#     prep_prep_disagg(params$cntry, params$agency) %>%
-#     viz_prep_disagg()
+df_msd %>%
+    prep_prep_disagg(params$cntry, params$agency) %>%
+    viz_prep_disagg()
 ```
 
-## 11. Are there key gaps identified by the SID for the country to prioritize?
+### 11. Are there key gaps identified by the SID for the country to prioritize?
 
 ```{r}
 # | label: sid
 
-# df_sid %>% 
-#   prep_sid(params$cntry) %>% 
-#   viz_sid()
+df_sid %>%
+  prep_sid(params$cntry) %>%
+  viz_sid()
 ```
 
-## 12. Have COP budgets been flatlining or changing in a similar manner across agencies?
+### 12. Have COP budgets been flatlining or changing in a similar manner across agencies?
 
 ```{r}
 # | label: budget_share
 
-# df_fsd %>% 
-#   prep_budget_trends(params$cntry) %>% 
-#   viz_budget_trends()
+df_fsd %>%
+  prep_budget_trends(params$cntry) %>%
+  viz_budget_trends()
 
 ```
 
-## 13. Does the country have the optimal mix of PEPFAR spending when thinking about sustainability?
+### 13. Does the country have the optimal mix of PEPFAR spending when thinking about sustainability?
 
 ```{r}
 #| label: funding_distro
 
-# df_fsd %>% 
-#   prep_funding_distro(params$cntry, "USAID") %>% 
-#   viz_funding_distro()
+df_fsd %>%
+  prep_funding_distro(params$cntry, "USAID") %>%
+  viz_funding_distro()
 
 ```
 
-## 14. What does the current staffing footprint look like in country? How do they align with sustainability and leveraging our assets?
+### 14. What does the current staffing footprint look like in country? How do they align with sustainability and leveraging our assets?
 
 ```{r}
 #| label: staffing_footprint
 
-# df_hrh %>% 
-#   prep_hrh_footprint(params$cntry, params$agency) %>% 
-#   viz_hrh_footprint()
+df_hrh %>%
+  prep_hrh_footprint(params$cntry, params$agency) %>%
+  viz_hrh_footprint()
 ```
 
-## 15. What are the gaps in adopting structural laws and policies towards the UNAIDS 10-10-10 goals?
-
-```{r}
-#| label: 10-10-10 barriers
-
-# df_tens %>% 
-#   prep_10s_barriers(params$cntry) %>% 
-#   viz_10s_barriers()
-```
-
-## 16. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
+### 15. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
 
 ```{r}
 #| label: staffing_titles
 
-# df_hrh %>% 
-#   prep_hrh_titles(params$cntry, params$agency) %>% 
-#   viz_hrh_titles()
+df_hrh %>%
+  prep_hrh_titles(params$cntry, params$agency) %>%
+  viz_hrh_titles()
 ```
 
-## Calculations Used
+### 16. What are the gaps in adopting structural laws and policies towards the UNAIDS 10-10-10 goals?
 
-Calculations
+```{r}
+#| label: 10-10-10 barriers
 
-**Target Achievement** - Data Source: MSD - FY Cumulative Results / FY
+df_tens %>%
+  prep_10s_barriers(params$cntry) %>%
+  viz_10s_barriers()
+```
+
+### Calculations Used
+
+*Calculations*
+
+**Target Achievement** 
+  - Data Source: MSD 
+  - FY Cumulative Results / FY
 Targets
 
-**HIV Prevalence** - Data Source: MSD - PLHIV / Population
+**HIV Prevalence** 
+  - Data Source: MSD 
+  - PLHIV / Population
 
-**Undiagnosed** - Data Source: UNAIDS - PLHIV - PLHIV with Known Status
+**Undiagnosed** 
+  - Data Source: UNAIDS 
+  - PLHIV - PLHIV with Known Status
 
-**Treatment Coverage Status** - Data Source: NAT_SUBNAT MSD - Diagnosed
-/ PLHIV
+**Treatment Coverage Status** 
+  - Data Source: NAT_SUBNAT MSD 
+  - Diagnosed / PLHIV
 
-**Treatment Gap** - Data Source: NAT_SUBNAT MSD - TX_CURR_SUBNAT / PLHIV
+**Treatment Gap** 
+  - Data Source: NAT_SUBNAT MSD 
+  - TX_CURR_SUBNAT / PLHIV
 
-**Viral Load Coverage** - Data Source: MSD - TX_PVLS_D / TX_CURR (2
-periods prior)
+**Viral Load Coverage** 
+  - Data Source: MSD 
+  - TX_PVLS_D / TX_CURR (2 periods prior)
 
-**Viral Load Suppression** - Data Source: MSD - TX_PVLS_D / TX_PVLS_D
+**Viral Load Suppression** 
+  - Data Source: MSD 
+  - TX_PVLS_D / TX_PVLS_D
 
-Adjustments
+*Adjustments*
 
-**Modality Groupings** - Data Source: MSD - Prevention = PMTCT ANC, Post
-ANC1, VMMC - Case Finding = All other modalities
+**Modality Groupings** 
+  - Data Source: MSD 
+  - Prevention = PMTCT ANC, Post ANC1, VMMC 
+  - Case Finding = All other modalities
 
-**Remove Known Issues** - Data Sources: MSD and FSD - Removes all
-flagged known issues flagged by SI and ER country backstops - Source
-doc:
-https://docs.google.com/spreadsheets/d/1CMPY-GCWP3NSNWvLGLwMwBaPZsobgvjtobhjkZkDfow/edit#gid=1630220016 -
-Source owners: OHA/SIEI/SI
+**Remove Known Issues** 
+  - Data Sources: MSD and FSD 
+  - Removes all flagged known issues flagged by SI and ER country backstops 
+  - Source doc: https://docs.google.com/spreadsheets/d/1CMPY-GCWP3NSNWvLGLwMwBaPZsobgvjtobhjkZkDfow/edit#gid=1630220016 
+  - Source owners: OHA/SIEI/SI
 
-**Remove M&O** - Data Source: FSD - Keep only where record_type ==
-"Implementing Mechanism"
+**Remove M&O** 
+  - Data Source: FSD 
+  - Keep only where record_type == "Implementing Mechanism"
 
-**Remove SCH** - Data Source: FSD - Remove all SCH and SGAC flagged
-supply chain mechanisms - Source doc:
-https://docs.google.com/spreadsheets/d/1mCJWDo4FPW2cQ6LpbsSjtnRjT7sUpPEOqxfT2zQNo64/edit#gid=1369222419 -
-Source owners: OHA/SIEI/ER
+**Remove SCH** 
+  - Data Source: FSD 
+  - Remove all SCH and SGAC flagged supply chain mechanisms 
+  - Source doc: https://docs.google.com/spreadsheets/d/1mCJWDo4FPW2cQ6LpbsSjtnRjT7sUpPEOqxfT2zQNo64/edit#gid=1369222419 
+  -Source owners: OHA/SIEI/ER
 
-**Funding Type Groupings** - Data Sources: FSD and HRH SD - Site Level
-Non-SD = interaction_type either Non Service Delivery or Non-Service
-Delivery - Service Delivery = interaction_type == Direct Service
-Delivery - All others are their program type -
+**Funding Type Groupings** 
+  - Data Sources: FSD and HRH SD 
+  - Site Level Non-SD = interaction_type either Non Service Delivery or Non-Service Delivery 
+  - Service Delivery = interaction_type == Direct Service Delivery 
+  - All others are their program type -
 
-## Data Sources
+### Data Sources
 
-**DATIM GENIE MER PSNU By IM** - Date accessed: 2023-02-12 - Date on
-data source: 2023-02-10 - Original Location: DATIM GENIE -
-https://www.datim.org/api/apps/Genie/ - Google Drive ID:
-1JS4DCk_AOx39BF_WMh1yEl4wvm6HwcDg
+**DATIM GENIE MER PSNU By IM** 
+  - Date accessed: 2023-02-12 
+  - Date on data source: 2023-02-10 
+  - Original Location: DATIM GENIE - https://www.datim.org/api/apps/Genie/ 
+  - Google Drive ID: 1JS4DCk_AOx39BF_WMh1yEl4wvm6HwcDg
 
-**Financial_Structured_Datasets_COP17-22_20221216** - Date accessed:
-2023-01-17 - Date on data source: 2022-12-16 - Original Location: PEPFAR
-Panorama - https://pepfar-panorama.org/forms/downloads/ - Google Drive
-ID: NA
+**Financial_Structured_Datasets_COP17-22_20221216** 
+  - Date accessed: 2023-01-17 - Date on data source: 2022-12-16 
+  - Original Location: PEPFAR Panorama 
+  - https://pepfar-panorama.org/forms/downloads/ 
+  - Google Drive ID: NA
 
-**HIV Policy Lab - Policy Data** - Date accessed: 2021-11-09 - Date on
-data source: 2021-09-17 - Original Location: HIV Policy Lab -
-https://www.hivpolicylab.org/data - Google Drive ID:
-1LadXX9g9D6MCp6M3WD27Js85YE8MHrf_ulJQmRVduCU
+**HIV Policy Lab - Policy Data** 
+  - Date accessed: 2021-11-09 
+  - Date on data source: 2021-09-17 
+  - Original Location: HIV Policy Lab - https://www.hivpolicylab.org/data 
+  - Google Drive ID: 1LadXX9g9D6MCp6M3WD27Js85YE8MHrf_ulJQmRVduCU
 
-**HRH_Structured_Datasets_Site_IM_FY21-22_not_redacted_20230118_PostClean_Adjusted
-(1)** - Date accessed: 2023-02-06 - Date on data source: 2023-01-31 -
-Original Location: contact J.Roffenbender & sign terms of use - Google
-Drive ID: 1IhiXVtH0DUofXOXF0KL0ikzfdT0ROmBq
+**HRH_Structured_Datasets_Site_IM_FY21-22_not_redacted_20230118_PostClean_Adjusted (1)** 
+- Date accessed: 2023-02-06 
+- Date on data source: 2023-01-31 
+- Original Location: contact J.Roffenbender & sign terms of use
+- Google Drive ID: 1IhiXVtH0DUofXOXF0KL0ikzfdT0ROmBq
 
-**MER_Structured_Datasets_NAT_SUBNAT_FY15-22_20221216_v2_1** - Date
-accessed: 2023-01-17 - Date on data source: 2022-12-16 - Original
-Location: PEPFAR Panorama -
-https://pepfar-panorama.org/forms/downloads/ - Google Drive ID: NA
+**MER_Structured_Datasets_NAT_SUBNAT_FY15-22_20221216_v2_1** 
+  - Date accessed: 2023-01-17 
+  - Date on data source: 2022-12-16 
+  - Original Location: PEPFAR Panorama - https://pepfar-panorama.org/forms/downloads/ 
+  - Google Drive ID: NA
 
-**SID_Global_Dataset Final 2.0** - Date accessed: 2023-02-02 - Date on
-data source: 2022-06-08 - Original Location: PEPFAR Sharepoint -
-https://pepfar.sharepoint.com/sites/SustainabilityAnalysisCOP22/Shared%20Documents/Global%20Dataset/SID_Global_Dataset%20Final%202.0.xlsx -
-Google Drive ID: 1nn4c9NBsYchD6xUjimbWBB-4tHvrc4-AnWntGOk0XLc
+**SID_Global_Dataset Final 2.0** 
+  - Date accessed: 2023-02-02 
+  - Date on data source: 2022-06-08 
+  - Original Location: PEPFAR Sharepoint - https://pepfar.sharepoint.com/sites/SustainabilityAnalysisCOP22/Shared%20Documents/Global%20Dataset/SID_Global_Dataset%20Final%202.0.xlsx 
+  - Google Drive ID: 1nn4c9NBsYchD6xUjimbWBB-4tHvrc4-AnWntGOk0XLc
 
-**UNAIDS - AIDSinfo Global data on HIV epidemiology and response** -
-Date accessed: 2023-02-09 - Date on data source: 2022-08-10 - Original
-Location: - Google Drice ID:
+**UNAIDS - AIDSinfo Global data on HIV epidemiology and response** 
+  - Date accessed: 2023-02-09 
+  - Date on data source: 2022-08-10 
+  - Original Location: AIDSInfo
+  - Google Drive ID: 1k5j169a_MtecrMdsu_n870Y0Y8tezLPopULn7AP3lQQ

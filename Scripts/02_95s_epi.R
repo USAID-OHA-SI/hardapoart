@@ -143,27 +143,27 @@ viz_epi_control <- function(df) {
               hjust = -0.3, size = 12/.pt,
               family = "Source Sans Pro Light") +
     ggplot2::geom_text(data = . %>% dplyr::filter(year == 2015),
-              aes(y = number_new_hiv_infections + 10000, label = paste("Number New Infections"),
+              aes(y = number_new_hiv_infections + 50000, label = paste("Number New Infections"),
                   x = year, color = glitr::denim), size = 12 / .pt, family = "Source Sans Pro SemiBold",
-              hjust = 0, vjust = 0) +
+              hjust = 1, vjust = -1) +
     ggplot2::geom_text(data = . %>% dplyr::filter(year == max(year)), 
               aes(y = -number_total_deaths_hiv_pop, color = glitr::old_rose, 
                   label = clean_number(number_total_deaths_hiv_pop)),
               hjust = -0.3, size = 12/.pt,
               family = "Source Sans Pro Light") +
     ggplot2::geom_text(data = . %>% dplyr::filter(year == 2015),
-              aes(y = -number_total_deaths_hiv_pop - 10000, label = paste("Total PLHIV Deaths"),
+              aes(y = -number_total_deaths_hiv_pop - 50000, label = paste("Total PLHIV Deaths"),
                   x = year, color = glitr::old_rose), size = 12 / .pt, family = "Source Sans Pro SemiBold",
-              hjust = 0, vjust = 0) +
+              hjust = 1, vjust = 1) +
     ggplot2::scale_fill_identity() +
     ggplot2::scale_color_identity() +
     ggplot2::scale_y_continuous(label = ~ scales::label_number(scale_cut = cut_short_scale())(abs(.))) +
     ggplot2::scale_x_continuous(breaks = seq(1990, 2024, 5)) +
     ggplot2::geom_hline(yintercept = 0, color = grey80k) +
     glitr::si_style_ygrid(text_scale = 1.15) +
-    ggplot2::labs(x = NULL, y = NULL,
-         title = glue::glue("{unique(df$cntry) %>% toupper()}: NUMBER OF <span style= 'color:#2057a7;'> 
-  NEW HIV INFECTIONS</span> AND <span style = 'color:#c43d4d;'> TOTAL PLHIV DEATHS </span> AND PROGRESS TO <span style = 'color:#1e87a5;'>95S</span>")) +
+    ggplot2::labs(x = NULL, y = NULL) +
+  #        title = glue::glue("{unique(df$cntry) %>% toupper()}: NUMBER OF <span style= 'color:#2057a7;'> 
+  # NEW HIV INFECTIONS</span> AND <span style = 'color:#c43d4d;'> TOTAL PLHIV DEATHS </span> AND PROGRESS TO <span style = 'color:#1e87a5;'>95S</span>")) +
     ggplot2::coord_cartesian(expand = T, clip = "off") +
     ggplot2::theme(plot.title = ggtext::element_markdown())
   
@@ -189,10 +189,10 @@ viz_95s <- function(df) {
               vjust = .5, hjust = .5,
               aes(label = value), family = "Source Sans Pro SemiBold", size = 6) +
     geom_text(data = . %>% filter(pop == "All Ages"), 
-              vjust = -5, hjust = .5,
+              vjust = -3, hjust = .5,
               aes(label = goal_rate, color = trolley_grey), family = "Source Sans Pro Light", size = 4) +
     geom_text(data = . %>% filter(pop == "All Ages" & indicator == "Known\nStatus"), 
-              vjust = -5, hjust = 1.5,
+              vjust = -3, hjust = 1.5,
               aes(label = paste("Goal Rate"), color = trolley_grey), family = "Source Sans Pro Light", size = 4) +
     geom_text(data = . %>% filter(achv == TRUE & indicator != "Epi\nControl"), 
               vjust = .5, hjust = .5,
@@ -239,7 +239,21 @@ viz_unaids_all <- function(cntry) {
   } else if(is.null(v2)){
     v1
   } else {
+<<<<<<< Updated upstream
     v1 + v2 + plot_layout(widths = c(2, 1), heights = c(10))
+=======
+    viz <- v1 + v2 + plot_layout(widths = c(2, 1), heights = c(10)) +
+      patchwork::plot_annotation(
+        title = glue::glue("{cntry %>% toupper()}: NUMBER OF <span style= 'color:#2057a7;'> 
+  NEW HIV INFECTIONS</span> AND <span style = 'color:#c43d4d;'> TOTAL PLHIV DEATHS </span> AND PROGRESS TO <span style = 'color:#1e87a5;'>95S</span>"),
+        #subtitle = "Facilities location data availability",
+        theme = ggplot2::theme(
+          plot.title = ggtext::element_markdown(),
+          plot.subtitle = element_text(hjust = .5))
+        
+        
+        )
+>>>>>>> Stashed changes
   }
 
   

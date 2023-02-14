@@ -1,5 +1,5 @@
 ---
-title: "country report"
+title: "`r params$curr_pd` `r params$cntry` COP Priorities Supporting Visualizations"
 date: "`r format(Sys.time(), '%Y-%m-%d')`"
 format: pptx
 execute:
@@ -59,6 +59,7 @@ editor:
   source(here("Scripts/14_hrh-footprint-various.R"))
   source(here("Scripts/15_10s_barriers.R"))
   source(here("Scripts/16_hrh-titles.R"))
+  source(here("Scripts/17_vl-coverage-and-suppression_kp-psnu.R"))
 
 # Helper function for assertr::verify() to show more descriptive error messages
   err_text <- function(msg) stop(msg, call = FALSE)
@@ -76,18 +77,9 @@ editor:
 
 ### Purpose
 
-In advance of the PLLs and COP meetings starting the week of February
-13, the OHA/SIEI division wanted to provide some useful data points that
-may help as a launching point to these discussions and help hasten
-further exploration. The visuals provided here aim to provide a first
-step in identifying gaps and a baseline as they relate to COP priorities
-informed by Ambassador Nkengasong's [PEPFAR Strategy (5x3 pillars)](https://www.state.gov/reimagining-pepfar-at-20-to-end-the-hiv-aids-pandemic-by-2030/).
+In advance of the PLLs and COP meetings starting the week of February 13, the OHA/SIEI division wanted to provide some useful data points that may help as a launching point to these discussions and help hasten further exploration. The visuals provided here aim to provide a first step in identifying gaps and a baseline as they relate to COP priorities informed by Ambassador Nkengasong's [PEPFAR Strategy (5x3 pillars)](https://www.state.gov/reimagining-pepfar-at-20-to-end-the-hiv-aids-pandemic-by-2030/).
 
-These supporting visuals are intended to help create and inform initial
-discussion and prompt further data exploration. We have provided notes,
-data sources, and calculations for anything included here to make this a
-jumping off point to delve into any software and explore further. If you
-have questions, please contact your SIEI backstop for assistance.
+These supporting visuals are intended to help create and inform initial discussion and prompt further data exploration. We have provided notes, data sources, and calculations for anything included here to make this a jumping off point to delve into any software and explore further. If you have questions, please contact your SIEI backstop for assistance.
 
 ```{r}
 # | label: supplemental_text
@@ -128,7 +120,7 @@ df_natsubnat %>%
   
 ```
 
-### 4. Is there a youth buldge of PLHIV we need to plan for?
+### 4. Is there a youth bulge of PLHIV we need to plan for?
 
 ```{r}
 # | label: youth_bulge
@@ -139,7 +131,7 @@ df_natsubnat %>%
 
 ```
 
-### 5. Does testing favor prevention or case finding and does this fit with where `r `params$cntry` is in the epidemic?
+### 5. Does testing favor prevention or case finding and does this fit with where `r`params\$cntry\` is in the epidemic?
 
 ```{r}
 # | label: testing
@@ -182,7 +174,18 @@ df_msd %>%
 
 ```
 
-### 9. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
+### 9. Are certain populations groups being missed when trying to reach the 3rd 95?
+
+```{r }
+# | label: vlsc_kp
+
+df_msd %>% 
+  prep_viral_load_kp_agyw(params$cntry, params$agency) %>% 
+  viz_viral_load_kp_agyw()
+
+```
+
+### 10. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
 
 ```{r}
 # | label: vlsc_geo
@@ -193,7 +196,7 @@ df_msd %>%
 
 ```
 
-### 10. Is PrEP uptake relatively consistent across demographics?
+### 11. Is PrEP uptake relatively consistent across demographics?
 
 ```{r}
 # | label: prep
@@ -203,7 +206,7 @@ df_msd %>%
     viz_prep_disagg()
 ```
 
-### 11. Are there key gaps identified by the SID for the country to prioritize?
+### 12. Are there key gaps identified by the SID for `r params$cntry` to prioritize?
 
 ```{r}
 # | label: sid
@@ -213,7 +216,7 @@ df_sid %>%
   viz_sid()
 ```
 
-### 12. Have COP budgets been flatlining or changing in a similar manner across agencies?
+### 13. Have COP budgets been flatlining or changing in a similar manner across agencies?
 
 ```{r}
 # | label: budget_share
@@ -224,7 +227,7 @@ df_fsd %>%
 
 ```
 
-### 13. Does the country have the optimal mix of PEPFAR spending when thinking about sustainability?
+### 14. Does `r params$cntry` have the optimal mix of PEPFAR spending when thinking about sustainability?
 
 ```{r}
 #| label: funding_distro
@@ -235,7 +238,7 @@ df_fsd %>%
 
 ```
 
-### 14. What does the current staffing footprint look like in country? How do they align with sustainability and leveraging our assets?
+### 15. What does the current staffing footprint look like in `r params$cntry`? How do they align with sustainability and leveraging our assets?
 
 ```{r}
 #| label: staffing_footprint
@@ -245,7 +248,7 @@ df_hrh %>%
   viz_hrh_footprint()
 ```
 
-### 15. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
+### 16. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
 
 ```{r}
 #| label: staffing_titles
@@ -255,7 +258,7 @@ df_hrh %>%
   viz_hrh_titles()
 ```
 
-### 16. What are the gaps in adopting structural laws and policies towards the UNAIDS 10-10-10 goals?
+### 17. What are the gaps in adopting structural laws and policies towards the UNAIDS 10-10-10 goals?
 
 ```{r}
 #| label: 10-10-10 barriers
@@ -269,18 +272,21 @@ df_tens %>%
 
 *Calculations*
 
-**Target Achievement** 
-  - Data Source: MSD 
-  - FY Cumulative Results / FY
-Targets
-
 **HIV Prevalence** 
   - Data Source: MSD 
   - PLHIV / Population
 
+**Proxy Linkage**
+  - Data Source: MSD
+  - TX_NEW / HTS_TST_POS
+  
 **Undiagnosed** 
   - Data Source: UNAIDS 
   - PLHIV - PLHIV with Known Status
+
+**Target Achievement** 
+  - Data Source: MSD 
+  - FY Cumulative Results / FY Targets
 
 **Treatment Coverage Status** 
   - Data Source: NAT_SUBNAT MSD 
@@ -296,10 +302,18 @@ Targets
 
 **Viral Load Suppression** 
   - Data Source: MSD 
-  - TX_PVLS_D / TX_PVLS_D
+  - TX_PVLS / TX_PVLS_D
 
 *Adjustments*
 
+**AGYW Grouping**
+  - Data Source: MSD
+  - 10-24 Females 
+  
+**GenPop Grouping**
+  - Data Source: MSD
+  - Total Numerator - KeyPoP (min = 0)
+  
 **Modality Groupings** 
   - Data Source: MSD 
   - Prevention = PMTCT ANC, Post ANC1, VMMC 

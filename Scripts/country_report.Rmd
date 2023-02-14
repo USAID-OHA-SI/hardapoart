@@ -1,5 +1,5 @@
 ---
-title: "country report"
+title: "`r params$curr_pd` `r params$cntry` COP Priorities Supporting Visualizations"
 date: "Generated: `r format(Sys.time(), '%Y-%m-%d')`"
 output: 
   html_document:
@@ -37,7 +37,7 @@ knitr::opts_chunk$set(echo = FALSE)
   source(here("Scripts/14_hrh-footprint-various.R"))
   source(here("Scripts/15_hrh-titles.R"))
   source(here("Scripts/16_10s_barriers.R"))
-  source(here("Scripts/17_KP_AGYW_VLC_Gaps.R"))
+  source(here("Scripts/17_vl-coverage-and-suppression_kp-psnu.R"))
 
 # Helper function for assertr::verify() to show more descriptive error messages
   err_text <- function(msg) stop(msg, call = FALSE)

@@ -8,57 +8,48 @@
 # NOTE:     based on KP Dashboard
 
 
+cntry <- "Malawi"
 # MUNGE -------------------------------------------------------------------
 
   vl_indicators <- c("TX_CURR", "TX_PVLS", "TX_PVLS_D")
   young <- c("15-19", "20-24", "24-29")
   older <- c("30-34", "35-39", "40-44")
 
-vl_df <- df_msd %>%  
-  filter(indicator %in% vl_indicators)
+  #filter to select indicators + country
+  df_vl <- df_msd %>%  
+    filter(indicator %in% vl_indicators,
+           country == cntry)
+  
 
-cumulatived <- vl_df %>% 
-  filter(indicator!="TX_CURR") %>%
-  mutate(
-    cumulative = coalesce(cumulative, 0),
-    fy = fiscal_year,
-    partner = prime_partner_name,
-    disagg = str_extract(standardizeddisaggregate, "Total|KeyPop|Age"),
-    disagg = recode(disagg, "KeyPop" = "KP",
+  #clean disaggs
+  df_vl <- df_vl %>% 
+    mutate(disagg = standardizeddisaggregate %>% 
+             str_extract("Total|KeyPop|Age") %>% 
+             recode("KeyPop" = "KP",
                     "Age" = "Age/Sex"),
-    keypop = str_extract(otherdisaggregate, "FSW|MSM|TG|PWID|People\\sin\\sprisons"),
-    keypop = recode(keypop, "People in prisons" = "Prisoners")) %>%
-  mutate(agesex = if_else(sex=="Female" & ageasentered %in% young, "AGYW", 
-                          if_else(sex=="Male" & ageasentered %in% young, "ABYM", 
-                                  case_when(sex=="Female" & ageasentered %in% older ~ "adult women"))),
-         kpgp = case_when(disagg == "KP" ~ "KP")) %>% 
-  select(operatingunit, country, snu1, psnu, indicator, disagg, agesex, kpgp, fy, cumulative) %>% 
-  filter(!(is.na(agesex) & disagg == "Age/Sex")) %>%
-  group_by(across(-c(cumulative))) %>% summarise(cumulative = sum(cumulative), .groups = "drop") 
+           keypop = otherdisaggregate %>% 
+             str_extract("FSW|MSM|TG|PWID|prisons") %>% 
+             recode("prisons" = "Prisoners"),
+           agesex = case_when(sex=="Female" & ageasentered %in% young ~ "AGYW",
+                              sex=="Male" & ageasentered %in% young ~ "ABYM", 
+                              sex=="Female" & ageasentered %in% older ~ "adult women"),
+           kpgp = disagg == "KP")
+  
+  #aggregate & reshape long
+  df_vl <- df_vl %>% 
+    group_by(fiscal_year, country, psnu, indicator, disagg, agesex, kpgp) %>% 
+    summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE)),
+              .groups = "drop") %>% 
+    reshape_msd(include_type = FALSE)
+  
+  #reshape wider by indicator and create lag for VLC
+  df_vl %>% 
+    pivot_wider(names_from = indicator,
+                names_glue = "{tolower(indicator)}") %>% 
+    group_by(country, psnu, disagg, agesex) %>% 
+    mutate(tx_curr_lag2 = lag(tx_curr, n = 2, order_by = period)) %>% 
+    ungroup()
 
-
-
-lagged <- vl_df %>% 
-  filter(indicator=="TX_CURR") %>%
-  mutate(cumulative = qtr2,
-         indicator = "TX_CURR_Lag2",
-         fy = fiscal_year,
-         partner = prime_partner_name,
-         disagg = str_extract(standardizeddisaggregate, "Total|KeyPop|Age"),
-         disagg = recode(disagg, "KeyPop" = "KP",
-                         "Age" = "Age/Sex"),
-         keypop = str_extract(otherdisaggregate, "FSW|MSM|TG|PWID|People\\sin\\sprisons"),
-         keypop = recode(keypop, "People in prisons" = "Prisoners")) %>% 
-  mutate(agesex = if_else(sex=="Female" & ageasentered %in% young, "AGYW", 
-                          if_else(sex=="Male" & ageasentered %in% young, "ABYM", 
-                                  case_when(sex=="Female" & ageasentered %in% older ~ "adult women"))),
-         kpgp = case_when(disagg == "KP" ~ "KP")) %>% 
-  select(operatingunit, country, snu1, psnu, indicator, disagg, agesex, kpgp, fy, cumulative) %>% 
-  filter(!(is.na(agesex) & disagg == "Age/Sex")) %>%
-  mutate(cumulative = coalesce(cumulative, 0)) %>%
-  group_by(across(-c(cumulative))) %>% summarise(cumulative = sum(cumulative), .groups = "drop") 
-vl_comps <- bind_rows(cumulatived, lagged) %>% 
-  pivot_wider(names_from = indicator, values_from = cumulative)
 
 #separate and bind dataframes
 ### AGYW

@@ -80,17 +80,17 @@ prep_viral_load_kp_agyw <- function(df, cntry, agency){
                                   TRUE ~ grey30k)) %>% 
     pivot_longer(c(vls, vlc), 
                  names_to = "indicator") %>% 
-    mutate(group = ifelse(group == "AGYW",
+    mutate(group_viz = ifelse(group == "AGYW",
                           glue("**<span style='color:{genoa}'>AGYW</span> vs <span style='color:{grey30k}'>non-AGYW</span> {toupper(indicator)}**"),
                           glue("**<span style='color:{scooter}'>KeyPop</span> vs <span style='color:{grey30k}'>GenPop</span> {toupper(indicator)}**")))
   
-  return(df_vl)
+  return(df_viz)
 }
   
 
 # VIZ ---------------------------------------------------------------------
 
-prep_viral_load_kp_agyw(df){
+viz_viral_load_kp_agyw <- function(df){
   
   if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
@@ -119,7 +119,7 @@ prep_viral_load_kp_agyw(df){
     geom_point(size = 2, color = "white", na.rm = TRUE) +
     geom_point(size = 2, alpha = .6, na.rm = TRUE) +
     scale_color_identity() +
-    facet_wrap(~group, nrow = 1) +
+    facet_wrap(~group_viz, nrow = 1) +
     scale_x_continuous(labels = scales::percent, name = NULL, 
                        limits = c(0,1.1), 
                        breaks = seq(0,1.1, by = .25),

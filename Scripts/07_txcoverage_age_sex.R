@@ -151,7 +151,7 @@ viz_txnew_age_sex <- function(df) {
     ggplot2::labs(x = NULL, y = NULL,
          title = glue::glue("{metadata_msd$curr_pd} {unique(df$funding_agency)}/{unique(df$cntry)} treatment initations") %>% toupper,
          subtitle = "TX_NEW by age and sex",
-         caption = glue::glue("{metadata_msd$caption} | USAID | Ref Id: {ref_id} v{vrsn}")) +
+         caption = glue::glue("{metadata_msd$caption} | USAID/OHA/SIEI |  Ref Id: {ref_id} v{vrsn}")) +
     ggplot2::coord_cartesian(clip = "off") +
     ggplot2::theme(
       strip.text.y = element_blank(), #element_text(hjust = .5),

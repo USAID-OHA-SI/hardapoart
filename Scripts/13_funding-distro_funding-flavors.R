@@ -74,7 +74,7 @@ viz_funding_distro <- function(df){
     ggplot2::labs(x = NULL, y = NULL, fill = NA,
          subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)}'s breakdown of annual expenditures by funding type"),
          caption = glue("Note: M&O and supply chain excluded
-                        {metadata_fsd$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
+                        {metadata_fsd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     glitr::si_style_ygrid() +
     ggplot2::theme(legend.position = "none")
   

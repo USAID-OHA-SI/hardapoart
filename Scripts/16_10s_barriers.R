@@ -85,7 +85,7 @@ viz_10s_barriers <- function(df) {
     ggplot2::labs(x = NULL, y = NULL,
          title = glue::glue("THE LARGEST GAP IN THE 10-10-10 GOALS IN {unique(df$country) %>% toupper()}"),
          subtitle = "Progress towards adopting structural laws/policies towards UNAIDS' 10-10-10 goals",
-         caption = glue::glue("{metadata_pol_lab$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
+         caption = glue::glue("{metadata_pol_lab$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     glitr::si_style_nolines() +
     ggplot2::theme(strip.placement = "outside",
           axis.text.x = ggplot2::element_blank())

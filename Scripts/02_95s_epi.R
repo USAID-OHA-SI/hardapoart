@@ -213,7 +213,7 @@ viz_95s <- function(df) {
     #scale_y_reordered() +
     coord_cartesian(clip = "off") +
     labs(x = NULL, y = NULL,
-         caption =  glue("{metadata_unaids$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
+         caption =  glue("{metadata_unaids$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     si_style_nolines() +
     theme(axis.text.y = ggtext::element_markdown(),
           strip.text.y = ggplot2::element_blank(),

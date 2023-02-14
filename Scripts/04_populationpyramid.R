@@ -110,7 +110,7 @@ prep_pop_pyramid <- function(df, cntry){
                     x = NULL, y = NULL, fill = NULL,
                     caption = 
                       glue("Note: There are {n_PLHIV_unknown} PLHIV with unreported age and sex data.
-                  {metadata_natsubnat$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
+                  {metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
       glitr::si_style_yline() +
       ggplot2::theme(
         legend.position = "none",

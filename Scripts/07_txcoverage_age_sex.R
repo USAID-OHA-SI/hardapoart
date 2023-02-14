@@ -29,7 +29,12 @@ prep_txcoverage_age_sex <- function(df, cntry) {
   df_gap <- df_gap %>% 
     dplyr::count(country, indicator, ageasentered, sex, wt = targets, name = "value") %>% 
     tidyr::pivot_wider(names_from = indicator,
-                names_glue = "{tolower(indicator)}") %>% 
+                names_glue = "{tolower(indicator)}") 
+  
+  if("plhiv" %ni% names(df_gap))
+    return(NULL)
+  
+  df_gap <- df_gap %>% 
     dplyr::mutate(cov_status = diagnosed_subnat/plhiv,
            cov_tx = tx_curr_subnat/plhiv)
   
@@ -171,10 +176,18 @@ viz_tx_all <- function(cntry, agency) {
   v2 <- prep_txnew_age_sex(df_msd, cntry, agency) %>% 
     viz_txnew_age_sex()
   
-  suppressWarnings(
-    viz_tx <- cowplot::plot_grid(v1, v2, ncol = 2, align = 'v')
-  )
-
+  if(is.null(v1) && is.null(v2)){
+    viz_tx <- NULL
+    print(paste("No data available."))
+  } else if(is.null(v2)){
+    viz_tx <- v1
+  } else if(is.null(v1)){
+    viz_tx <- v2
+  } else {
+    suppressWarnings(
+      viz_tx <- cowplot::plot_grid(v1, v2, ncol = 2, align = 'v')
+    )
+  }
   
   return(viz_tx)
   

@@ -11,13 +11,11 @@
 cntry <- "Malawi"
 # MUNGE -------------------------------------------------------------------
 
-  vl_indicators <- c("TX_CURR", "TX_PVLS", "TX_PVLS_D")
   young <- c("15-19", "20-24", "24-29")
-  older <- c("30-34", "35-39", "40-44")
 
   #filter to select indicators + country
   df_vl <- df_msd %>%  
-    filter(indicator %in% vl_indicators,
+    filter(indicator %in% c("TX_CURR", "TX_PVLS", "TX_PVLS_D"),
            country == cntry)
   
 
@@ -38,7 +36,8 @@ cntry <- "Malawi"
   df_vl <- df_vl %>% 
     pivot_wider(names_from = type,
                 values_fill = 0) %>% 
-    mutate(GenPop = Total - KeyPop) %>% 
+    mutate(GenPop = Total - KeyPop,
+           GenPop = ifelse(GenPop < 0, 0, GenPop)) %>% 
     select(-Total) %>% 
     pivot_longer(-where(is.character),
                  names_to = "type") %>% 
@@ -54,69 +53,14 @@ cntry <- "Malawi"
     mutate(tx_curr_lag2 = lag(tx_curr, n = 2, order_by = period)) %>% 
     ungroup()
 
-
-  #create populations for comparision
-  df_vl %>% 
-    mutate(pop = case_when(agesex == "AGYW" ~ agesex,
-                           disagg == "Age/Sex" ~ "non-AGYW",
-                           disagg == "KP-GP" ~ kpgp),
-           disagg = ifelse(disagg == "KP", "KP-GP", disagg)) %>% 
-    distinct(agesex, disagg, pop)
+  #calculate VLC/S
+  df_vl <- df_vl %>%
+    mutate(vlc = tx_pvls_d/tx_curr_lag2,
+           vls = tx_pvls/tx_pvls_d) %>% 
+    filter(!is.nan(vlc))
   
-#separate and bind dataframes
-
-### KP
-kp <- vl_comps %>% filter(disagg == "KP") %>% 
-  mutate(disagg = "KP-GP") %>% 
-  rename(pop = kpgp) %>%
-  select(-agesex) %>%
-  glimpse()
-
-
-### GP
-gp_pre <- vl_comps %>% filter(disagg == "Total") %>%
-  mutate(disagg = NA) %>%
-  glimpse()
-
-kp_minus <- kp %>% 
-  mutate(
-    disagg = NA,
-    kpgp = NA,
-    TX_PVLS_D = -TX_PVLS_D,
-    TX_PVLS_N = -TX_PVLS_N,
-    TX_CURR_Lag2 = -TX_CURR_Lag2
-  ) %>%
-  glimpse()
-
-gp <- bind_rows(gp_pre, kp_minus) %>%
-  mutate(pop = "GP",
-         disagg = "KP-GP") %>%
-  select(-agesex, -kpgp) %>%
-  group_by(across(-c("TX_PVLS_D", "TX_PVLS_N", "TX_CURR_Lag2"))) %>%
-  summarise(TX_PVLS_D = coalesce(sum(TX_PVLS_D), 0),
-            TX_PVLS_N = coalesce(sum(TX_PVLS_N), 0),
-            TX_CURR_Lag2 = coalesce(sum(TX_CURR_Lag2),0),
-            .groups = "drop") %>%
-  glimpse()
-
-
-# combine dataframes AGYW - vs non-AGYW, KP vs GP 
-vl_comparisons <- bind_rows(agyw, nonagyw, kp, gp) %>% 
-  # select(-) %>%
-  group_by(across(-c("TX_PVLS_D", "TX_PVLS_N", "TX_CURR_Lag2"))) %>%
-  summarise(TX_PVLS_D = coalesce(sum(TX_PVLS_D), 0),
-            TX_PVLS_N = coalesce(sum(TX_PVLS_N), 0),
-            TX_CURR_Lag2 = coalesce(sum(TX_CURR_Lag2),0),
-            .groups = "drop") %>%
-  clean_names() %>%
-  mutate(
-    # country = fct_reorder(country, desc(country)),
-    vlc = tx_pvls_d/tx_curr_lag2,
-    vlc = if_else(vlc > 1, 1.05, vlc),
-    vls = tx_pvls_n/tx_pvls_d,
-    vls = if_else(vls > 1, 1.05, vls),
-  ) %>%
-  glimpse()
+  #limit to latest period
+  df_vl <- filter(df_vl, period == max(period))
 
 
 # visualize after inputting selections ------------------------------------

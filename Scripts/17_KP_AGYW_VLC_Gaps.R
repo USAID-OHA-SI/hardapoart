@@ -8,22 +8,27 @@
 # NOTE:     based on KP Dashboard
 
 
-cntry <- "Malawi"
 # MUNGE -------------------------------------------------------------------
 
+prep_viral_load_kp_agyw <- function(df, cntry, agency){
+  
   young <- c("15-19", "20-24", "24-29")
-
+  
   #filter to select indicators + country
   df_vl <- df_msd %>%  
     filter(indicator %in% c("TX_CURR", "TX_PVLS", "TX_PVLS_D"),
-           country == cntry)
+           country == cntry,
+           funding_agency == agency)
   
-
+  #clean exit for missing data
+  if(nrow(df_vl) == 0)
+    return(NULL)
+  
   #clean define groups - Total, KP, AGYW, Non-AGYW
   df_vl <- df_vl %>% 
     mutate(type = case_when(sex=="Female" & ageasentered %in% young ~ "AGYW",
-                              str_detect(standardizeddisaggregate, "Total|KeyPop", negate = TRUE) ~ "Non-AGYW",
-                              TRUE ~ str_extract(standardizeddisaggregate, "Total|KeyPop")))
+                            str_detect(standardizeddisaggregate, "Total|KeyPop", negate = TRUE) ~ "Non-AGYW",
+                            TRUE ~ str_extract(standardizeddisaggregate, "Total|KeyPop")))
   
   #aggregate & reshape long
   df_vl <- df_vl %>% 
@@ -52,7 +57,7 @@ cntry <- "Malawi"
     group_by(country, psnu, group, type) %>% 
     mutate(tx_curr_lag2 = lag(tx_curr, n = 2, order_by = period)) %>% 
     ungroup()
-
+  
   #calculate VLC/S
   df_vl <- df_vl %>%
     mutate(vlc = tx_pvls_d/tx_curr_lag2,
@@ -61,6 +66,11 @@ cntry <- "Malawi"
   
   #limit to latest period
   df_vl <- filter(df_vl, period == max(period))
+  
+  return(df_vl)
+}
+  
+  
 
 
 # visualize after inputting selections ------------------------------------

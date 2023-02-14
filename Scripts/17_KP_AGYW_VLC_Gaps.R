@@ -37,7 +37,7 @@ prep_viral_load_kp_agyw <- function(df, cntry, agency){
   
   #aggregate & reshape long
   df_vl <- df_vl %>% 
-    group_by(fiscal_year, country, psnu, indicator, type) %>% 
+    group_by(fiscal_year, funding_agency, country, psnu, indicator, type) %>% 
     summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE)),
               .groups = "drop") %>% 
     reshape_msd(include_type = FALSE)

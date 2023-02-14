@@ -149,7 +149,11 @@ vl_comparisons <- bind_rows(agyw, nonagyw, kp, gp) %>%
 
 
 # visualize after inputting selections ------------------------------------
-
+country_selection <- c("Botswana")
+disagg_selection <- c(
+   "KP-GP"
+  # "Age/Sex"
+)
 
 info <- vl_comparisons %>% filter(disagg %in% disagg_selection,
                                   country %in% country_selection) %>% 

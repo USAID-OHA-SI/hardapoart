@@ -7,22 +7,14 @@
 # UPDATED: 
 # NOTE:     based on KP Dashboard
 
-# data source: psnu x im MSD
-library(tidyverse)
-library(janitor)
-library(gagglr)
-library(scales)
 
+# MUNGE -------------------------------------------------------------------
 
+  vl_indicators <- c("TX_CURR", "TX_PVLS", "TX_PVLS_D")
+  young <- c("15-19", "20-24", "24-29")
+  older <- c("30-34", "35-39", "40-44")
 
-# data prep ---------------------------------------------------------------
-
-
-vl_indicators <- c("TX_CURR", "TX_PVLS", "TX_PVLS_D", "TX_PVLS_N", "TX_CURR_Lag1", "TX_CURR_Lag2")
-young <- c("15-19", "20-24", "24-29")
-older <- c("30-34", "35-39", "40-44")
-
-vl_df <- mer_df %>%  
+vl_df <- df %>%  
   filter(fiscal_year == 2022, 
          indicator %in% vl_indicators) %>%
   mutate(indicator = recode(indicator, "TX_PVLS" = paste0(indicator,"_",numeratordenom)),

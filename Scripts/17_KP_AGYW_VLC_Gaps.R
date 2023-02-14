@@ -72,44 +72,65 @@ prep_viral_load_kp_agyw <- function(df, cntry, agency){
   #limit to latest period
   df_vl <- filter(df_vl, period == max(period))
   
+  #color
+  df_viz <- df_vl %>% 
+    select(-c(tx_pvls, tx_pvls_d, tx_curr_lag2)) %>% 
+    mutate(fill_color = case_when(type == "KeyPop" ~ scooter,
+                                  type == "AGYW" ~ genoa,
+                                  TRUE ~ grey30k)) %>% 
+    pivot_longer(c(vls, vlc), 
+                 names_to = "indicator") %>% 
+    mutate(group = ifelse(group == "AGYW",
+                          glue("**<span style='color:{genoa}'>AGYW</span> vs <span style='color:{grey30k}'>non-AGYW</span> {toupper(indicator)}**"),
+                          glue("**<span style='color:{scooter}'>KeyPop</span> vs <span style='color:{grey30k}'>GenPop</span> {toupper(indicator)}**")))
+  
   return(df_vl)
 }
   
+
+# VIZ ---------------------------------------------------------------------
+
+prep_viral_load_kp_agyw(df){
   
-
-
-# visualize after inputting selections ------------------------------------
-country_selection <- c("Botswana")
-disagg_selection <- c(
-   "KP-GP"
-  # "Age/Sex"
-)
-
-info <- vl_comparisons %>% filter(disagg %in% disagg_selection,
-                                  country %in% country_selection) %>% 
-  select(operatingunit, country, fy, psnu, disagg) %>% group_by_all() %>% summarise(.groups = "drop") %>%
-  mutate(fyy = fy-2000,
-         main = if_else(disagg == "KP-GP", "KP", "AGYW"),
-         ref = if_else(disagg == "KP-GP", "GP", "non-AGYW"))
-
-vl_comparisons %>% filter(disagg %in% disagg_selection,
-                          country %in% country_selection) %>%
-  mutate(main = if_else(disagg == "KP-GP", "KP", "AGYW"),
-         vlc_main = case_when(pop == main ~ vlc)) %>% 
-  arrange(desc(vlc_main)) %>%
-  mutate(psnu = fct_reorder(psnu, desc(vlc_main)))  %>%
-  #unable to reorder? any assistance is appreciated
+  if(is.null(df) || nrow(df) == 0)
+    return(print(paste("No data available.")))
   
-  ggplot(aes(y = psnu, x = vlc, color = pop)) + 
-  geom_line(color = "#d3d3d3") +
-  geom_point(size = 2) +
-  # geom_text(aes(label=scales::percent(vlc, accuracy = 1))) + 
-  scale_color_manual(values = c(KP = scooter, GP = grey30k, AGYW = genoa, "non-AGYW" = grey30k)) +
-  si_style_xyline() +
-  scale_x_continuous(labels = scales::percent, name = NULL, limits = c(0,1.1), breaks = seq(0,1.1, by = .25)) + 
-  theme(legend.title = element_blank(), legend.position = "bottom") +
-  labs(title = glue("FY{info$fyy} PEPFAR VL Coverage comparison of {info$main} and {info$ref} by psnu"),
-       caption = "VL Coverage > 1, coded as 105%.
-       Data Source: MER_Structured_Datasets_OU_IM_FY20-23_20221216_v2_1")
+  ref_id <- "f5d17218" #id for adorning to plots, making it easier to find on GH
+  
+  vrsn <- 1 
+  
+  cap_note <- ifelse(nrow(df) > 21, "| Limited to the largest 20 TX_CURR PSNUs\n", "")
+  
+  #limit to 21 bars (overall + 20 psnus)
+  v_top <- df %>% 
+    filter(group == "AGYW") %>% 
+    count(psnu, wt = tx_curr, sort = TRUE) %>% 
+    slice_head(n = 21) %>% 
+    pull(psnu)
+  
+  df <- filter(df, psnu %in% v_top) 
+  
+  #viz
+  df %>% 
+    ggplot(aes(value, fct_reorder(psnu, tx_curr, max, na.rm = TRUE), color = fill_color, group = psnu)) +
+    geom_vline(xintercept = 0, color = "#D3D3D3") +
+    geom_vline(xintercept = 1, color = "#D3D3D3", linetype = "dashed") +
+    geom_line(color = "#d3d3d3", na.rm = TRUE) +
+    geom_point(size = 2, color = "white", na.rm = TRUE) +
+    geom_point(size = 2, alpha = .6, na.rm = TRUE) +
+    scale_color_identity() +
+    facet_wrap(~group, nrow = 1) +
+    scale_x_continuous(labels = scales::percent, name = NULL, 
+                       limits = c(0,1.1), 
+                       breaks = seq(0,1.1, by = .25),
+                       oob = oob_squish) + 
+    labs(x = NULL, y = NULL,
+         subtitle = glue("{unique(df$period)} {unique(df$funding_agency)}/{unique(df$country)} VLC/S gaps between different population groups"),
+         caption = glue("Note: VL capped at 110% {cap_note}{metadata_msd$caption} | USAID/OHA/SIEI | Ref id: {ref_id} v{vrsn}")) +
+    si_style_xline() +
+    theme(legend.position = "none",
+          strip.text = element_markdown())
+  
+}
 
-ggsave("Images/vl_comparison_by{info$disagg}.png", width = 13, height = 6)
+

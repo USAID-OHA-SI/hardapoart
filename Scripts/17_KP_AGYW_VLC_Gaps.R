@@ -14,14 +14,8 @@
   young <- c("15-19", "20-24", "24-29")
   older <- c("30-34", "35-39", "40-44")
 
-vl_df <- df %>%  
-  filter(fiscal_year == 2022, 
-         indicator %in% vl_indicators) %>%
-  mutate(indicator = recode(indicator, "TX_PVLS" = paste0(indicator,"_",numeratordenom)),
-         funding_agency = recode(funding_agency, "HHS/CDC" = "CDC")) 
-  
-  rm(mer_df)
-# table(vl_df$indicator, vl_df$disaggregate)
+vl_df <- df_msd %>%  
+  filter(indicator %in% vl_indicators)
 
 cumulatived <- vl_df %>% 
   filter(indicator!="TX_CURR") %>%

@@ -93,7 +93,7 @@ df_natsubnat %>%
   
 ```
 
-### 4. Is there a youth buldge of PLHIV we need to plan for?
+### 4. Is there a youth bulge of PLHIV we need to plan for?
 
 ```{r youth_bulge}
 
@@ -140,7 +140,7 @@ df_msd %>%
 
 ```
 
-### 9. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
+### 9. Are certain regions by age or sex being missed when trying to reach the 3rd 95?
 
 ```{r vlsc_geo}
 
@@ -159,7 +159,7 @@ df_msd %>%
     viz_prep_disagg()
 ```
 
-### 11. Are there key gaps identified by the SID for the country to prioritize?
+### 11. Are there key gaps identified by the SID for `r params$cntry` to prioritize?
 
 ```{r sid}
 
@@ -179,7 +179,7 @@ df_fsd %>%
 
 ```
 
-### 13. Does the country have the optimal mix of PEPFAR spending when thinking about sustainability?
+### 13. Does `r params$cntry` have the optimal mix of PEPFAR spending when thinking about sustainability?
 
 ```{r funding_distro}
 
@@ -189,7 +189,7 @@ df_fsd %>%
 
 ```
 
-### 14. What does the current staffing footprint look like in country? How do they align with sustainability and leveraging our assets?
+### 14. What does the current staffing footprint look like in `r params$cntry`? How do they align with sustainability and leveraging our assets?
 
 ```{r staffing_footprint}
 

@@ -24,6 +24,11 @@ prep_viral_load_kp_agyw <- function(df, cntry, agency){
   if(nrow(df_vl) == 0)
     return(NULL)
   
+  #create overall value
+  df_vl <- df_vl %>% 
+    bind_rows(df_vl %>% 
+                mutate(psnu = "OVERALL"))
+  
   #clean define groups - Total, KP, AGYW, Non-AGYW
   df_vl <- df_vl %>% 
     mutate(type = case_when(sex=="Female" & ageasentered %in% young ~ "AGYW",

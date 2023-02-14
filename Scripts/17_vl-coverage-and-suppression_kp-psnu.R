@@ -42,10 +42,17 @@ prep_viral_load_kp_agyw <- function(df, cntry, agency){
               .groups = "drop") %>% 
     reshape_msd(include_type = FALSE)
   
-  #pivot wide to subtract KP from GP (Total)
+  #pivot wide in order to subtract KP from GP (Total)
   df_vl <- df_vl %>% 
     pivot_wider(names_from = type,
-                values_fill = 0) %>% 
+                values_fill = 0) 
+  
+  #create KeyPop if missing
+  if("KeyPop" %ni% names(df_vl))
+    df_vl <- mutate(df_vl, KeyPop = 0)
+  
+  #subtract KP from GP (Total)
+  df_vl <- df_vl %>%
     mutate(GenPop = Total - KeyPop,
            GenPop = ifelse(GenPop < 0, 0, GenPop)) %>% 
     select(-Total) %>% 

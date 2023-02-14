@@ -129,7 +129,8 @@ viz_viral_load_kp_agyw <- function(df){
          caption = glue("Note: VL capped at 110% {cap_note}{metadata_msd$caption} | USAID/OHA/SIEI | Ref id: {ref_id} v{vrsn}")) +
     si_style_xline() +
     theme(legend.position = "none",
-          strip.text = element_markdown())
+          strip.text = element_markdown(),
+          panel.spacing = unit(.5, "picas"))
   
 }
 

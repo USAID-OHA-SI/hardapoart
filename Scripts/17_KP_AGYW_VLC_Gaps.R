@@ -12,7 +12,7 @@
 
 prep_viral_load_kp_agyw <- function(df, cntry, agency){
   
-  young <- c("15-19", "20-24", "24-29")
+  young <- c("10-14","15-19", "20-24") #DREAMS AGYW age band based on DREAMS guidance
   
   #filter to select indicators + country
   df_vl <- df_msd %>%  

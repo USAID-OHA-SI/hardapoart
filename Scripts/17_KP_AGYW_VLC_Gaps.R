@@ -21,55 +21,49 @@ cntry <- "Malawi"
            country == cntry)
   
 
-  #clean disaggs
+  #clean define groups - Total, KP, AGYW, Non-AGYW
   df_vl <- df_vl %>% 
-    mutate(disagg = standardizeddisaggregate %>% 
-             str_extract("Total|KeyPop|Age") %>% 
-             recode("KeyPop" = "KP",
-                    "Age" = "Age/Sex"),
-           keypop = otherdisaggregate %>% 
-             str_extract("FSW|MSM|TG|PWID|prisons") %>% 
-             recode("prisons" = "Prisoners"),
-           agesex = case_when(sex=="Female" & ageasentered %in% young ~ "AGYW",
-                              sex=="Male" & ageasentered %in% young ~ "ABYM", 
-                              sex=="Female" & ageasentered %in% older ~ "adult women"),
-           kpgp = disagg == "KP")
+    mutate(type = case_when(sex=="Female" & ageasentered %in% young ~ "AGYW",
+                              str_detect(standardizeddisaggregate, "Total|KeyPop", negate = TRUE) ~ "Non-AGYW",
+                              TRUE ~ str_extract(standardizeddisaggregate, "Total|KeyPop")))
   
   #aggregate & reshape long
   df_vl <- df_vl %>% 
-    group_by(fiscal_year, country, psnu, indicator, disagg, agesex, kpgp) %>% 
+    group_by(fiscal_year, country, psnu, indicator, type) %>% 
     summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE)),
               .groups = "drop") %>% 
     reshape_msd(include_type = FALSE)
   
+  #pivot wide to subtract KP from GP (Total)
+  df_vl <- df_vl %>% 
+    pivot_wider(names_from = type,
+                values_fill = 0) %>% 
+    mutate(GenPop = Total - KeyPop) %>% 
+    select(-Total) %>% 
+    pivot_longer(-where(is.character),
+                 names_to = "type") %>% 
+    mutate(group = case_when(type %in% c("KeyPop", "GenPop") ~ "KP-GP",
+                             type %in% c("AGYW", "Non-AGYW") ~ "AGYW"),
+           .before = type)
+  
   #reshape wider by indicator and create lag for VLC
-  df_vl %>% 
+  df_vl <- df_vl %>% 
     pivot_wider(names_from = indicator,
                 names_glue = "{tolower(indicator)}") %>% 
-    group_by(country, psnu, disagg, agesex) %>% 
+    group_by(country, psnu, group, type) %>% 
     mutate(tx_curr_lag2 = lag(tx_curr, n = 2, order_by = period)) %>% 
     ungroup()
 
 
+  #create populations for comparision
+  df_vl %>% 
+    mutate(pop = case_when(agesex == "AGYW" ~ agesex,
+                           disagg == "Age/Sex" ~ "non-AGYW",
+                           disagg == "KP-GP" ~ kpgp),
+           disagg = ifelse(disagg == "KP", "KP-GP", disagg)) %>% 
+    distinct(agesex, disagg, pop)
+  
 #separate and bind dataframes
-### AGYW
-agyw <- vl_comps %>% filter(!is.na(agesex) 
-                            & agesex == "AGYW") %>% 
-  rename(pop = agesex) %>%
-  select(-kpgp) %>%
-  glimpse()
-
-### Non-AGYW
-nonagyw <- vl_comps %>% filter(disagg == "Age/Sex" & agesex !="AGYW") %>%
-  mutate(agesex = "non-AGYW") %>%
-  rename(pop = agesex) %>%
-  select(-kpgp) %>%
-  group_by(across(-c("TX_PVLS_D", "TX_PVLS_N", "TX_CURR_Lag2"))) %>%
-  summarise(TX_PVLS_D = coalesce(sum(TX_PVLS_D), 0),
-            TX_PVLS_N = coalesce(sum(TX_PVLS_N), 0),
-            TX_CURR_Lag2 = coalesce(sum(TX_CURR_Lag2),0),
-            .groups = "drop") %>%
-  glimpse()
 
 ### KP
 kp <- vl_comps %>% filter(disagg == "KP") %>% 

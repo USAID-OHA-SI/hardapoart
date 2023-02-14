@@ -67,7 +67,7 @@
     df_msd <- clean_indicator(df_msd)
 
     #MSD filter table
-    df_msd_ind <- tibble::tribble(
+    df_msd_ind <-tibble::tribble(
           ~indicator,      ~standardizeddisaggregate,
            "HTS_TST",              "Total Numerator",
            "HTS_TST",      "Modality/Age/Sex/Result",
@@ -80,15 +80,19 @@
           "PrEP_NEW",              "Total Numerator",
            "TB_PREV",              "Total Numerator",
            "TX_CURR",            "Age/Sex/HIVStatus",
+           "TX_CURR",             "KeyPop/HIVStatus",
            "TX_CURR",              "Total Numerator",
             "TX_NEW",              "Total Numerator",
             "TX_NEW",            "Age/Sex/HIVStatus",
            "TX_PVLS", "Age/Sex/Indication/HIVStatus",
+           "TX_PVLS",  "KeyPop/Indication/HIVStatus",
            "TX_PVLS",              "Total Numerator",
          "TX_PVLS_D", "Age/Sex/Indication/HIVStatus",
+         "TX_PVLS_D",  "KeyPop/Indication/HIVStatus",
          "TX_PVLS_D",            "Total Denominator",
          "VMMC_CIRC",              "Total Numerator"
        )
+
 
 
     #filter to select indicators/disaggs

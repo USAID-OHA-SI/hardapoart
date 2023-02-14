@@ -176,7 +176,7 @@
       labs(x = "", y = "",
            title = glue::glue("{toupper(unique(df$funding_agency))}/{toupper(unique(df$country))} - VIRAL LOAD TRENDS"),
            subtitle = glue::glue("VL <span style='color:{burnt_sienna}'>Coverage</span> & <span style='color:{genoa}'>Supression</span> for the last 5 quarters"),
-           caption = glue::glue("{metadata_msd$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
+           caption = glue::glue("{metadata_msd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
       coord_cartesian(clip = "off") +
       facet_wrap(~snu1, ncol = 4) +
       si_style_nolines() +

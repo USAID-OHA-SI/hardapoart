@@ -138,7 +138,7 @@ viz_hrh_footprint <- function(df){
     ggplot2::scale_color_identity() +
     ggplot2::labs(x = NULL, y = NULL,
                   subtitle = glue("{metadata_hrh$curr_fy_lab} HRH Staffing Footprint in {unique(df$funding_agency)}/{unique(df$country)} Broken Down By FTEs"),
-                  caption = glue("{metadata_hrh$caption} Structured Dataset (not redacted) | USAID | Ref id: {ref_id} v{vrsn}")) + 
+                  caption = glue("{metadata_hrh$caption} Structured Dataset (not redacted) | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) + 
     ggplot2::coord_cartesian(clip = "off") +
     glitr::si_style_nolines() +
     ggplot2::theme(legend.position = "none",

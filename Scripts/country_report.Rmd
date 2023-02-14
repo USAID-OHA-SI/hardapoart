@@ -50,13 +50,20 @@ In advance of the PLLs and COP meetings starting the week of February
 may help as a launching point to these discussions and help hasten
 further exploration. The visuals provided here aim to provide a first
 step in identifying gaps and a baseline as they relate to COP priorities
-informed by Ambassador Nkengasong's 5x3 pillars.
+informed by Ambassador Nkengasong's [PEPFAR Strategy (5x3 pillars)](https://www.state.gov/reimagining-pepfar-at-20-to-end-the-hiv-aids-pandemic-by-2030/).
 
 These supporting visuals are intended to help create and inform initial
 discussion and prompt further data exploration. We have provided notes,
 data sources, and calculations for anything included here to make this a
 jumping off point to delve into any software and explore further. If you
 have questions, please contact your SIEI backstop for assistance.
+
+```{r sup_text, include=FALSE}
+sup_text <- glue("Note that the visuals below largely reflect the {params$cntry} as a whole or all PEPFAR agencies unless otherwise noted in the visual itself.")
+  
+```
+
+`r if(params$agency == "PEPFAR"){sup_text}`
 
 ### 1. Are there any major gaps in achievement as of `r params$curr_pd`?
 

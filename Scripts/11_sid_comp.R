@@ -93,7 +93,7 @@ viz_sid <- function(df){
     ggplot2::labs(x = NULL, y = NULL,
                   title = glue("{sel_cntry} {unique(df$fiscal_year)} SID Scores") %>% toupper,
                   subtitle = glue("Large points represent {sel_cntry}'s score compared with other PEPFAR countries (smaller points) and PEPFAR average (line)"),
-         caption = glue("{metadata_sid$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
+         caption = glue("{metadata_sid$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     si_style_xgrid(facet_space = .5) +
     ggplot2::theme(axis.text.x = element_blank())
   

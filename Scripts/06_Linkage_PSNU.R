@@ -122,7 +122,7 @@
       si_style_nolines() +
       labs(subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)} {metadata_msd$curr_pd} Proxy Linkage"),
            x = NULL, y = NULL,
-           caption = glue("{cap_note}{metadata_msd$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
+           caption = glue("{cap_note}{metadata_msd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
       theme(legend.position = "none",
             axis.text.x = element_blank())
  

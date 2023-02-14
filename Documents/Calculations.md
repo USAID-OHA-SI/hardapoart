@@ -8,6 +8,10 @@
   - Data Source: MSD
   - PLHIV / Population
 
+**Proxy Linkage**
+  - Data Source: MSD
+  - TX_NEW / HTS_TST_POS
+  
 **Undiagnosed**
   - Data Source: UNAIDS
   - PLHIV - PLHIV with Known Status
@@ -26,11 +30,19 @@
   
 **Viral Load Suppression**
   - Data Source: MSD
-  - TX_PVLS_D / TX_PVLS_D
+  - TX_PVLS / TX_PVLS_D
 
 
 ## Adjustments
 
+**AGYW Grouping**
+  - Data Source: MSD
+  - 10-24 Females 
+  
+**GenPop Grouping**
+  - Data Source: MSD
+  - Total Numerator - KeyPoP (min = 0)
+  
 **Modality Groupings**
   - Data Source: MSD
   - Prevention = PMTCT ANC, Post ANC1, VMMC

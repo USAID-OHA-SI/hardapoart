@@ -57,7 +57,7 @@ These supporting visuals are intended to help create and inform initial
 discussion and prompt further data exploration. We have provided notes,
 data sources, and calculations for anything included here to make this a
 jumping off point to delve into any software and explore further. If you
-have questions, please contact your SIEI backstop for assistance.
+have questions, please contact your SIEI backstop for assistance. Underlying R code can be found on [GitHub](https://github.com/USAID-OHA-SI/hardapoart)
 
 ```{r sup_text, include=FALSE}
 sup_text <- glue("Note that the visuals below largely reflect the {params$cntry} as a whole or all PEPFAR agencies unless otherwise noted in the visual itself.")

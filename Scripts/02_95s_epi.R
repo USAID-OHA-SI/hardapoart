@@ -213,7 +213,8 @@ viz_95s <- function(df) {
     #scale_y_reordered() +
     coord_cartesian(clip = "off") +
     labs(x = NULL, y = NULL,
-         caption =  glue("{metadata_unaids$caption} | USAID | Ref id: {ref_id} v{vrsn}")) +
+         # caption =  glue("{metadata_unaids$caption} | USAID/OHA/SIEI | Ref id: {ref_id} v{vrsn}")
+         ) +
     si_style_nolines() +
     theme(axis.text.y = ggtext::element_markdown(),
           strip.text.y = ggplot2::element_blank(),
@@ -225,6 +226,9 @@ viz_95s <- function(df) {
 
 #patchwork all together!
 viz_unaids_all <- function(cntry) {
+  
+  ref_id <- "02e4fc9c" 
+  vrsn <- 2 
   
   v1 <- prep_epi_control(df_unaids_epi, cntry) %>%
     viz_epi_control()

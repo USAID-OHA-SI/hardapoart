@@ -60,7 +60,7 @@ jumping off point to delve into any software and explore further. If you
 have questions, please contact your SIEI backstop for assistance. Underlying R code can be found on [GitHub](https://github.com/USAID-OHA-SI/hardapoart)
 
 ```{r sup_text, include=FALSE}
-sup_text <- glue("Note that the visuals below largely reflect the {params$cntry} as a whole or all PEPFAR agencies unless otherwise noted in the visual itself.")
+sup_text <- glue("Note that the visuals below largely reflect {params$cntry} as a whole or all PEPFAR agencies unless otherwise noted in the visual itself.")
   
 ```
 

@@ -178,7 +178,7 @@ viz_95s <- function(df) {
     return(NULL)
   
   ref_id <- "02e4fc9c" 
-  vrsn <- 1 
+  vrsn <- 2 
   
   viz_95 <- df %>% 
     ggplot(aes(indicator, pop,

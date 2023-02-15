@@ -250,11 +250,10 @@ viz_unaids_all <- function(cntry) {
         title = glue::glue("{cntry %>% toupper()}: NUMBER OF <span style= 'color:#2057a7;'> 
   NEW HIV INFECTIONS</span> AND <span style = 'color:#c43d4d;'> TOTAL PLHIV DEATHS </span> AND PROGRESS TO <span style = 'color:#1e87a5;'>95S</span>"),
         #subtitle = "Facilities location data availability",
-        theme = ggplot2::theme(
+        caption =  glue("{metadata_unaids$caption} | USAID/OHA/SIEI | Ref id: {ref_id} v{vrsn}"),
+        theme = si_style_nolines() + ggplot2::theme(
           plot.title = ggtext::element_markdown(),
-          plot.subtitle = element_text(hjust = .5))
-
-      )
+          plot.subtitle = element_text(hjust = .5)))
       
     return(viz)
 

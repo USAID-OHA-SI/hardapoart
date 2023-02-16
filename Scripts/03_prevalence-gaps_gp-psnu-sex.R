@@ -163,9 +163,14 @@
       gap_step <- .005
     }
     
+    # Foot note for reduced datasets
+    n_max <- 21
+    
+    cap_note <- ifelse(nrow(df) > (n_max +1) * 2, "Note: Limited to the largest 20 HIV Prevalence PSNUs\n", "")
+    
     # Display only a subset
     df_viz <- df %>% 
-      dplyr::slice_max(order_by = psnu_prev, n = 21 * 2) 
+      dplyr::slice_max(order_by = psnu_prev, n = n_max * 2) 
     
     if ("COUNTRY" %ni% df_viz$psnu) {
       df_viz <- df %>% 
@@ -197,7 +202,7 @@
       labs(x = "", y = "", 
            title = glue::glue("{toupper(unique(df$country))} - {unique(df$fiscal_year)} HIV PREVALANCE"),
            subtitle = glue::glue("HIV Prevalence Gap between <span style='color:{genoa}'>Male</span> & <span style='color:{moody_blue}'>Female</span> by PSNU"),
-           caption = glue::glue("{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
+           caption = glue::glue("{cap_note}{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
       si_style_nolines() +
       theme(plot.subtitle = element_markdown(),
             axis.text.y = element_markdown())
@@ -230,15 +235,15 @@
 
   # Test Viz
   
-  # pepfar_country_list %>% 
-  #   pull(country) %>% 
-  #   #first() %>% 
-  #   #nth(26) %>% 
-  #   #nth(28) %>% 
-  #   nth(46) %>% 
+  # pepfar_country_list %>%
+  #   pull(country) %>%
+  #   #first() %>%
+  #   nth(26) %>%
+  #   #nth(28) %>%
+  #   #nth(46) %>%
   #   prep_hiv_prevalence(df = df_natsubnat,
   #                       cntry = .,
-  #                       add_style = T) %>% 
+  #                       add_style = T) %>%
   #   viz_hiv_prevalence()
 
   

@@ -147,14 +147,19 @@
       pull() %>% 
       length()
     
+    cap_note <- ""
+    
     if (n_snu > 12) {
       snus <- df %>% 
-        filter(period == max(period), vls < .95) %>% 
-        distinct(snu1) %>% 
-        pull()
+        dplyr::filter(period == max(period), vls < .95) %>% 
+        dplyr::slice_max(order_by = vls, n = 12)  %>% 
+        dplyr::distinct(snu1) %>% 
+        dplyr::pull()
       
       df <- df %>% 
-        filter(snu1 %in% snus)
+        dplyr::filter(snu1 %in% snus)
+      
+      cap_note <- "Note: Limited to the 12 lowest PSNUs with VLS < 95%\n"
     }
     
     # Generate the plot

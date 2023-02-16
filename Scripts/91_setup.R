@@ -20,12 +20,7 @@
   library(mindthegap)
   library(ggrepel)
   library(janitor)
-  library(sf)
-  library(selfdestructin5)
-  library(gt)
   library(cascade) # Use dev version
-  library(ggpattern)
-  library(rcartocolor)
   library(here)
   library(assertr)
 

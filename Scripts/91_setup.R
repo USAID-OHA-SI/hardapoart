@@ -69,6 +69,8 @@
        "HTS_TST_POS",              "Total Numerator",
            "KP_PREV",              "Total Numerator",
           "OVC_SERV",              "Total Numerator",
+       "OVC_HIVSTAT",              "Total Numerator",
+   "OVC_HIVSTAT_POS",       "Age/Sex/ReportedStatus",
          "PMTCT_EID",              "Total Numerator",
           "PrEP_NEW",                      "Age/Sex",
           "PrEP_NEW",                    "KeyPopAbr",

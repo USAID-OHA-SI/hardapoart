@@ -131,13 +131,23 @@ df_natsubnat %>%
 
 ```
 
-### 5. Does testing favor prevention or case finding and does this fit with where `r`params\$cntry\` is in the epidemic?
+### 5. Does testing favor prevention or case finding and does this fit with where `r params$cntry` is in the epidemic?
 
 ```{r}
 # | label: testing
 
  prep_modality_age(df_msd, params$cntry, "PEPFAR", trendscoarse) %>% 
    viz_modality_age()
+
+```
+
+### What proportion of C/ALHIV is the OVC Comprehensive program reaching?
+
+```{r}
+# | label: ovc_tx
+
+prep_ovc_coverage(df_msd, df_subnat, params$cntry, "PEPFAR") %>% 
+  viz_ovc_coverage()
 
 ```
 
@@ -158,7 +168,7 @@ df_msd %>%
 # | label: tx_gap
 # | execute: warning: FALSE
 
-viz_tx_all(params$cntry, params$agency) #wrapper function for tx_coverage and tx_new
+viz_tx_all(params$cntry, params$agency) 
 
 
 ```
@@ -275,6 +285,20 @@ df_tens %>%
 **HIV Prevalence** 
   - Data Source: MSD 
   - PLHIV / Population
+
+**OVC Coverage of CLHIV**
+  - Data Sources: MSD + NAT_SUBNAT MSD
+  - OVC_HIVSTAT_POS (Receiving ART, <15) / PLHIV (<15)
+    - Only in OVC Programed PSNUs 
+    
+**OVC Coverage of Children on Treatment**
+  - Data Sources: MSD
+  - OVC_HIVSTAT_POS (Receiving ART, <15) / TX_CURR (Age/Sex/HIVStatus, <15)
+    - Only in OVC Programed PSNUs 
+    
+**OVC Programmed PSNU**
+  - Data Source: MSD
+  - PSNUs where there is a OVC programming - OVC_HIVSTAT Total Numerator > 0
 
 **Proxy Linkage**
   - Data Source: MSD

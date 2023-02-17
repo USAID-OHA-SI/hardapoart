@@ -8,6 +8,20 @@
   - Data Source: MSD
   - PLHIV / Population
 
+**OVC Coverage of CLHIV**
+  - Data Sources: MSD + NAT_SUBNAT MSD
+  - OVC_HIVSTAT_POS (Receiving ART, <15) / PLHIV (<15)
+    - Only in OVC Programed PSNUs 
+    
+**OVC Coverage of Children on Treatment**
+  - Data Sources: MSD
+  - OVC_HIVSTAT_POS (Receiving ART, <15) / TX_CURR (Age/Sex/HIVStatus, <15)
+    - Only in OVC Programed PSNUs 
+    
+**OVC Programmed PSNU**
+  - Data Source: MSD
+  - PSNUs where there is a OVC programming - OVC_HIVSTAT Total Numerator > 0
+  
 **Proxy Linkage**
   - Data Source: MSD
   - TX_NEW / HTS_TST_POS

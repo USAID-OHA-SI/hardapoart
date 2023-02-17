@@ -8,6 +8,10 @@
   - Data Source: MSD
   - PLHIV / Population
 
+**OVC Budget**
+  - Data Source: FSD
+  - Total COP Allocation for OVC beneficiaries
+
 **OVC Coverage of CLHIV**
   - Data Sources: MSD + NAT_SUBNAT MSD
   - OVC_HIVSTAT_POS (Receiving ART, <15) / PLHIV (<15)
@@ -61,6 +65,10 @@
   - Data Source: MSD
   - Prevention = PMTCT ANC, Post ANC1, VMMC
   - Case Finding = All other modalities
+  
+**OVC_SERV Target Adjustment**
+  - Data Source: MSD
+  - OVC_SERV disaggs excluding Age/Sex/DREAMS
   
 **Remove Known Issues**
   - Data Sources: MSD and FSD

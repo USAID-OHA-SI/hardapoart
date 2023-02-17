@@ -20,12 +20,7 @@
   library(mindthegap)
   library(ggrepel)
   library(janitor)
-  library(sf)
-  library(selfdestructin5)
-  library(gt)
   library(cascade) # Use dev version
-  library(ggpattern)
-  library(rcartocolor)
   library(here)
   library(assertr)
 
@@ -74,6 +69,8 @@
        "HTS_TST_POS",              "Total Numerator",
            "KP_PREV",              "Total Numerator",
           "OVC_SERV",              "Total Numerator",
+       "OVC_HIVSTAT",              "Total Numerator",
+   "OVC_HIVSTAT_POS",       "Age/Sex/ReportedStatus",
          "PMTCT_EID",              "Total Numerator",
           "PrEP_NEW",                      "Age/Sex",
           "PrEP_NEW",                    "KeyPopAbr",

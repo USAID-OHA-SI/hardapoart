@@ -104,6 +104,16 @@ df_natsubnat %>%
 
 ```
 
+### What proportion of C/ALHIV is the OVC Comprehensive program reaching?
+
+```{r ovc_tx}
+
+prep_ovc_coverage(df_msd, df_subnat, params$cntry, "PEPFAR") %>% 
+  viz_ovc_coverage()
+
+```
+
+
 ### 5. Does testing favor prevention or case finding and does this fit with where `r params$cntry` is in the epidemic?
 
 ```{r testing}
@@ -239,6 +249,20 @@ df_tens %>%
   - Data Source: MSD 
   - PLHIV / Population
 
+**OVC Coverage of CLHIV**
+  - Data Sources: MSD + NAT_SUBNAT MSD
+  - OVC_HIVSTAT_POS (Receiving ART, <15) / PLHIV (<15)
+    - Only in OVC Programed PSNUs 
+    
+**OVC Coverage of Children on Treatment**
+  - Data Sources: MSD
+  - OVC_HIVSTAT_POS (Receiving ART, <15) / TX_CURR (Age/Sex/HIVStatus, <15)
+    - Only in OVC Programed PSNUs 
+    
+**OVC Programmed PSNU**
+  - Data Source: MSD
+  - PSNUs where there is a OVC programming - OVC_HIVSTAT Total Numerator > 0
+  
 **Proxy Linkage**
   - Data Source: MSD
   - TX_NEW / HTS_TST_POS
@@ -307,10 +331,10 @@ df_tens %>%
 ### Data Sources
 
 **DATIM GENIE MER PSNU By IM** 
-  - Date accessed: 2023-02-12 
+  - Date accessed: 2023-02-16 
   - Date on data source: 2023-02-10 
   - Original Location: DATIM GENIE - https://www.datim.org/api/apps/Genie/ 
-  - Google Drive ID: 1JS4DCk_AOx39BF_WMh1yEl4wvm6HwcDg
+  - Google Drive ID: 1JMsTOxt-LUm61newJbMDsFrh-DNAfG72
 
 **Financial_Structured_Datasets_COP17-22_20221216** 
   - Date accessed: 2023-01-17 - Date on data source: 2022-12-16 

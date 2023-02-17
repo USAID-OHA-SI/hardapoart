@@ -106,23 +106,23 @@ viz_ovc_coverage <- function(df){
     dplyr::slice_max(order_by = clhiv, n = 20)
   
   df %>%
-    dplyr::ggplot(aes(y = forcats::fct_reorder(psnu, clhiv), alpha = fill_alpha)) +
-    dplyr::geom_col(aes(clhiv), color = glitr::moody_blue, fill = NA, na.rm = TRUE) +
-    dplyr::geom_col(aes(tx_curr), fill = glitr::moody_blue_light, alpha = .3, na.rm = TRUE) +
-    dplyr::geom_col(aes(ovc_hivstat_art), fill = glitr::moody_blue, na.rm = TRUE) +
-    dplyr::geom_text(aes(x = 0, label = scales::percent(coverage_clhiv, 1)),
+    ggplot2::ggplot(aes(y = forcats::fct_reorder(psnu, clhiv), alpha = fill_alpha)) +
+    ggplot2::geom_col(aes(clhiv), color = glitr::moody_blue, fill = NA, na.rm = TRUE) +
+    ggplot2::geom_col(aes(tx_curr), fill = glitr::moody_blue_light, alpha = .3, na.rm = TRUE) +
+    ggplot2::geom_col(aes(ovc_hivstat_art), fill = glitr::moody_blue, na.rm = TRUE) +
+    ggplot2::geom_text(aes(x = 0, label = scales::percent(coverage_clhiv, 1)),
                      hjust = -.5, family = "Source Sans Pro SemiBold", color = "white", na.rm = TRUE) +
-    dplyr::facet_grid(forcats::fct_rev(group) ~ ., scale = "free_y", space = "free", switch = "y") +
-    dplyr::scale_x_continuous(label = scales::comma, expand = c(.005, .005)) +
-    dplyr::scale_alpha_identity() +
-    dplyr::labs(x = NULL, y = NULL,
+    ggplot2::facet_grid(forcats::fct_rev(group) ~ ., scale = "free_y", space = "free", switch = "y") +
+    ggplot2::scale_x_continuous(label = scales::comma, expand = c(.005, .005)) +
+    ggplot2::scale_alpha_identity() +
+    ggplot2::labs(x = NULL, y = NULL,
                 subtitle = glue::glue("{unique(df$period)} {unique(df$funding_agency)}/{unique(df$country)} **<span style = 'color:{glitr::moody_blue};'>comprehensive OVC program </span>** covered {scales::percent(overall_cov,1)} of CLHIV in PSNUs with OVC Programming<br><span style = 'color:{glitr::moody_blue_light};'>TX_CURR <15</span> provided for reference"),
                 caption = glue::glue("{cap_note}{metadata_msd$caption} & {metadata_natsubnat$source} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     glitr::si_style_xgrid() +
-    dplyr::theme(strip.placement = "outside",
+    ggplot2::theme(strip.placement = "outside",
                  panel.spacing = ggplot2::unit(.5, "picas"),
                  strip.text.y = ggplot2::element_text(hjust = .5),
-                 plot.subtitle = ggplot2::element_markdown())
+                 plot.subtitle = ggtext::element_markdown())
   
   
 }  

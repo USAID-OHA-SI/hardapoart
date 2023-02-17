@@ -12,7 +12,7 @@
 prep_ovc_budget <- function(df_mer, df_fin, cntry){
   
   #clean exit if no data
-  if(cntry %ni% unique(df$country))
+  if(cntry %ni% unique(df_mer$country))
     return(NULL)
   
   #limit data to OVC non-DREAMS (and remove PEPFAR comparing agency)

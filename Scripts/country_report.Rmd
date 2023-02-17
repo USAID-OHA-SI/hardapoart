@@ -2,11 +2,10 @@
 title: '`r params$curr_pd` `r params$cntry` COP Priorities Supporting Visualizations'
 date: 'Generated: `r format(Sys.time(), "%Y-%m-%d")`'
 output:
-  pdf_document: default
-  html_document:
+  powerpoint_presentation:
+    reference_doc: ppt_template.pptx
     fig_width: 10
     fig_height: 5.625
-    dpi: 330
 params:
   curr_pd: FY23Q1
   cntry: Malawi
@@ -69,8 +68,6 @@ sup_text <- glue("Note that the visuals below largely reflect {params$cntry} as 
 
 `r if(params$agency == "PEPFAR"){sup_text}`
 
-### 1. Are there any major gaps in achievement as of `r params$curr_pd`?
-
 ```{r achievement}
 
 df_msd %>%
@@ -79,7 +76,6 @@ df_msd %>%
 
 ```
 
-### 2. Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
 
 ```{r epi_95s}
 
@@ -87,7 +83,6 @@ viz_unaids_all(params$cntry)
 
 ```
 
-### 3. What does HIV prevalence look like across sex / SNUs?
 
 ```{r prevalence}
 
@@ -97,7 +92,6 @@ df_natsubnat %>%
   
 ```
 
-### 4. Is there a youth bulge of PLHIV we need to plan for?
 
 ```{r youth_bulge}
 
@@ -107,7 +101,6 @@ df_natsubnat %>%
 
 ```
 
-### What proportion of C/ALHIV is the OVC Comprehensive program reaching?
 
 ```{r ovc_tx}
 
@@ -117,8 +110,6 @@ prep_ovc_coverage(df_msd, df_subnat, params$cntry, "PEPFAR") %>%
 ```
 
 
-### 5. Does testing favor prevention or case finding and does this fit with where `r params$cntry` is in the epidemic?
-
 ```{r testing}
 
  prep_modality_age(df_msd, params$cntry, "PEPFAR", trendscoarse) %>% 
@@ -126,7 +117,6 @@ prep_ovc_coverage(df_msd, df_subnat, params$cntry, "PEPFAR") %>%
 
 ```
 
-### 6. Are there any major issues with proxy linkage by geography/population that can be targeted?
 
 ```{r linkage}
 
@@ -136,7 +126,7 @@ df_msd %>%
 
 ```
 
-### 7. Are new patients being added to the areas with the largest gaps in treatment coverage?
+
 
 ```{r tx_gap, warning=FALSE}
 
@@ -144,7 +134,6 @@ viz_tx_all(params$cntry, params$agency)
 
 ```
 
-### 8. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
 
 ```{r vlsc_pop}
 
@@ -154,7 +143,6 @@ df_msd %>%
 
 ```
 
-### 9. Are certain populations groups being missed when trying to reach the 3rd 95?
 
 ```{r vlsc_kp}
 
@@ -164,7 +152,6 @@ df_msd %>%
 
 ```
 
-### 10. Are certain regions by age or sex being missed when trying to reach the 3rd 95?
 
 ```{r vlsc_geo}
 
@@ -175,7 +162,6 @@ df_msd %>%
 ```
 
 
-### 11. Is PrEP uptake relatively consistent across demographics?
 
 ```{r prep}
 
@@ -184,7 +170,6 @@ df_msd %>%
     viz_prep_disagg()
 ```
 
-### 12. Are there key gaps identified by the SID for `r params$cntry` to prioritize?
 
 ```{r sid}
 
@@ -194,7 +179,6 @@ df_sid %>%
 
 ```
 
-### 13. Have COP budgets been flatlining or changing in a similar manner across agencies?
 
 ```{r budget_share}
 
@@ -204,7 +188,6 @@ df_fsd %>%
 
 ```
 
-### Are OVC target increases proportional to changes in the OVC budget?
 
 ```{r ovc_budget}
 
@@ -215,8 +198,6 @@ df_msd %>%
 ```
 
 
-### 14. Does `r params$cntry` have the optimal mix of PEPFAR spending when thinking about sustainability?
-
 ```{r funding_distro}
 
 df_fsd %>% 
@@ -225,7 +206,6 @@ df_fsd %>%
 
 ```
 
-### 15. What does the current staffing footprint look like in `r params$cntry`? How do they align with sustainability and leveraging our assets?
 
 ```{r staffing_footprint}
 
@@ -235,7 +215,6 @@ df_hrh %>%
 
 ```
 
-### 16. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
 
 ```{r staffing_titles}
 
@@ -245,7 +224,6 @@ df_hrh %>%
 
 ```
 
-### 17. What are the gaps in adopting structural laws and policies towards the UNAIDS 10-10-10 goals?
 
 ```{r 10s_barriers}
 

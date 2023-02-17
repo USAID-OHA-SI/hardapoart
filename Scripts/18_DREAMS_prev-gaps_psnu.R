@@ -1,6 +1,6 @@
 # PROJECT:  hardapoart
 # AUTHOR:   Jessica Hoehner, Baboyma Kagniniwa | USAID
-# PURPOSE:  HIV prevalence of AGYW and ABYW ages 10-24 by geography
+# PURPOSE:  HIV prevalence of AGYW and ABYM ages 10-24 by geography
 # REF ID:   70241287 
 # LICENSE:  MIT
 # DATE:     2023-02-17
@@ -192,7 +192,7 @@ viz_hiv_prev_DREAMS <- function(df, save = F) {
     coord_flip() +
     labs(x = "", y = "", 
          title = glue::glue("{toupper(unique(df$country))} - {unique(df$fiscal_year)} HIV PREVALANCE"),
-         subtitle = glue::glue("HIV Prevalence Gap between <span style='color:{genoa}'>ABYW</span> & <span style='color:{moody_blue}'>AGYW</span> ages 10-24 by PSNU"),
+         subtitle = glue::glue("HIV Prevalence Gap between <span style='color:{genoa}'>ABYM</span> & <span style='color:{moody_blue}'>AGYW</span> ages 10-24 by PSNU"),
          caption = glue::glue("{cap_note}{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     si_style_nolines() +
     theme(plot.subtitle = element_markdown(),

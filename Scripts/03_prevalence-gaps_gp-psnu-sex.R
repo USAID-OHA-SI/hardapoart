@@ -200,7 +200,7 @@
       scale_y_continuous(labels = percent, position = "right") +
       coord_flip() +
       labs(x = "", y = "", 
-           title = glue::glue("{toupper(unique(df$country))} - {unique(df$fiscal_year)} HIV PREVALANCE"),
+           title = glue::glue("{toupper(unique(df$country))} - {unique(df$fiscal_year)} HIV PREVALENCE"),
            subtitle = glue::glue("HIV Prevalence Gap between <span style='color:{genoa}'>Male</span> & <span style='color:{moody_blue}'>Female</span> by PSNU"),
            caption = glue::glue("{cap_note}{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
       si_style_nolines() +

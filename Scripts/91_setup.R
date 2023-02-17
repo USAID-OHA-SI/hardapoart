@@ -106,6 +106,9 @@
     df_msd <- df_msd %>% 
       bind_rows(df_msd %>% mutate(funding_agency = "PEPFAR"))
     
+    #clean agency name
+    df_msd <- clean_agency(df_msd)
+    
     #resolve known issues
     df_msd <- resolve_knownissues(df_msd)
     
@@ -241,6 +244,9 @@
       return_latest("Financial") %>%
       read_psd()
     
+    #clean agency name
+    df_fsd <- clean_agency(df_fsd)
+    
     #remove M&O and supply chain
     df_fsd <- df_fsd %>% 
       remove_mo() %>% 
@@ -297,6 +303,9 @@
     return_latest("HRH") %>%
     read_psd()
 
+  #clean agency name
+  df_hrh <- clean_agency(df_hrh)
+  
   #limit to latest fy
   df_hrh <- df_hrh %>%
     filter(fiscal_year == max(fiscal_year, na.rm = TRUE))

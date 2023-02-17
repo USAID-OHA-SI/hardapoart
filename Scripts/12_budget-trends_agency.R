@@ -24,7 +24,6 @@ prep_budget_trends <- function(df, cntry){
   
   #agency and PEPFAR total
   df_int_agg <- df_int %>% 
-    gophr::clean_agency() %>% 
     dplyr::mutate(funding_agency = ifelse(funding_agency %in% c("USAID", "CDC"), funding_agency, "Other Agencies")) %>% 
     dplyr::count(country, planning_cycle, fiscal_year, funding_agency, wt = cop_budget_total, name = "cop_budget_total") %>% 
     dplyr::group_by(fiscal_year) %>% 

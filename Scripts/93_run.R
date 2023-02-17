@@ -33,7 +33,7 @@ library(rmarkdown)
   
   #output files
   reports <- tibble(
-    output_file = glue(here("markdown","{metadata_msd$curr_pd}_{vct_cntry_clean}_cop-support-viz_oha-siei.html")),
+    output_file = glue(here("markdown","{metadata_msd$curr_pd}_{vct_cntry_clean}_cop-support-viz_oha-siei.pptx")),
     params = map(vct_cntry, ~list(curr_pd = metadata_msd$curr_pd, cntry = ., agency = "PEPFAR"))
   )
   

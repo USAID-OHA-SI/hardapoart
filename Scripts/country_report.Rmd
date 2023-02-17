@@ -38,6 +38,8 @@ knitr::opts_chunk$set(echo = FALSE)
   source(here("Scripts/15_hrh-titles.R"))
   source(here("Scripts/16_10s_barriers.R"))
   source(here("Scripts/17_vl-coverage-and-suppression_kp-psnu.R"))
+  source(here("Scripts/18_ovc-coverage_psnu.R"))
+  source(here("Scripts/19_ovc-budget_agency.R"))
 
 # Helper function for assertr::verify() to show more descriptive error messages
   err_text <- function(msg) stop(msg, call = FALSE)
@@ -201,6 +203,17 @@ df_fsd %>%
 
 ```
 
+### Are OVC target increases proportional to changes in the OVC budget?
+
+```{r ovc_budget}
+
+df_msd %>% 
+  prep_ovc_budget(df_fsd, params$cntry) %>% 
+  viz_ovc_budget()
+
+```
+
+
 ### 14. Does `r params$cntry` have the optimal mix of PEPFAR spending when thinking about sustainability?
 
 ```{r funding_distro}
@@ -249,6 +262,10 @@ df_tens %>%
   - Data Source: MSD 
   - PLHIV / Population
 
+**OVC Budget**
+  - Data Source: FSD
+  - Total COP Allocation for OVC beneficiaries
+  
 **OVC Coverage of CLHIV**
   - Data Sources: MSD + NAT_SUBNAT MSD
   - OVC_HIVSTAT_POS (Receiving ART, <15) / PLHIV (<15)
@@ -306,6 +323,10 @@ df_tens %>%
   - Prevention = PMTCT ANC, Post ANC1, VMMC 
   - Case Finding = All other modalities
 
+**OVC_SERV Target Adjustment**
+  - Data Source: MSD
+  - OVC_SERV disaggs excluding Age/Sex/DREAMS
+  
 **Remove Known Issues** 
   - Data Sources: MSD and FSD 
   - Removes all flagged known issues flagged by SI and ER country backstops 

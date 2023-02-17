@@ -1,15 +1,16 @@
 ---
-title: "`r params$curr_pd` `r params$cntry` COP Priorities Supporting Visualizations"
-date: "Generated: `r format(Sys.time(), '%Y-%m-%d')`"
-output: 
+title: '`r params$curr_pd` `r params$cntry` COP Priorities Supporting Visualizations'
+date: 'Generated: `r format(Sys.time(), "%Y-%m-%d")`'
+output:
+  pdf_document: default
   html_document:
     fig_width: 10
     fig_height: 5.625
     dpi: 330
-params: 
-  curr_pd: "FY23Q1"
-  cntry: "Malawi"
-  agency: "USAID"
+params:
+  curr_pd: FY23Q1
+  cntry: Malawi
+  agency: USAID
 ---
 
 

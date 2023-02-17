@@ -63,7 +63,7 @@ viz_budget_trends <- function(df){
                        expand = c(.005, .005)) +
     ggplot2::scale_fill_manual(values = c("USAID" = glitr::denim,
                                  "CDC" = glitr::scooter_light,
-                                 "Other" = glitr::trolley_grey)) +
+                                 "Other Agencies" = glitr::trolley_grey)) +
     ggplot2::coord_cartesian(clip = "off") +
     ggplot2::labs(x = NULL, y = NULL,
          subtitle = glue("{unique(df$country)}'s annual budget shifts by agency (fiscal year)"),

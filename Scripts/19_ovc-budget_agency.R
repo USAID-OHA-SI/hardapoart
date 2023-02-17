@@ -45,9 +45,9 @@ prep_ovc_budget <- function(df_mer, df_fin, cntry){
   
   #add labels for slope chart
   df_ovc <- df_ovc %>% 
-    mutate(lab_min = dplyr::case_when(type == "Budget" & fiscal_year == min(fiscal_year) ~ scales::label_number(1, prefix = "$", scale_cut = cut_short_scale())(value),
+    mutate(lab_min = dplyr::case_when(type == "Budget" & fiscal_year == min(fiscal_year) ~ scales::label_number(.1, prefix = "$", scale_cut = cut_short_scale())(value),
                                       fiscal_year == min(fiscal_year) ~ scales::label_number(1, scale_cut = cut_short_scale())(value)),
-           lab_max = dplyr::case_when(type == "Budget" & fiscal_year == max(fiscal_year) ~ scales::label_number(1, prefix = "$", scale_cut = cut_short_scale())(value),
+           lab_max = dplyr::case_when(type == "Budget" & fiscal_year == max(fiscal_year) ~ scales::label_number(.1, prefix = "$", scale_cut = cut_short_scale())(value),
                                       fiscal_year == max(fiscal_year) ~ scales::label_number(1, scale_cut = cut_short_scale())(value)))
   
   return(df_ovc)
@@ -99,7 +99,7 @@ viz_ovc_budget <- function(df){
     ggplot2::facet_grid(forcats::fct_rev(type) ~ forcats::fct_reorder2(funding_agency, fiscal_year, value), 
                         scales = "free_y", switch = "y") +
     ggplot2::scale_y_continuous(label = scales::label_number(scale_cut = cut_short_scale())) +
-    ggplot2::scale_x_continuous(breaks = unique(df_ovc$fiscal_year)) +
+    ggplot2::scale_x_continuous(breaks = unique(df$fiscal_year)) +
     ggplot2::scale_fill_manual(values = c("USAID" = glitr::denim,
                                           "CDC" = glitr::scooter_light,
                                           "Other Agencies" = glitr::trolley_grey),

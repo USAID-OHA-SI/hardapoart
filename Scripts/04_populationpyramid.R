@@ -123,5 +123,14 @@
       legend.position = "none",
       plot.subtitle = element_markdown())
   
-}
-
+  }
+  
+# Example 
+  
+# df_zmb <- prep_pop_pyramid(df_natsubnat, "Zambia", "PLHIV")
+# 
+# viz_pop_pyramid(df_zmb)
+  
+# df_zmb <- prep_pop_pyramid(df_natsubnat, "Zambia", "POP_EST")
+# 
+# viz_pop_pyramid(df_zmb)

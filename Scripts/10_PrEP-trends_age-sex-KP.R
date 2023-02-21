@@ -57,7 +57,7 @@ viz_prep_disagg <-function (df){
   pd_brks <- unique(df$period) %>% str_replace(".*(2|4)$", "")
 
   # Facets
-  df %>% 
+  suppressWarnings(viz_prep_disagg<-df %>% 
     ggplot(aes(x=period, y=value)) + 
     geom_point(aes(color=sex), size = 4) +  
     geom_line(aes(group=sex, color=sex), linewidth=1)+
@@ -76,7 +76,7 @@ viz_prep_disagg <-function (df){
          title = glue("{toupper(unique(df$funding_agency))}/{toupper(unique(df$country))} PREP_NEW DISAGGREGATED BY AGE/SEX (<span style = 'color: #8980cb;'>FEMALE</span><span style = 'color: #287c6f;'>/MALE</span>) 
        AND <span style = 'color: #e07653;'>KEY POPULATIONS</span> <br />"),  
          caption = glue("{metadata_msd$caption} | USAID/OHA/SIEI |  Ref ID: {ref_id} v{vrsn}"))+
-    theme(plot.title = element_markdown())
+    theme(plot.title = element_markdown())) 
 } 
 
 

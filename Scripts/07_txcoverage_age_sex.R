@@ -5,6 +5,7 @@
 # LICENSE:  MIT
 # DATE:     2023-02-08
 # UPDATED: adapted from groundhog_day/Scripts/FY21Q4_TXCURRSUBNAT-coverage.R
+#test
 
  
 # MUNGE -------------------------------------------------------------------
@@ -70,7 +71,7 @@ prep_txnew_age_sex <- function(df, cntry, agency) {
                   indicator == "TX_NEW",
                   funding_agency == agency,
                   standardizeddisaggregate == "Age/Sex/HIVStatus") %>% 
-    dplyr::group_by(country, fiscal_year, funding_agency, indicator, ageasentered, sex) %>% 
+    dplyr::group_by(country, fiscal_year, funding_agency, indicator, age_2019, sex) %>% 
     dplyr::summarise(across(starts_with("qtr"), sum, na.rm = TRUE),
                      .groups = "drop") %>%
     gophr::reshape_msd() 
@@ -79,7 +80,7 @@ prep_txnew_age_sex <- function(df, cntry, agency) {
     dplyr::mutate(ctry_name = glue::glue("{unique(df$funding_agency)}/{unique(df$country)}<br>")) %>%
     dplyr::mutate(fill_color = ifelse(sex == "Male", glitr::genoa_light, glitr::moody_blue_light)) %>% 
     dplyr::rename(cntry = country) %>% 
-    dplyr::group_by(cntry, period, indicator, ageasentered, sex) %>% 
+    dplyr::group_by(cntry, period, indicator, age_2019, sex) %>% 
     dplyr::mutate(val_lab = glue::glue("{clean_number(value)}")) %>% 
     dplyr::ungroup()
     
@@ -138,9 +139,9 @@ viz_txnew_age_sex <- function(df) {
   vrsn <- 1 
   
   df %>% 
-    dplyr::filter(ageasentered != "Unknown Age",
+    dplyr::filter(age_2019 != "Unknown Age",
            period == metadata_msd$curr_pd) %>% 
-    ggplot2::ggplot(aes(value, ageasentered, fill = fill_color, color = fill_color)) +
+    ggplot2::ggplot(aes(value, age_2019, fill = fill_color, color = fill_color)) +
     ggplot2::geom_col(aes(fill = fill_color), width = .8, alpha = .8) +
     #facet_wrap(~sex, switch = "y", scales = "free_x") +
     ggplot2::facet_grid(sex ~ forcats::fct_reorder(ctry_name, value, sum, na.rm = TRUE, .desc = TRUE),

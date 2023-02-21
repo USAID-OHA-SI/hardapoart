@@ -93,11 +93,14 @@
                 qtr2 = sum(qtr2, na.rm = TRUE),
                 qtr3 = sum(qtr3, na.rm = TRUE),
                 qtr4 = sum(qtr4, na.rm = TRUE),
-                .groups = "drop") 
+                .groups = "drop") %>%
+                reshape_msd() 
+    
+    if(nrow(df_tx) == 0)
+    return(NULL)
     
     # Reshape long and calculate VLC/S
     df_vl <- df_tx %>% 
-      reshape_msd() %>% 
       select(-period_type) %>% 
       pivot_wider(names_from = indicator, values_from = value) %>% 
       rename_with(str_to_lower) %>% 

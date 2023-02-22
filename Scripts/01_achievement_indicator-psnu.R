@@ -57,6 +57,7 @@ prep_achv_psnu <- function (df, cntry, agency){
     
    #calculate achievement and add colors 
    df_achv <- adorn_achievement(df_achv, metadata_msd$curr_qtr)
+   
 
    #viz adjustments
    df_achv_viz <- df_achv %>% 
@@ -72,13 +73,16 @@ prep_achv_psnu <- function (df, cntry, agency){
 
   #adjust facet label to include indicator and national values
   df_achv_viz <- df_achv_viz %>% 
+         mutate(indicator=case_when(indicator %in% snapshot_ind ~ paste(indicator, "(SS)"), TRUE ~ indicator)) %>%
          mutate(ind_w_glob_vals = case_when(psnuuid == "GLOBAL" & is.na(targets) ~ glue("**{indicator}**<br><span style = 'font-size:11pt;'>No MER reporting</span>"),
                                   psnuuid == "GLOBAL" ~ glue("**{indicator}**<br><span style = 'font-size:11pt;'>{clean_number(cumulative)} / {clean_number(targets)}</span>"))) %>% 
          group_by(indicator) %>% 
          fill(ind_w_glob_vals, .direction = "downup") %>% 
          ungroup() %>% 
          arrange(indicator) %>% 
-         mutate(ind_w_glob_vals = fct_inorder(ind_w_glob_vals))
+         mutate(ind_w_glob_vals = fct_inorder(ind_w_glob_vals)) 
+     
+  
   
     return(df_achv_viz)
   
@@ -94,6 +98,16 @@ viz_achv_psnu <- function (df){
     #Reference ID to be used for searching GitHub
     ref_id <- "d51dd3f9"
     vrsn <- 1 
+    
+    lab_q4<-c("<75%","75-89%","90-110%","+110%")
+    
+    lab_leg<-case_when(metadata_msd$curr_qtr==1 ~  c("<15%","15-35%",">35%"))%>%
+    ## NOTE: Will need to add Q2, Q3, Q4 later
+                      # metadata_msd$curr_qtr==2 ~  c("<75%","75-89%","90-110%","+110%"),
+                      # metadata_msd$curr_qtr==3 ~  c("<75%","75-89%","90-110%","+110%"),
+                      # metadata_msd$curr_qtr==4 ~  c("<75%","75-89%","90-110%","+110%")) %>%
+              paste("| SS:",lab_q4)
+
     
     df %>% 
         ggplot(aes(achievement, indicator, color = achv_color)) +
@@ -113,11 +127,13 @@ viz_achv_psnu <- function (df){
                   color = "#202020", family = "Source Sans Pro", size = 10/.pt) +
         coord_cartesian(clip = "off") + # default decides how much to show - expands padding
         scale_x_continuous(limit=c(0,1.1),oob=scales::squish, breaks = seq(0, 1.25, .25), label = percent_format(1)) + #capping achievement at 110
-        scale_color_identity() + #whatever value is defined by color -- use that value from data frame
+        scale_color_identity(guide="legend", breaks=c("#ff939a","#ffcaa2","#5BB5D5","#e6e6e6"),
+                             labels=lab_leg,
+                             name="Achievement: Cumulative indicators | Snapshot indicators") + #whatever value is defined by color -- use that value from data frame
         facet_wrap(~ind_w_glob_vals, scales = "free_y", nrow=2) +
         labs(x = NULL, y = NULL,
              title = glue("{metadata_msd$curr_pd} {unique(df$funding_agency)}/{unique(df$country)} achievement, year to date") %>% toupper,
-             subtitle = glue("Country achievement (large, labeled points) with PSNU achievement reference points <br>"),
+             subtitle = glue("Country achievement (large, labeled points) with PSNU achievement reference points, SS indicates snapshot indicator<br>"),
              caption = glue("Target achievement capped at 110%
                               Source: {metadata_msd$source} | USAID/OHA/SIEI |  Ref ID: {ref_id} v{vrsn}")) +
         si_style_nolines() +
@@ -126,8 +142,10 @@ viz_achv_psnu <- function (df){
           axis.text.y = element_blank(),
           plot.subtitle = element_markdown(),
           strip.text = element_markdown(),
-          panel.spacing.y = unit(0, "lines"))
-
+          panel.spacing.y = unit(0, "lines"),
+          legend.position="bottom")
+          #legend.title=element_text(vjust = 2, hjust=0.5))
+       
 }  
   
 

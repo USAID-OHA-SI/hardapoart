@@ -129,7 +129,7 @@ prep_ovc_coverage(df_msd, df_subnat, params$cntry, "PEPFAR") %>%
 ```
 
 
-### Do at least 95% of TB cases know their HIV status across PSNUs in `r params$cntry`?
+### Is the percentage of TB patients that know their HIV status (TB_STAT % coverage) close to a 95% to align with the first 95 target?
 
 ```{r tb_stat_coverage}
 

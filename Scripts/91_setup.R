@@ -331,7 +331,7 @@
 # LOAD UNAIDS -------------------------------------------------------------
 
   #store meta data
-  metadata_unaids <- list(caption = glue("Source: {source_note}"))
+  metadata_unaids <- list(caption = glue("Source: {str_remove(source_note, '[:digit:]{4} ')} [released {str_extract(source_note, '[:digit:]{4}')}]"))
   
   #import
   df_unaids_tt <- pull_unaids(TRUE, "HIV Test & Treat")

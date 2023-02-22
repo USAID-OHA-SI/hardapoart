@@ -2,7 +2,6 @@
 title: '`r params$curr_pd` `r params$cntry` COP Priorities Supporting Visualizations'
 date: 'Generated: `r format(Sys.time(), "%Y-%m-%d")`'
 output:
-  pdf_document: default
   html_document:
     fig_width: 10
     fig_height: 5.625
@@ -41,7 +40,7 @@ knitr::opts_chunk$set(echo = FALSE)
   source(here("Scripts/17_vl-coverage-and-suppression_kp-psnu.R"))
   source(here("Scripts/18_ovc-coverage_psnu.R"))
   source(here("Scripts/19_ovc-budget_agency.R"))
-  source(here("Scripts/20_tbstat_coverage.R"))
+  source(here("Scripts/20_DREAMS_prev-gaps_psnu.R"))
 
 
 # Helper function for assertr::verify() to show more descriptive error messages
@@ -93,23 +92,46 @@ viz_unaids_all(params$cntry)
 
 ```{r prevalence}
 
+suppressWarnings(
 df_natsubnat %>% 
   prep_hiv_prevalence(params$cntry) %>% 
   viz_hiv_prevalence()
+)
   
 ```
 
+### What does HIV prevalence look like across AGYW/ABYM across SNUs?
+
+```{r prevalence_dreams}
+suppressWarnings(
+df_natsubnat %>% 
+  prep_hiv_prev_DREAMS(params$cntry) %>% 
+  viz_hiv_prevalence()
+)
+```
+
+
+
 ### 4. Is there a youth bulge of PLHIV we need to plan for?
 
-```{r youth_bulge}
+```{r youth_bulge_plhiv}
 
 df_natsubnat %>% 
-  prep_pop_pyramid(params$cntry) %>% 
+  prep_pop_pyramid(params$cntry, "PLHIV") %>% 
   viz_pop_pyramid()
 
 ```
 
-### What proportion of C/ALHIV is the OVC Comprehensive program reaching?
+### Is there a youth bulge of the overall population we need to plan for?
+```{r youth_bulge_pop}
+
+df_natsubnat %>% 
+  prep_pop_pyramid(params$cntry, "POP_EST") %>% 
+  viz_pop_pyramid()
+
+```
+
+### What proportion of PEPFAR's <15 on treatment is the OVC Comprehensive program reaching?
 
 ```{r ovc_tx}
 
@@ -189,10 +211,11 @@ df_msd %>%
 ### 11. Is PrEP uptake relatively consistent across demographics?
 
 ```{r prep}
-
+suppressWarnings(
 df_msd %>%
     prep_prep_disagg(params$cntry, params$agency) %>%
     viz_prep_disagg()
+)
 ```
 
 ### 12. Are there key gaps identified by the SID for `r params$cntry` to prioritize?

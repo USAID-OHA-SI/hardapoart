@@ -73,6 +73,23 @@ viz_ovc_budget <- function(df){
     ungroup() %>% 
     dplyr::filter(!is.na(growth_rate))
   
+  #append msg if no budget data
+  df_missing_msg <- df %>% 
+    dplyr::group_by(funding_agency, country, type) %>% 
+    dplyr::summarize(value = sum(value, na.rm = TRUE),
+                     fiscal_year = max(fiscal_year) - .5, 
+                     .groups = "drop") %>% 
+    tidyr::pivot_wider(names_from = type,
+                       names_glue = "{tolower(type)}") %>% 
+    dplyr::mutate(growth_rate = dplyr::case_when(is.na(budget) ~ "No OVC beneficiary \nfunding designation")) %>% 
+    dplyr::filter(is.na(budget)) %>% 
+    dplyr::mutate(value_plot = max(df$value, na.rm  = TRUE)/2,
+                  value = 0,
+                  type = "Budget") %>% 
+    dplyr::select(-c(targets, budget))
+  
+  df_gr <- dplyr::bind_rows(df_gr, df_missing_msg)
+  
   #information to plug into title
   df_title <- df_gr %>% 
     filter(funding_agency == "USAID") %>% 
@@ -96,7 +113,7 @@ viz_ovc_budget <- function(df){
                        aes(fiscal_year, value_plot, label = growth_rate),
                        family = "Source Sans Pro", color = glitr::matterhorn, size = 10/.pt,
                        vjust = -.5, na.rm = TRUE) +
-    ggplot2::facet_grid(forcats::fct_rev(type) ~ forcats::fct_reorder2(funding_agency, fiscal_year, value), 
+    ggplot2::facet_grid(forcats::fct_rev(type) ~ forcats::fct_reorder2(funding_agency, fiscal_year, value, .na_rm = TRUE), 
                         scales = "free_y", switch = "y") +
     ggplot2::scale_y_continuous(label = scales::label_number(scale_cut = cut_short_scale())) +
     ggplot2::scale_x_continuous(breaks = unique(df$fiscal_year)) +

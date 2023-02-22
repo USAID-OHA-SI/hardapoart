@@ -62,6 +62,7 @@ editor:
   source(here("Scripts/17_vl-coverage-and-suppression_kp-psnu.R"))
   source(here("Scripts/18_ovc-coverage_psnu.R"))
   source(here("Scripts/19_ovc-budget_agency.R"))
+  source(here("Scripts/20_DREAMS_prev-gaps_psnu.R"))
 
 # Helper function for assertr::verify() to show more descriptive error messages
   err_text <- function(msg) stop(msg, call = FALSE)

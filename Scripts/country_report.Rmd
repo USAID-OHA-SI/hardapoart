@@ -42,6 +42,7 @@ knitr::opts_chunk$set(echo = FALSE)
   source(here("Scripts/19_ovc-budget_agency.R"))
   source(here("Scripts/20_DREAMS_prev-gaps_psnu.R"))
 
+
 # Helper function for assertr::verify() to show more descriptive error messages
   err_text <- function(msg) stop(msg, call = FALSE)
 
@@ -147,6 +148,15 @@ prep_ovc_coverage(df_msd, df_subnat, params$cntry, "PEPFAR") %>%
  prep_modality_age(df_msd, params$cntry, "PEPFAR", trendscoarse) %>% 
    viz_modality_age()
 
+```
+
+
+### Is the percentage of TB patients that know their HIV status (TB_STAT % coverage) close to a 95% to align with the first 95 target?
+
+```{r tb_stat_coverage}
+
+prep_tbstat_cov(df_msd, params$cntry, "PEPFAR") %>% 
+  viz_tbstat_cov()
 ```
 
 ### 6. Are there any major issues with proxy linkage by geography/population that can be targeted?

@@ -178,10 +178,11 @@ df_msd %>%
 ### 11. Is PrEP uptake relatively consistent across demographics?
 
 ```{r prep}
-
+suppressWarnings(
 df_msd %>%
     prep_prep_disagg(params$cntry, params$agency) %>%
     viz_prep_disagg()
+)
 ```
 
 ### 12. Are there key gaps identified by the SID for `r params$cntry` to prioritize?

@@ -95,7 +95,7 @@ viz_ovc_coverage <- function(df){
     return(print(paste("No data available.")))
   
   ref_id <- "7f4c9dc0" #id for adorning to plots, making it easier to find on GH
-  vrsn <- 1 
+  vrsn <- 2 
   
   #overall coverage to include in plot title
   overall_cov <- sum(df$ovc_hivstat_art, na.rm = TRUE) / sum(df$tx_curr)
@@ -106,7 +106,7 @@ viz_ovc_coverage <- function(df){
     dplyr::slice_max(order_by = tx_curr, n = 20)
   
   df %>%
-    ggplot2::ggplot(aes(y = forcats::fct_reorder(psnu, clhiv), alpha = fill_alpha)) +
+    ggplot2::ggplot(aes(y = forcats::fct_reorder(psnu, tx_curr, na.rm = TRUE), alpha = fill_alpha)) +
     ggplot2::geom_col(aes(tx_curr), color = glitr::moody_blue, fill = NA, na.rm = TRUE) +
     ggplot2::geom_col(aes(ovc_hivstat_art), fill = glitr::moody_blue, na.rm = TRUE) +
     ggplot2::geom_text(aes(x = 0, label = scales::percent(coverage_tx, 1)),

@@ -207,8 +207,3 @@ viz_hiv_prev_DREAMS <- function(df, save = F) {
   }
 }
 
-# Example
-
-df_zmb <- prep_hiv_prev_DREAMS(df_natsubnat, "Zambia")
-
-viz_hiv_prev_DREAMS(df_zmb)

@@ -63,6 +63,7 @@ editor:
   source(here("Scripts/18_ovc-coverage_psnu.R"))
   source(here("Scripts/19_ovc-budget_agency.R"))
   source(here("Scripts/20_DREAMS_prev-gaps_psnu.R"))
+  source(here("Scripts/20_tbstat_coverage.R"))
 
 # Helper function for assertr::verify() to show more descriptive error messages
   err_text <- function(msg) stop(msg, call = FALSE)
@@ -118,11 +119,10 @@ sup_text <- glue("Note that the visuals below largely reflect the {params$cntry}
 ```{r}
 #| label: prevalence
 
-suppressWarnings(
 df_natsubnat %>% 
   prep_hiv_prevalence(params$cntry, "POP") %>% 
   viz_hiv_prevalence()
-)
+
   
 ```
 
@@ -131,11 +131,10 @@ df_natsubnat %>%
 ```{r}
 #| label: prevalence_dreams
 
-suppressWarnings(
 df_natsubnat %>% 
   prep_hiv_prev_DREAMS(params$cntry) %>% 
   viz_hiv_prevalence()
-)
+
 ```
 
 ### 4. Is there a youth bulge of PLHIV we need to plan for?
@@ -240,9 +239,12 @@ df_msd %>%
 ```{r}
 # | label: prep
 
-df_msd %>%
+suppressMessages(
+  df_msd %>%
     prep_prep_disagg(params$cntry, params$agency) %>%
-    viz_prep_disagg()
+    viz_prep_disagg() %>% 
+    print()
+)
 ```
 
 ### 12. Are there key gaps identified by the SID for `r params$cntry` to prioritize?

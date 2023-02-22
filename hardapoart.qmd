@@ -117,10 +117,25 @@ sup_text <- glue("Note that the visuals below largely reflect the {params$cntry}
 
 ```{r}
 #| label: prevalence
+
+suppressWarnings(
 df_natsubnat %>% 
   prep_hiv_prevalence(params$cntry, "POP") %>% 
   viz_hiv_prevalence()
+)
   
+```
+
+### What does HIV prevalence look like across AGYW/ABYM across SNUs?
+
+```{r}
+#| label: prevalence_dreams
+
+suppressWarnings(
+df_natsubnat %>% 
+  prep_hiv_prev_DREAMS(params$cntry) %>% 
+  viz_hiv_prevalence()
+)
 ```
 
 ### 4. Is there a youth bulge of PLHIV we need to plan for?

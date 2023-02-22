@@ -92,11 +92,25 @@ viz_unaids_all(params$cntry)
 
 ```{r prevalence}
 
+suppressWarnings(
 df_natsubnat %>% 
   prep_hiv_prevalence(params$cntry) %>% 
   viz_hiv_prevalence()
+)
   
 ```
+
+### What does HIV prevalence look like across AGYW/ABYM across SNUs?
+
+```{r prevalence_dreams}
+suppressWarnings(
+df_natsubnat %>% 
+  prep_hiv_prev_DREAMS(params$cntry) %>% 
+  viz_hiv_prevalence()
+)
+```
+
+
 
 ### 4. Is there a youth bulge of PLHIV we need to plan for?
 

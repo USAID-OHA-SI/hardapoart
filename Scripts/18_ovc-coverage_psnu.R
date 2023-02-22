@@ -72,7 +72,7 @@ prep_ovc_coverage <- function(df_mer, df_subnat, cntry, agency){
     df_ovctx <- dplyr::mutate(df_ovctx, tx_curr = NA)
   
   #expected coverage
-  cov_rate <- .75
+  cov_rate <- .9
   
   #calculate coverage
   df_ovctx <- df_ovctx %>% 
@@ -98,26 +98,25 @@ viz_ovc_coverage <- function(df){
   vrsn <- 1 
   
   #overall coverage to include in plot title
-  overall_cov <- sum(df$ovc_hivstat_art, na.rm = TRUE) / sum(df$clhiv)
+  overall_cov <- sum(df$ovc_hivstat_art, na.rm = TRUE) / sum(df$tx_curr)
   
   #limit to 21 bars (overall + 20 psnus)
-  cap_note <- ifelse(nrow(df) > 20, "Note: Limited to the largest 20 CLHIV PSNUs\n", "")
+  cap_note <- ifelse(nrow(df) > 20, "Note: Limited to the largest 20 TX_CURR <15 PSNUs\n", "")
   df <- df %>% 
-    dplyr::slice_max(order_by = clhiv, n = 20)
+    dplyr::slice_max(order_by = tx_curr, n = 20)
   
   df %>%
     ggplot2::ggplot(aes(y = forcats::fct_reorder(psnu, clhiv), alpha = fill_alpha)) +
-    ggplot2::geom_col(aes(clhiv), color = glitr::moody_blue, fill = NA, na.rm = TRUE) +
-    ggplot2::geom_col(aes(tx_curr), fill = glitr::moody_blue_light, alpha = .3, na.rm = TRUE) +
+    ggplot2::geom_col(aes(tx_curr), color = glitr::moody_blue, fill = NA, na.rm = TRUE) +
     ggplot2::geom_col(aes(ovc_hivstat_art), fill = glitr::moody_blue, na.rm = TRUE) +
-    ggplot2::geom_text(aes(x = 0, label = scales::percent(coverage_clhiv, 1)),
+    ggplot2::geom_text(aes(x = 0, label = scales::percent(coverage_tx, 1)),
                      hjust = -.5, family = "Source Sans Pro SemiBold", color = "white", na.rm = TRUE) +
     ggplot2::facet_grid(forcats::fct_rev(group) ~ ., scale = "free_y", space = "free", switch = "y") +
     ggplot2::scale_x_continuous(label = scales::comma, expand = c(.005, .005)) +
     ggplot2::scale_alpha_identity() +
     ggplot2::labs(x = NULL, y = NULL,
-                subtitle = glue::glue("{unique(df$period)} {unique(df$funding_agency)}/{unique(df$country)} **<span style = 'color:{glitr::moody_blue};'>comprehensive OVC program </span>** covered {scales::percent(overall_cov,1)} of CLHIV in PSNUs with OVC Programming<br><span style = 'color:{glitr::moody_blue_light};'>TX_CURR <15</span> provided for reference"),
-                caption = glue::glue("{cap_note}{metadata_msd$caption} & {metadata_natsubnat$source} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
+                subtitle = glue::glue("{unique(df$period)} {unique(df$funding_agency)}/{unique(df$country)} **<span style = 'color:{glitr::moody_blue};'>comprehensive OVC program </span>** covered {scales::percent(overall_cov,1)} of <15 on Treatment in PSNUs with OVC Programming"),
+                caption = glue::glue("{cap_note}{metadata_msd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     glitr::si_style_xgrid() +
     ggplot2::theme(strip.placement = "outside",
                  panel.spacing = ggplot2::unit(.5, "picas"),

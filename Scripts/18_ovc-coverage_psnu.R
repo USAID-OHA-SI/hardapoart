@@ -4,7 +4,7 @@
 # REF ID:   7f4c9dc0 
 # LICENSE:  MIT
 # DATE:     2023-02-16
-# UPDATED: 
+# UPDATED:  2023-02-22
 
 
 # MUNGE -------------------------------------------------------------------
@@ -72,14 +72,14 @@ prep_ovc_coverage <- function(df_mer, df_subnat, cntry, agency){
     df_ovctx <- dplyr::mutate(df_ovctx, tx_curr = NA)
   
   #expected coverage
-  cov_rate <- .9
+  cov_rate <- .75
   
   #calculate coverage
   df_ovctx <- df_ovctx %>% 
     dplyr::mutate(coverage_clhiv = ovc_hivstat_art / clhiv,
                   coverage_tx = ovc_hivstat_art / tx_curr,
-                  group = ifelse(coverage_clhiv <=cov_rate, glue("Below {percent(cov_rate)} Coverage"), ""),
-                  fill_alpha = ifelse(coverage_clhiv <=cov_rate, .8, .5))
+                  group = ifelse(coverage_tx <=cov_rate, glue("Below {percent(cov_rate)} Coverage"), ""),
+                  fill_alpha = ifelse(coverage_tx <=cov_rate, .8, .5))
   
   return(df_ovctx)
 }

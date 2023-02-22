@@ -154,7 +154,7 @@ df_natsubnat %>%
 
 ```
 
-### What proportion of C/ALHIV is the OVC Comprehensive program reaching?
+### What proportion of PEPFAR's <15 on treatment is the OVC Comprehensive program reaching?
 
 ```{r}
 # | label: ovc_tx

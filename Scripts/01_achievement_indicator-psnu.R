@@ -127,7 +127,8 @@ viz_achv_psnu <- function (df){
                   color = "#202020", family = "Source Sans Pro", size = 10/.pt) +
         coord_cartesian(clip = "off") + # default decides how much to show - expands padding
         scale_x_continuous(limit=c(0,1.1),oob=scales::squish, breaks = seq(0, 1.25, .25), label = percent_format(1)) + #capping achievement at 110
-        scale_color_identity(guide="legend", breaks=c("#ff939a","#ffcaa2","#5BB5D5","#e6e6e6"),
+        scale_color_identity(guide=guide_legend(direction = "horizontal", title.position = "top",
+                                                title.hjust = 0), breaks=c("#ff939a","#ffcaa2","#5BB5D5","#e6e6e6"),
                              labels=lab_leg,
                              name="Achievement: Cumulative indicators | Snapshot indicators") + #whatever value is defined by color -- use that value from data frame
         facet_wrap(~ind_w_glob_vals, scales = "free_y", nrow=2) +

@@ -20,7 +20,7 @@ prep_ovc_budget <- function(df_mer, df_fin, cntry){
     dplyr::filter(indicator == "OVC_SERV",
                   stringr::str_detect(standardizeddisaggregate, "Age/Sex/(?!DREAMS)"),
                   country == cntry,
-                  funding_agency != "PEPFAR")
+                  !funding_agency %in% c("PEPFAR", "Dedup"))
   
   if(nrow(df_ovc) == 0)
     return(NULL)
@@ -31,6 +31,7 @@ prep_ovc_budget <- function(df_mer, df_fin, cntry){
     dplyr::count(fiscal_year, country, funding_agency, wt = targets, name = "value") %>% 
     dplyr::mutate(type = "Targets")
   
+  
   #filter FSD for COP budgets to OVC beneficiaries
   df_budget <- df_fsd %>% 
     filter(beneficiary == "OVC",
@@ -40,8 +41,10 @@ prep_ovc_budget <- function(df_mer, df_fin, cntry){
     dplyr::count(fiscal_year, country, funding_agency, wt = cop_budget_total, name = "value") %>% 
     dplyr::mutate(type = "Budget")
   
-  #bind data
-  df_ovc <- bind_rows(df_ovc, df_budget)
+  #bind data and complete
+  df_ovc <- bind_rows(df_ovc, df_budget) %>% 
+    tidyr::complete(fiscal_year, nesting(funding_agency, type), fill = list(value = 0)) %>% 
+    tidyr::fill(country, .direction = "updown")
   
   #add labels for slope chart
   df_ovc <- df_ovc %>% 
@@ -62,16 +65,34 @@ viz_ovc_budget <- function(df){
     return(print(paste("No data available.")))
   
   ref_id <- "15e7b94c" #id for adorning to plots, making it easier to find on GH
-  vrsn <- 1
+  vrsn <- 2
   
   #rate of change for budget and targets
   df_gr <- df %>% 
     dplyr::group_by(funding_agency, type) %>% 
-    dplyr::mutate(growth_rate = ((value / lag(value, order_by = fiscal_year))-1) %>%  scales::percent(1),
+    dplyr::mutate(growth_rate = ((value / lag(value, order_by = fiscal_year))-1) %>%  scales::percent(1) %>% na_if("Inf"),
                   fiscal_year = fiscal_year - .5,
                   value_plot = (value + lag(value)) / 2) %>% 
     ungroup() %>% 
     dplyr::filter(!is.na(growth_rate))
+  
+  #append msg if no budget data
+  df_missing_msg <- df %>% 
+    dplyr::group_by(funding_agency, country, type) %>% 
+    dplyr::summarize(value = sum(value, na.rm = TRUE),
+                     # fiscal_year = max(fiscal_year) - .5, 
+                     .groups = "drop") %>% 
+    tidyr::pivot_wider(names_from = type,
+                       names_glue = "{tolower(type)}") %>% 
+    dplyr::mutate(growth_rate = dplyr::case_when(is.na(budget) ~ "No OVC beneficiary \nfunding designation")) %>% 
+    dplyr::filter(is.na(budget)) %>% 
+    dplyr::mutate(value_plot = max(df$value, na.rm  = TRUE)/2,
+                  fiscal_year = max(df$fiscal_year) - .5,
+                  value = 0,
+                  type = "Budget") %>% 
+    dplyr::select(-c(targets, budget))
+  
+  df_gr <- dplyr::bind_rows(df_gr, df_missing_msg)
   
   #information to plug into title
   df_title <- df_gr %>% 
@@ -96,7 +117,7 @@ viz_ovc_budget <- function(df){
                        aes(fiscal_year, value_plot, label = growth_rate),
                        family = "Source Sans Pro", color = glitr::matterhorn, size = 10/.pt,
                        vjust = -.5, na.rm = TRUE) +
-    ggplot2::facet_grid(forcats::fct_rev(type) ~ forcats::fct_reorder2(funding_agency, fiscal_year, value), 
+    ggplot2::facet_grid(forcats::fct_rev(type) ~ forcats::fct_reorder2(funding_agency, fiscal_year, value, .na_rm = TRUE), 
                         scales = "free_y", switch = "y") +
     ggplot2::scale_y_continuous(label = scales::label_number(scale_cut = cut_short_scale())) +
     ggplot2::scale_x_continuous(breaks = unique(df$fiscal_year)) +

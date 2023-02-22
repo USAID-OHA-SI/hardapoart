@@ -41,6 +41,8 @@ knitr::opts_chunk$set(echo = FALSE)
   source(here("Scripts/17_vl-coverage-and-suppression_kp-psnu.R"))
   source(here("Scripts/18_ovc-coverage_psnu.R"))
   source(here("Scripts/19_ovc-budget_agency.R"))
+  source(here("Scripts/20_tbstat_coverage.R"))
+
 
 # Helper function for assertr::verify() to show more descriptive error messages
   err_text <- function(msg) stop(msg, call = FALSE)
@@ -124,6 +126,15 @@ prep_ovc_coverage(df_msd, df_subnat, params$cntry, "PEPFAR") %>%
  prep_modality_age(df_msd, params$cntry, "PEPFAR", trendscoarse) %>% 
    viz_modality_age()
 
+```
+
+
+### Do at least 95% of TB cases know their HIV status across PSNUs in `r params$cntry`?
+
+```{r tb_stat_coverage}
+
+prep_tbstat_cov(df_msd, params$cntry, "PEPFAR") %>% 
+  viz_tbstat_cov()
 ```
 
 ### 6. Are there any major issues with proxy linkage by geography/population that can be targeted?

@@ -117,7 +117,7 @@ sup_text <- glue("Note that the visuals below largely reflect the {params$cntry}
 ```{r}
 #| label: prevalence
 df_natsubnat %>% 
-  prep_hiv_prevalence(params$cntry) %>% 
+  prep_hiv_prevalence(params$cntry, "POP") %>% 
   viz_hiv_prevalence()
   
 ```
@@ -125,10 +125,21 @@ df_natsubnat %>%
 ### 4. Is there a youth bulge of PLHIV we need to plan for?
 
 ```{r}
-# | label: youth_bulge
+# | label: youth_bulge_plhiv
 
 df_natsubnat %>% 
-  prep_pop_pyramid(params$cntry) %>% 
+  prep_pop_pyramid(params$cntry, "PLHIV") %>% 
+  viz_pop_pyramid()
+
+```
+
+### Is there a youth bulge of the overall population we need to plan for?
+
+```{r}
+# | label: youth_bulge_pop
+
+df_natsubnat %>% 
+  prep_pop_pyramid(params$cntry, "Pop") %>% 
   viz_pop_pyramid()
 
 ```

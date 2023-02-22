@@ -99,10 +99,19 @@ df_natsubnat %>%
 
 ### 4. Is there a youth bulge of PLHIV we need to plan for?
 
-```{r youth_bulge}
+```{r youth_bulge_plhiv}
 
 df_natsubnat %>% 
-  prep_pop_pyramid(params$cntry) %>% 
+  prep_pop_pyramid(params$cntry, "PLHIV") %>% 
+  viz_pop_pyramid()
+
+```
+
+### Is there a youth bulge of the overall population we need to plan for?
+```{r youth_bulge_pop}
+
+df_natsubnat %>% 
+  prep_pop_pyramid(params$cntry, "POP_EST") %>% 
   viz_pop_pyramid()
 
 ```
@@ -178,10 +187,11 @@ df_msd %>%
 ### 11. Is PrEP uptake relatively consistent across demographics?
 
 ```{r prep}
-
+suppressWarnings(
 df_msd %>%
     prep_prep_disagg(params$cntry, params$agency) %>%
     viz_prep_disagg()
+)
 ```
 
 ### 12. Are there key gaps identified by the SID for `r params$cntry` to prioritize?

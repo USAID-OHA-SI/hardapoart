@@ -66,8 +66,10 @@ prep_sid <- function(df, cntry){
 
 viz_sid <- function(df){
   
+  q <- glue::glue("Are there key gaps identified by the SID for to prioritize?") %>% toupper 
+    
   if(is.null(df) || nrow(df) == 0)
-    return(print(paste("No data available.")))
+    return(dummy_plot(q))
   
   ref_id <- "79fe7ff5" 
   vrsn <- 1 
@@ -91,8 +93,8 @@ viz_sid <- function(df){
     ggplot2::scale_fill_identity() +
     ggplot2::scale_color_identity() +
     ggplot2::labs(x = NULL, y = NULL,
-                  title = glue("{sel_cntry} {unique(df$fiscal_year)} SID Scores") %>% toupper,
-                  subtitle = glue("Large points represent {sel_cntry}'s score compared with other PEPFAR countries (smaller points) and PEPFAR average (line)"),
+                  title = {q},
+                  subtitle = glue("Large points represent {sel_cntry}'s SID score compared with other PEPFAR countries (smaller points) and PEPFAR average (line)"),
          caption = glue("{metadata_sid$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     si_style_xgrid(facet_space = .5) +
     ggplot2::theme(axis.text.x = element_blank())

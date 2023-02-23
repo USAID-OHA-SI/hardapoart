@@ -350,21 +350,3 @@
                                             skip = 6, col_types = "c") %>%
     janitor::clean_names()
 
-
-# MARKDOWN ----------------------------------------------------------------
-
-
-  # #TODO
-  # vct_cntry <- pepfar_country_list %>% 
-  #   pull(country)
-  # 
-  # #output files
-  # reports <- tibble(
-  #   output_file = glue(here("markdown","{curr_pd}_{vct_cntry}_cop-support-viz_oha-siei.pptx")),
-  #   params = map(vct_cntry, ~list(vct_cntry = .))
-  # )
-  # 
-  # #create reports
-  # reports %>%
-  #   pwalk(render, 
-  #         input = here("Scripts","reports.Qmd"))

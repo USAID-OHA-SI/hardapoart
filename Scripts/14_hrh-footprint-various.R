@@ -118,8 +118,12 @@ prep_hrh_footprint <- function(df, cntry, agency){
 
 viz_hrh_footprint <- function(df){
  
+  q <- glue::glue("What does the current staffing footprint look like? How do they align with sustainability and leveraging our assets?") %>% toupper 
+    
    if(is.null(df) || nrow(df) == 0)
-    return(print(paste("No data available.")))
+    return(dummy_plot(q))
+  
+  q <- stringr::str_replace(q, "LIKE", glue::glue("LIKE IN {toupper(unique(df$country))}")) %>% stringr::str_wrap(width = 80)
   
   ref_id <- "d98b536f" #id for adorning to plots, making it easier to find on GH
   vrsn <- 1
@@ -137,6 +141,7 @@ viz_hrh_footprint <- function(df){
     ggplot2::scale_fill_identity() +
     ggplot2::scale_color_identity() +
     ggplot2::labs(x = NULL, y = NULL,
+                  title = {q},
                   subtitle = glue("{metadata_hrh$curr_fy_lab} HRH Staffing Footprint in {unique(df$funding_agency)}/{unique(df$country)} Broken Down By FTEs"),
                   caption = glue("{metadata_hrh$caption} Structured Dataset (not redacted) | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) + 
     ggplot2::coord_cartesian(clip = "off") +

@@ -63,7 +63,7 @@ prep_achv_psnu <- function (df, cntry, agency){
    df_achv_viz <- df_achv %>% 
               mutate(global_achv = case_when(psnuuid == "GLOBAL" ~ achievement),
               achievement = ifelse(psnuuid == "GLOBAL", NA, achievement),
-              indicator = factor(indicator, ind_sel),
+              # indicator = factor(indicator, ind_sel),
               baseline_pt_1 = 0,
               baseline_pt_2 = .25,
               baseline_pt_3 = .5,
@@ -72,15 +72,16 @@ prep_achv_psnu <- function (df, cntry, agency){
               )
 
   #adjust facet label to include indicator and national values
-  df_achv_viz <- df_achv_viz %>% 
-         mutate(indicator=case_when(indicator %in% snapshot_ind ~ paste(indicator, "(SS)"), TRUE ~ indicator)) %>%
-         mutate(ind_w_glob_vals = case_when(psnuuid == "GLOBAL" & is.na(targets) ~ glue("**{indicator}**<br><span style = 'font-size:11pt;'>No MER reporting</span>"),
-                                  psnuuid == "GLOBAL" ~ glue("**{indicator}**<br><span style = 'font-size:11pt;'>{clean_number(cumulative)} / {clean_number(targets)}</span>"))) %>% 
-         group_by(indicator) %>% 
-         fill(ind_w_glob_vals, .direction = "downup") %>% 
-         ungroup() %>% 
-         arrange(indicator) %>% 
-         mutate(ind_w_glob_vals = fct_inorder(ind_w_glob_vals)) 
+   df_achv_viz <- df_achv_viz %>% 
+     mutate(indicator_ss = ifelse(indicator %in% snapshot_ind, paste(indicator, "(SS)"), indicator),
+            ind_w_glob_vals = case_when(psnuuid == "GLOBAL" & is.na(targets) ~ glue("**{indicator_ss}**<br><span style = 'font-size:11pt;'>No MER reporting</span>"),
+                                        psnuuid == "GLOBAL" ~ glue("**{indicator_ss}**<br><span style = 'font-size:11pt;'>{clean_number(cumulative)} / {clean_number(targets)}</span>")),
+            indicator = factor(indicator, levels = ind_sel)) %>% 
+     group_by(indicator) %>% 
+     fill(ind_w_glob_vals, .direction = "downup") %>% 
+     ungroup() %>% 
+     arrange(indicator) %>% 
+     mutate(ind_w_glob_vals = fct_inorder(ind_w_glob_vals)) 
      
   
   
@@ -92,12 +93,15 @@ prep_achv_psnu <- function (df, cntry, agency){
 
 viz_achv_psnu <- function (df){
 
+  q <- glue::glue("Are there any major achievement gaps as of {metadata_msd$curr_pd}?") %>% toupper
+  
   if(is.null(df) || nrow(df) == 0)
-    return(print(paste("No data available.")))
+    return(dummy_plot(q))
+    
     
     #Reference ID to be used for searching GitHub
     ref_id <- "d51dd3f9"
-    vrsn <- 1 
+    vrsn <- 2
     
     lab_q4<-c("<75%","75-89%","90-110%","+110%")
     
@@ -133,8 +137,8 @@ viz_achv_psnu <- function (df){
                              name="Achievement: Cumulative indicators | Snapshot indicators") + #whatever value is defined by color -- use that value from data frame
         facet_wrap(~ind_w_glob_vals, scales = "free_y", nrow=2) +
         labs(x = NULL, y = NULL,
-             title = glue("{metadata_msd$curr_pd} {unique(df$funding_agency)}/{unique(df$country)} achievement, year to date") %>% toupper,
-             subtitle = glue("Country achievement (large, labeled points) with PSNU achievement reference points, SS indicates snapshot indicator<br>"),
+             title = {q},
+             subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)} achievement (large, labeled points) with PSNU achievement reference points, SS indicates snapshot indicator<br>"),
              caption = glue("Target achievement capped at 110%
                               Source: {metadata_msd$source} | USAID/OHA/SIEI |  Ref ID: {ref_id} v{vrsn}")) +
         si_style_nolines() +

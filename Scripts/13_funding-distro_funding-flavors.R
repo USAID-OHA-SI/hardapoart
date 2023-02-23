@@ -54,8 +54,12 @@ prep_funding_distro <- function(df, cntry, agency){
 
 viz_funding_distro <- function(df){
   
+  q <- glue::glue("Does the country have the optimal mix of PEPFAR spending when considering sustainability?") %>% toupper
+  
   if(is.null(df) || nrow(df) == 0)
-    return(print(paste("No data available.")))
+    return(dummy_plot(q))
+  
+  q <- stringr::str_replace(q, "THE COUNTRY", toupper(unique(df$country)))
   
   ref_id <- "e258e5d3" #id for adorning to plots, making it easier to find on GH
   vrsn <- 1 
@@ -65,15 +69,16 @@ viz_funding_distro <- function(df){
     ggplot2::geom_area(aes(y = exp_total), fill = "#909090", alpha = .2) +
     ggplot2::geom_area(alpha = .8) +
     ggplot2::geom_text(aes(label = lab), family = "Source Sans Pro", hjust = -.1,
-              color = glitr::matterhorn, na.rm = TRUE) +
+                       color = glitr::matterhorn, na.rm = TRUE) +
     ggplot2::facet_grid(~fct_reorder2(funding_type, fiscal_year, exp_amt)) +
     ggplot2::scale_y_continuous(label = number_format(scale = 1e-6, prefix = "$", suffix = "M"),
-                       expand = c(.005, .005)) + 
+                                expand = c(.005, .005)) + 
     glitr::scale_fill_si("genoa", discrete = TRUE) +
     ggplot2::coord_cartesian(clip = "off") +
     ggplot2::labs(x = NULL, y = NULL, fill = NA,
-         subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)}'s breakdown of annual expenditures by funding type"),
-         caption = glue("Note: M&O and supply chain excluded
+                  title = {q},
+                  subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)}'s breakdown of annual expenditures by funding type"),
+                  caption = glue("Note: M&O and supply chain excluded
                         {metadata_fsd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     glitr::si_style_ygrid() +
     ggplot2::theme(legend.position = "none")

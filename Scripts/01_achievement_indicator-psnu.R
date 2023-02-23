@@ -93,8 +93,11 @@ prep_achv_psnu <- function (df, cntry, agency){
 
 viz_achv_psnu <- function (df){
 
+  q <- glue::glue("Are there any major achievement gaps as of {metadata_msd$curr_pd}?") %>% toupper
+  
   if(is.null(df) || nrow(df) == 0)
-    return(print(paste("No data available.")))
+    return(dummy_plot(q))
+    
     
     #Reference ID to be used for searching GitHub
     ref_id <- "d51dd3f9"
@@ -134,8 +137,8 @@ viz_achv_psnu <- function (df){
                              name="Achievement: Cumulative indicators | Snapshot indicators") + #whatever value is defined by color -- use that value from data frame
         facet_wrap(~ind_w_glob_vals, scales = "free_y", nrow=2) +
         labs(x = NULL, y = NULL,
-             title = glue("{metadata_msd$curr_pd} {unique(df$funding_agency)}/{unique(df$country)} achievement, year to date") %>% toupper,
-             subtitle = glue("Country achievement (large, labeled points) with PSNU achievement reference points, SS indicates snapshot indicator<br>"),
+             title = {q},
+             subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)} achievement (large, labeled points) with PSNU achievement reference points, SS indicates snapshot indicator<br>"),
              caption = glue("Target achievement capped at 110%
                               Source: {metadata_msd$source} | USAID/OHA/SIEI |  Ref ID: {ref_id} v{vrsn}")) +
         si_style_nolines() +

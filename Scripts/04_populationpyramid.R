@@ -38,7 +38,6 @@
   
   df_filt <- df_filt %>%
     dplyr::mutate(indicator = ifelse(indicator == "POP_EST", "Population (Est)", indicator)) %>% 
-    dplyr::select(fiscal_year, country, indicator, sex, ageasentered, targets) %>%
     dplyr::group_by(fiscal_year, country, indicator, sex, ageasentered) %>%
     dplyr::summarise(targets = sum(targets, na.rm = TRUE),
                      .groups = "drop") %>%

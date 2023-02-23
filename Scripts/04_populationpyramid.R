@@ -61,6 +61,12 @@
     mutate(n_unknown = if_else(is.na(n_unknown) == TRUE,
                                "no", n_unknown))
   
+  df_viz <- df_viz %>% 
+    dplyr::group_by(indicator) %>% 
+    dplyr::mutate(axis_max = max(targets, na.rm = TRUE),
+                  axis_min = -axis_max) %>% 
+    dplyr::ungroup()
+    
   return(df_viz)
   
 }
@@ -71,8 +77,7 @@
 
   viz_pop_pyramid <- function(df){
   
-    indicator <- unique(df$indicator)[1]
-    q <- glue::glue("Is there a youth bulge ({indicator}) {unique(df$country)} needs to plan for?") %>% toupper
+    q <- glue::glue("Is there a youth bulge {unique(df$country)} needs to plan for?") %>% toupper
       
   if(is.null(df) || nrow(df) == 0)
     return(dummy_plot(q))

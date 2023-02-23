@@ -29,10 +29,10 @@
   load_secrets("email")
 
   #SID_Global_Dataset Final 2.0.xlsx
-  sid_gs_id <- as_sheets_id("1nn4c9NBsYchD6xUjimbWBB-4tHvrc4-AnWntGOk0XLc")
+  sid_gs_id <- "1nn4c9NBsYchD6xUjimbWBB-4tHvrc4-AnWntGOk0XLc"
 
   #HIV Policy Lab data
-  pol_lab_id <- as_sheets_id("1LadXX9g9D6MCp6M3WD27Js85YE8MHrf_ulJQmRVduCU")
+  pol_lab_id <- "1LadXX9g9D6MCp6M3WD27Js85YE8MHrf_ulJQmRVduCU"
 
 # LOAD MSD ----------------------------------------------------------------
 
@@ -316,7 +316,7 @@
 # LOAD SID ----------------------------------------------------------------
 
   #import
-  df_sid <- range_speedread(sid_gs_id,
+  df_sid <- range_speedread(as_sheets_id(sid_gs_id),
                             col_types = c(
                               .default = "c",
                               SIDweighted_answer = "d",
@@ -346,7 +346,7 @@
   metadata_pol_lab <- list(caption = "Source: HIV Policy Lab [2021-11-09]")
 
   #read in HIV Policy Lab data export
-  df_tens <- googlesheets4::range_speedread(pol_lab_id, "Policy adoption data",
+  df_tens <- googlesheets4::range_speedread(as_sheets_id(pol_lab_id), "Policy adoption data",
                                             skip = 6, col_types = "c") %>%
     janitor::clean_names()
 

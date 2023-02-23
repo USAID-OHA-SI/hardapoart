@@ -127,23 +127,13 @@ df_natsubnat %>%
 ```
 
 ```{r}
-# | label: youth_bulge_plhiv
+# | label: youth_bulge
 
 df_natsubnat %>% 
-  prep_pop_pyramid(params$cntry, "PLHIV") %>% 
+  prep_pop_pyramid(params$cntry) %>% 
   viz_pop_pyramid()
 
 ```
-
-```{r}
-# | label: youth_bulge_pop
-
-df_natsubnat %>% 
-  prep_pop_pyramid(params$cntry, "Pop") %>% 
-  viz_pop_pyramid()
-
-```
-
 
 ```{r}
 # | label: testing

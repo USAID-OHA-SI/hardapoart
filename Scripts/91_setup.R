@@ -57,38 +57,40 @@
     df_msd <- clean_indicator(df_msd)
 
     #MSD filter table
-    df_msd_ind <- tibble::tribble(
-                           ~indicator,        ~standardizeddisaggregate,
-                            "HTS_TST",                "Total Numerator",
-                            "HTS_TST",        "Modality/Age/Sex/Result",
-                        "HTS_TST_POS",                "Total Numerator",
-                            "KP_PREV",                "Total Numerator",
-                           "OVC_SERV",                "Total Numerator",
-                           "OVC_SERV",             "Age/Sex/Preventive",
-                           "OVC_SERV",          "Age/Sex/ProgramStatus",
-                           "OVC_SERV", "Age/Sex/ProgramStatusCaregiver",
-                        "OVC_HIVSTAT",                "Total Numerator",
-                    "OVC_HIVSTAT_POS",         "Age/Sex/ReportedStatus",
-                          "PMTCT_EID",                "Total Numerator",
-                           "PrEP_NEW",                        "Age/Sex",
-                           "PrEP_NEW",                      "KeyPopAbr",
-                           "PrEP_NEW",                "Total Numerator",
-                            "TB_PREV",                "Total Numerator",
-                            "TB_STAT",                "Age/Sex/KnownNewPosNeg",
-                            "TB_STAT_D",                "Age/Sex",
-                            "TX_CURR",              "Age/Sex/HIVStatus",
-                            "TX_CURR",               "KeyPop/HIVStatus",
-                            "TX_CURR",                "Total Numerator",
-                             "TX_NEW",                "Total Numerator",
-                             "TX_NEW",              "Age/Sex/HIVStatus",
-                            "TX_PVLS",   "Age/Sex/Indication/HIVStatus",
-                            "TX_PVLS",    "KeyPop/Indication/HIVStatus",
-                            "TX_PVLS",                "Total Numerator",
-                          "TX_PVLS_D",   "Age/Sex/Indication/HIVStatus",
-                          "TX_PVLS_D",    "KeyPop/Indication/HIVStatus",
-                          "TX_PVLS_D",              "Total Denominator",
-                          "VMMC_CIRC",                "Total Numerator"
-                    )
+    df_msd_ind <-
+      tibble::tribble(
+               ~indicator,        ~standardizeddisaggregate,
+                "HTS_TST",                "Total Numerator",
+                "HTS_TST",        "Modality/Age/Sex/Result",
+            "HTS_TST_POS",                "Total Numerator",
+                "KP_PREV",                "Total Numerator",
+               "OVC_SERV",                "Total Numerator",
+               "OVC_SERV",             "Age/Sex/Preventive",
+               "OVC_SERV",          "Age/Sex/ProgramStatus",
+               "OVC_SERV", "Age/Sex/ProgramStatusCaregiver",
+            "OVC_HIVSTAT",                "Total Numerator",
+        "OVC_HIVSTAT_POS",         "Age/Sex/ReportedStatus",
+              "PMTCT_EID",                "Total Numerator",
+               "PrEP_NEW",                        "Age/Sex",
+               "PrEP_NEW",                      "KeyPopAbr",
+               "PrEP_NEW",                "Total Numerator",
+                "TB_PREV",                "Total Numerator",
+                "TB_STAT",         "Age/Sex/KnownNewPosNeg",
+              "TB_STAT_D",                        "Age/Sex",
+                "TX_CURR",              "Age/Sex/HIVStatus",
+                "TX_CURR",               "KeyPop/HIVStatus",
+                "TX_CURR",                "Total Numerator",
+                 "TX_NEW",                "Total Numerator",
+                 "TX_NEW",              "Age/Sex/HIVStatus",
+                "TX_PVLS",   "Age/Sex/Indication/HIVStatus",
+                "TX_PVLS",    "KeyPop/Indication/HIVStatus",
+                "TX_PVLS",                "Total Numerator",
+              "TX_PVLS_D",   "Age/Sex/Indication/HIVStatus",
+              "TX_PVLS_D",    "KeyPop/Indication/HIVStatus",
+              "TX_PVLS_D",              "Total Denominator",
+              "VMMC_CIRC",                "Total Numerator"
+        )
+
 
 
 
@@ -105,6 +107,9 @@
     
     #clean agency name
     df_msd <- clean_agency(df_msd)
+    
+    #clean PSNU names
+    df_msd <- clean_psnu(df_msd)
     
     #resolve known issues
     df_msd <- resolve_knownissues(df_msd)

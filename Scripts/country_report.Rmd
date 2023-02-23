@@ -8,7 +8,7 @@ output:
     dpi: 330
 params:
   curr_pd: FY23Q1
-  cntry: Cameroon
+  cntry: Malawi
   agency: USAID
 ---
 

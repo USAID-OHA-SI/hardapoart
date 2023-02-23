@@ -56,15 +56,45 @@
     grp_vars <- c(grp_vars_viz, {level})
   
   df_viz <- df_viz %>% 
-    dplyr::group_by(dplyr::all_of(grp_vars_viz)) %>% 
+    dplyr::group_by(dplyr::across(grp_vars_viz)) %>% 
     dplyr::mutate(axis_max = max(targets, na.rm = TRUE),
                   axis_min = -axis_max) %>% 
     dplyr::ungroup()
+  
+  df_viz <- df_viz %>% 
+    dplyr::mutate(facet_grp = forcats::fct_rev(indicator))
     
   return(df_viz)
   
 }
 
+  
+  prep_pop_pyramid_dreams <- function(df_prep_psnu, df_msd){
+    
+    if(is.null(df) || nrow(df) == 0)
+      return(NULL)
+    
+    dreams_psnus <- df_msd %>% 
+      filter(indicator == "AGYW_PREV_D",
+             country == cntry,
+             fiscal_year == max(fiscal_year),
+             !is.na(targets)) %>% 
+      count(psnu, wt = targets, sort = TRUE) %>% 
+      pull(psnu)
+    
+    df <- df %>% 
+      dplyr::filter(psnu %in% dreams_psnus,
+                    indicator == "Population (Est)") 
+    
+    if(nrow(df) == 0)
+      return(NULL)
+    df <- df %>% 
+      dplyr::mutate(psnu = factor(psnu, dreams_psnus),
+                    facet_grp = psnu)
+    
+    return(df)
+  }
+  
 # VIZ --------------------------------------------------------------------------
   
   # df = df_natsubnat comes from 91_setup.R, could add a test to make sure 
@@ -86,7 +116,7 @@
     ggplot2::geom_blank(aes(axis_min)) +
     ggplot2::geom_col(alpha = .8, na.rm = TRUE) +
     ggplot2::geom_vline(aes(xintercept = 0), color = "white", linewidth = 1.1)+
-    ggplot2::facet_wrap(~forcats::fct_rev(indicator), scales = "free_x") +
+    ggplot2::facet_wrap(~facet_grp, scales = "free_x") +
     ggplot2::scale_fill_manual(values = c("Male" = glitr::genoa, 
                                           "Female" = glitr::moody_blue)) +
     ggplot2::scale_x_continuous(
@@ -101,17 +131,46 @@
     ggplot2::theme(
       legend.position = "none",
       strip.text = element_text(hjust = .5),
-      plot.subtitle = element_markdown())
+      plot.subtitle = element_markdown(),
+      panel.spacing.y = unit(.2, "picas"))
   
   }
   
-# Example 
-  
-# df_zmb <- prep_pop_pyramid(df_natsubnat, "Zambia", "PLHIV")
-# 
-# viz_pop_pyramid(df_zmb)
-  
-# df_zmb <- prep_pop_pyramid(df_natsubnat, "Zambia", "POP_EST")
-# 
-# viz_pop_pyramid(df_zmb)
+
+  viz_pop_pyramid_dreams <- function(df){
+    
+    q <- glue::glue("Is there a youth bulge {unique(df$country)} needs to plan for in DREAMS PSNUs?") %>% toupper
+    
+    if(is.null(df) || nrow(df) == 0)
+      return(dummy_plot(q))
+    
+    ref_id <- "06dbca9d"
+    vrsn <- 1
+    
+    
+    df %>%
+      ggplot2::ggplot(aes(population, ageasentered, fill = sex)) +
+      ggplot2::geom_blank(aes(axis_max)) +
+      ggplot2::geom_blank(aes(axis_min)) +
+      ggplot2::geom_col(alpha = .8, na.rm = TRUE) +
+      ggplot2::geom_vline(aes(xintercept = 0), color = "white", linewidth = 1.1)+
+      ggplot2::facet_wrap(~facet_grp, scales = "free_x") +
+      ggplot2::scale_fill_manual(values = c("Male" = glitr::genoa, 
+                                            "Female" = glitr::moody_blue)) +
+      ggplot2::scale_x_continuous(
+        labels = function(x) {glue("{label_number(scale_cut = cut_short_scale())(abs(x))}")}, 
+      ) +
+      ggplot2::labs(title = {q},
+                    subtitle =  glue::glue("Comparison between <span style='color:{genoa}'>Males</span> & <span style='color:{moody_blue}'>Females</span> Population (Est) by age band"),
+                    x = NULL, y = NULL, fill = NULL,
+                    caption = 
+                      glue("{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
+      glitr::si_style_yline() +
+      ggplot2::theme(
+        legend.position = "none",
+        strip.text = element_text(hjust = .5),
+        plot.subtitle = element_markdown(),
+        panel.spacing.y = unit(.2, "picas"))
+    
+  }
 

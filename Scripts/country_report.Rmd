@@ -117,6 +117,17 @@ df_natsubnat %>%
 ```
 
 
+```{r youth_bulge_dreams}
+### Is there a youth bulge we need to plan for in DREAMS districts?
+
+df_natsubnat %>% 
+  prep_pop_pyramid(params$cntry, "psnu") %>% 
+  prep_pop_pyramid_dreams(df_msd) %>% 
+  viz_pop_pyramid_dreams()
+
+```
+
+
 ```{r ovc_tx}
 ### What proportion of PEPFAR's <15 on treatment is the OVC Comprehensive program reaching?
 

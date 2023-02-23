@@ -16,7 +16,7 @@
 # Data is pre-loaded 91_setup.R
 
 # prep -------------------------------------------------------------------------
-  
+
 prep_hiv_prev_DREAMS <- function(df, cntry,
                                  add_style = T) {
   
@@ -30,7 +30,8 @@ prep_hiv_prev_DREAMS <- function(df, cntry,
                   ageasentered %in% c("10-14", "15-19", "20-24")) %>% 
     dplyr::group_by(fiscal_year, operatingunit, country, snu1uid, snu1,
                     psnuuid, psnu, indicator, ageasentered, sex) %>% 
-    dplyr::summarise(value = sum(targets, na.rm = T), .groups = "drop")
+    dplyr::summarise(value = sum(targets, na.rm = T), .groups = "drop") %>% 
+    gophr::clean_psnu()
   
   #clean exit if no data
   if(nrow(df_pops) == 0)
@@ -116,10 +117,11 @@ prep_hiv_prev_DREAMS <- function(df, cntry,
   
   return(df_prev)
 }
-  
 # viz --------------------------------------------------------------------------
-  
+
 viz_hiv_prev_DREAMS <- function(df, save = F) {
+  
+  df <- df_mwi
   
   if(is.null(df) || nrow(df) == 0)
     return(print(paste("No data available.")))
@@ -128,7 +130,7 @@ viz_hiv_prev_DREAMS <- function(df, save = F) {
   
   ref_id <- "70241287"
   ref_psnu <- "COUNTRY"
-  vrsn <- 1 
+  vrsn <- 1.1
   
   # if (all(na.omit(df$country) %in% df$operatingunit)) {
   #   df <- df %>% filter(psnu != "COUNTRY")
@@ -206,3 +208,8 @@ viz_hiv_prev_DREAMS <- function(df, save = F) {
   }
 }
 
+# Example
+
+df_mwi <- prep_hiv_prev_DREAMS(df_natsubnat, "Malawi")
+
+viz_hiv_prev_DREAMS(df_mwi)

@@ -13,37 +13,23 @@
   # cntry is a string
   # selected_ind is either "POP_EST" or "PLHIV"
 
-  prep_pop_pyramid <- function(df, cntry, selected_ind, ...){
+  prep_pop_pyramid <- function(df, cntry){
   
   # clean exit if no data
   if(cntry %ni% unique(df$country))
-    return(NULL)
-  
-  # clean exit if missing required indicators
-  assertr::verify(df, 
-                  selected_ind %in% indicator,
-                  error_fun = err_text(glue::glue("Error: {df} does not contain the required indicators PLHIV or POP_EST.
-                                               Please check {df} for at least one of these indicators.")),
-                  description = glue::glue("Verify dataset has required indicators"))
-  
-  if(selected_ind %ni% df$indicator)
     return(NULL)
   
   df_filt <- df %>%
     dplyr::filter(
       fiscal_year == max(fiscal_year),
       country == cntry, 
-      # can be either POP_EST or PLHIV 
-      # need to figure out a way to limit user choice on this
-      # idea for 1.2:
-      # add option for both as a faceted plot
-      indicator == selected_ind)
+      indicator %in% c("PLHIV", "POP_EST"))
   
   if(nrow(df_filt) == 0)
     return(NULL)
   
   df_filt %>%
-    assertr::verify(indicator == selected_ind &
+    assertr::verify(indicator %in% c("PLHIV", "POP_EST") &
                       fiscal_year == max(fiscal_year) &
                       country == cntry,
                     error_fun = err_text(glue::glue("Error: {df} has not been filtered correctly.
@@ -51,6 +37,7 @@
                     description = glue::glue("Verify that the filters worked"))
   
   df_filt <- df_filt %>%
+    dplyr::mutate(indicator = ifelse(indicator == "POP_EST", "Population (Est)", indicator)) %>% 
     dplyr::select(fiscal_year, country, indicator, sex, ageasentered, targets) %>%
     dplyr::group_by(fiscal_year, country, indicator, sex, ageasentered) %>%
     dplyr::summarise(targets = sum(targets, na.rm = TRUE),

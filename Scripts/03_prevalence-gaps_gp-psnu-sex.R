@@ -34,8 +34,7 @@
                     country == cntry) %>% 
       dplyr::group_by(fiscal_year, operatingunit, country, snu1uid, snu1,
                       psnuuid, psnu, indicator, ageasentered, sex) %>% 
-      dplyr::summarise(value = sum(targets, na.rm = T), .groups = "drop") %>% 
-      gophr::clean_psnu()
+      dplyr::summarise(value = sum(targets, na.rm = T), .groups = "drop")
     
     #clean exit if no data
     if(nrow(df_pops) == 0)

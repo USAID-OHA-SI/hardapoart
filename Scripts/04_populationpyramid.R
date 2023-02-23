@@ -44,23 +44,9 @@
                      .groups = "drop") %>%
     dplyr::mutate(population = if_else(sex == "Male", -targets, targets))
   
-  unknown <- df_filt  %>%
-    dplyr::filter(is.na(sex) & is.na(ageasentered)) %>%
-    dplyr::mutate(n_unknown = comma(targets))
-  
   df_viz <- df_filt %>%
-    tidyr::drop_na(sex, ageasentered) %>%
-    # include those with age and sex data unavailable in the notes on the viz
-    # if there are no PLHIV/POP_EST missing age or sex data, replace NA with "No"
-    # so that the note on the viz reads:
-    # "Note: There are no PLHIV/POP_EST with unreported age and sex data.
-    # otherwise it will show the number
-    full_join(., unknown,
-              by = join_by(fiscal_year, country, indicator, sex, ageasentered, targets,
-                           population)) %>%
-    mutate(n_unknown = if_else(is.na(n_unknown) == TRUE,
-                               "no", n_unknown))
-  
+    tidyr::drop_na(sex, ageasentered)
+
   df_viz <- df_viz %>% 
     dplyr::group_by(indicator) %>% 
     dplyr::mutate(axis_max = max(targets, na.rm = TRUE),
@@ -85,16 +71,6 @@
   ref_id <- "aa8bd5b4"
   vrsn <- 2
   
-  # pull in the number of PLHIV/POP_EST reported with no age or sex data available
-  n_PPL_unknown <- df$n_unknown[1]
-  
-  # format the number with a comma if it is not "no"
-  if(n_PPL_unknown != "no"){
-    
-    scales::comma(n_PPL_unknown)
-    
-    return(n_PPL_unknown)
-  }
   
   df %>%
     ggplot2::ggplot(aes(population, ageasentered, fill = sex)) +
@@ -112,8 +88,7 @@
                   subtitle =  glue::glue("Comparison between <span style='color:{genoa}'>Males</span> & <span style='color:{moody_blue}'>Females</span> by age band"),
                   x = NULL, y = NULL, fill = NULL,
                   caption = 
-                    glue("Note: There are {n_PPL_unknown} indicator with unreported age and sex data.
-                  {metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
+                    glue("{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     glitr::si_style_yline() +
     ggplot2::theme(
       legend.position = "none",

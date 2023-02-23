@@ -60,6 +60,7 @@
     df_msd_ind <-
       tibble::tribble(
                ~indicator,        ~standardizeddisaggregate,
+            "AGYW_PREV_D",              "Total Denominator",
                 "HTS_TST",                "Total Numerator",
                 "HTS_TST",        "Modality/Age/Sex/Result",
             "HTS_TST_POS",                "Total Numerator",
@@ -285,6 +286,9 @@
   #filter to select indicators/disaggs
   df_natsubnat <- df_natsubnat %>%
     semi_join(df_natsubnat_ind, by = c("indicator", "standardizeddisaggregate"))
+  
+  #clean PSNU names
+  df_natsubnat <- clean_psnu(df_natsubnat)
   }
 
 

@@ -107,21 +107,23 @@ df_natsubnat %>%
 ```
 
 
-```{r youth_bulge_plhiv}
-### Is there a youth bulge of PLHIV we need to plan for?
+```{r youth_bulge}
+### Is there a youth bulge we need to plan for?
 
 df_natsubnat %>% 
-  prep_pop_pyramid(params$cntry, "PLHIV") %>% 
+  prep_pop_pyramid(params$cntry, "country") %>% 
   viz_pop_pyramid()
 
 ```
 
-```{r youth_bulge_pop}
-### Is there a youth bulge of the overall population we need to plan for?
+
+```{r youth_bulge_dreams}
+### Is there a youth bulge we need to plan for in DREAMS districts?
 
 df_natsubnat %>% 
-  prep_pop_pyramid(params$cntry, "POP_EST") %>% 
-  viz_pop_pyramid()
+  prep_pop_pyramid(params$cntry, "psnu") %>% 
+  prep_pop_pyramid_dreams(df_msd) %>% 
+  viz_pop_pyramid_dreams()
 
 ```
 

@@ -11,81 +11,97 @@
   # df = df_natsubnat comes from 91_setup.R, could add a test to make sure 
   # it is actually natsubnat data
   # cntry is a string
-  # selected_ind is either "POP_EST" or "PLHIV"
+  # level is either country or psnu
 
-  prep_pop_pyramid <- function(df, cntry, selected_ind, ...){
+  prep_pop_pyramid <- function(df, cntry, level){
   
   # clean exit if no data
   if(cntry %ni% unique(df$country))
-    return(NULL)
-  
-  # clean exit if missing required indicators
-  assertr::verify(df, 
-                  selected_ind %in% indicator,
-                  error_fun = err_text(glue::glue("Error: {df} does not contain the required indicators PLHIV or POP_EST.
-                                               Please check {df} for at least one of these indicators.")),
-                  description = glue::glue("Verify dataset has required indicators"))
-  
-  if(selected_ind %ni% df$indicator)
     return(NULL)
   
   df_filt <- df %>%
     dplyr::filter(
       fiscal_year == max(fiscal_year),
       country == cntry, 
-      # can be either POP_EST or PLHIV 
-      # need to figure out a way to limit user choice on this
-      # idea for 1.2:
-      # add option for both as a faceted plot
-      indicator == selected_ind)
+      indicator %in% c("PLHIV", "POP_EST"))
   
   if(nrow(df_filt) == 0)
     return(NULL)
   
   df_filt %>%
-    assertr::verify(indicator == selected_ind &
+    assertr::verify(indicator %in% c("PLHIV", "POP_EST") &
                       fiscal_year == max(fiscal_year) &
                       country == cntry,
                     error_fun = err_text(glue::glue("Error: {df} has not been filtered correctly.
                                                Please check the first filter in prep_pop_pyramid().")),
                     description = glue::glue("Verify that the filters worked"))
   
+  grp_vars <- c("fiscal_year", "country", "indicator", "sex", "ageasentered")
+  
+  if(level != "country")
+    grp_vars <- c(grp_vars, {level})
+  
   df_filt <- df_filt %>%
-    dplyr::select(fiscal_year, country, indicator, sex, ageasentered, targets) %>%
-    dplyr::group_by(fiscal_year, country, indicator, sex, ageasentered) %>%
+    dplyr::mutate(indicator = ifelse(indicator == "POP_EST", "Population (Est)", indicator)) %>% 
+    dplyr::group_by(dplyr::pick(grp_vars)) %>%
     dplyr::summarise(targets = sum(targets, na.rm = TRUE),
                      .groups = "drop") %>%
     dplyr::mutate(population = if_else(sex == "Male", -targets, targets))
   
-  unknown <- df_filt  %>%
-    dplyr::filter(is.na(sex) & is.na(ageasentered)) %>%
-    dplyr::mutate(n_unknown = comma(targets))
-  
   df_viz <- df_filt %>%
-    tidyr::drop_na(sex, ageasentered) %>%
-    # include those with age and sex data unavailable in the notes on the viz
-    # if there are no PLHIV/POP_EST missing age or sex data, replace NA with "No"
-    # so that the note on the viz reads:
-    # "Note: There are no PLHIV/POP_EST with unreported age and sex data.
-    # otherwise it will show the number
-    full_join(., unknown,
-              by = join_by(fiscal_year, country, indicator, sex, ageasentered, targets,
-                           population)) %>%
-    mutate(n_unknown = if_else(is.na(n_unknown) == TRUE,
-                               "no", n_unknown))
+    tidyr::drop_na(sex, ageasentered)
+
+  grp_vars_viz <- c("indicator")
+  if(level != "country")
+    grp_vars <- c(grp_vars_viz, {level})
   
+  df_viz <- df_viz %>% 
+    dplyr::group_by(dplyr::across(grp_vars_viz)) %>% 
+    dplyr::mutate(axis_max = max(targets, na.rm = TRUE),
+                  axis_min = -axis_max) %>% 
+    dplyr::ungroup()
+  
+  df_viz <- df_viz %>% 
+    dplyr::mutate(facet_grp = forcats::fct_rev(indicator))
+    
   return(df_viz)
   
 }
 
+  
+  prep_pop_pyramid_dreams <- function(df_prep_psnu, df_msd){
+    
+    if(is.null(df) || nrow(df) == 0)
+      return(NULL)
+    
+    dreams_psnus <- df_msd %>% 
+      filter(indicator == "AGYW_PREV_D",
+             country == cntry,
+             fiscal_year == max(fiscal_year),
+             !is.na(targets)) %>% 
+      count(psnu, wt = targets, sort = TRUE) %>% 
+      pull(psnu)
+    
+    df <- df %>% 
+      dplyr::filter(psnu %in% dreams_psnus,
+                    indicator == "Population (Est)") 
+    
+    if(nrow(df) == 0)
+      return(NULL)
+    df <- df %>% 
+      dplyr::mutate(psnu = factor(psnu, dreams_psnus),
+                    facet_grp = psnu)
+    
+    return(df)
+  }
+  
 # VIZ --------------------------------------------------------------------------
   
   # df = df_natsubnat comes from 91_setup.R, could add a test to make sure 
 
   viz_pop_pyramid <- function(df){
   
-    indicator <- unique(df$indicator)[1]
-    q <- glue::glue("Is there a youth bulge ({indicator}) {unique(df$country)} needs to plan for?") %>% toupper
+    q <- glue::glue("Is there a youth bulge {unique(df$country)} needs to plan for?") %>% toupper
       
   if(is.null(df) || nrow(df) == 0)
     return(dummy_plot(q))
@@ -93,47 +109,68 @@
   ref_id <- "aa8bd5b4"
   vrsn <- 2
   
-  # pull in the number of PLHIV/POP_EST reported with no age or sex data available
-  n_PPL_unknown <- df$n_unknown[1]
-  
-  # format the number with a comma if it is not "no"
-  if(n_PPL_unknown != "no"){
-    
-    scales::comma(n_PPL_unknown)
-    
-    return(n_PPL_unknown)
-  }
   
   df %>%
     ggplot2::ggplot(aes(population, ageasentered, fill = sex)) +
-    ggplot2::geom_col() +
+    ggplot2::geom_blank(aes(axis_max)) +
+    ggplot2::geom_blank(aes(axis_min)) +
+    ggplot2::geom_col(alpha = .8, na.rm = TRUE) +
     ggplot2::geom_vline(aes(xintercept = 0), color = "white", linewidth = 1.1)+
+    ggplot2::facet_wrap(~facet_grp, scales = "free_x") +
     ggplot2::scale_fill_manual(values = c("Male" = glitr::genoa, 
                                           "Female" = glitr::moody_blue)) +
     ggplot2::scale_x_continuous(
-      limits = c(-max(df$targets), max(df$targets)),
       labels = function(x) {glue("{label_number(scale_cut = cut_short_scale())(abs(x))}")}, 
     ) +
     ggplot2::labs(title = {q},
-                  subtitle =  glue::glue("Comparison between <span style='color:{genoa}'>Males</span> & <span style='color:{moody_blue}'>FEMALES</span> {indicator} {indicator} by age band"),
+                  subtitle =  glue::glue("Comparison between <span style='color:{genoa}'>Males</span> & <span style='color:{moody_blue}'>Females</span> by age band"),
                   x = NULL, y = NULL, fill = NULL,
                   caption = 
-                    glue("Note: There are {n_PPL_unknown} {indicator} with unreported age and sex data.
-                  {metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
+                    glue("{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     glitr::si_style_yline() +
     ggplot2::theme(
       legend.position = "none",
-      plot.subtitle = element_markdown())
+      strip.text = element_text(hjust = .5),
+      plot.subtitle = element_markdown(),
+      panel.spacing.y = unit(.2, "picas"))
   
   }
   
-# Example 
-  
-# df_zmb <- prep_pop_pyramid(df_natsubnat, "Zambia", "PLHIV")
-# 
-# viz_pop_pyramid(df_zmb)
-  
-# df_zmb <- prep_pop_pyramid(df_natsubnat, "Zambia", "POP_EST")
-# 
-# viz_pop_pyramid(df_zmb)
+
+  viz_pop_pyramid_dreams <- function(df){
+    
+    q <- glue::glue("Is there a youth bulge {unique(df$country)} needs to plan for in DREAMS PSNUs?") %>% toupper
+    
+    if(is.null(df) || nrow(df) == 0)
+      return(dummy_plot(q))
+    
+    ref_id <- "06dbca9d"
+    vrsn <- 1
+    
+    
+    df %>%
+      ggplot2::ggplot(aes(population, ageasentered, fill = sex)) +
+      ggplot2::geom_blank(aes(axis_max)) +
+      ggplot2::geom_blank(aes(axis_min)) +
+      ggplot2::geom_col(alpha = .8, na.rm = TRUE) +
+      ggplot2::geom_vline(aes(xintercept = 0), color = "white", linewidth = 1.1)+
+      ggplot2::facet_wrap(~facet_grp, scales = "free_x") +
+      ggplot2::scale_fill_manual(values = c("Male" = glitr::genoa, 
+                                            "Female" = glitr::moody_blue)) +
+      ggplot2::scale_x_continuous(
+        labels = function(x) {glue("{label_number(scale_cut = cut_short_scale())(abs(x))}")}, 
+      ) +
+      ggplot2::labs(title = {q},
+                    subtitle =  glue::glue("Comparison between <span style='color:{genoa}'>Males</span> & <span style='color:{moody_blue}'>Females</span> Population (Est) by age band"),
+                    x = NULL, y = NULL, fill = NULL,
+                    caption = 
+                      glue("{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
+      glitr::si_style_yline() +
+      ggplot2::theme(
+        legend.position = "none",
+        strip.text = element_text(hjust = .5),
+        plot.subtitle = element_markdown(),
+        panel.spacing.y = unit(.2, "picas"))
+    
+  }
 

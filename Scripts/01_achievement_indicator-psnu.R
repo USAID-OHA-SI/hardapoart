@@ -63,7 +63,7 @@ prep_achv_psnu <- function (df, cntry, agency){
    df_achv_viz <- df_achv %>% 
               mutate(global_achv = case_when(psnuuid == "GLOBAL" ~ achievement),
               achievement = ifelse(psnuuid == "GLOBAL", NA, achievement),
-              indicator = factor(indicator, ind_sel),
+              # indicator = factor(indicator, ind_sel),
               baseline_pt_1 = 0,
               baseline_pt_2 = .25,
               baseline_pt_3 = .5,
@@ -72,15 +72,16 @@ prep_achv_psnu <- function (df, cntry, agency){
               )
 
   #adjust facet label to include indicator and national values
-  df_achv_viz <- df_achv_viz %>% 
-         mutate(indicator=case_when(indicator %in% snapshot_ind ~ paste(indicator, "(SS)"), TRUE ~ indicator)) %>%
-         mutate(ind_w_glob_vals = case_when(psnuuid == "GLOBAL" & is.na(targets) ~ glue("**{indicator}**<br><span style = 'font-size:11pt;'>No MER reporting</span>"),
-                                  psnuuid == "GLOBAL" ~ glue("**{indicator}**<br><span style = 'font-size:11pt;'>{clean_number(cumulative)} / {clean_number(targets)}</span>"))) %>% 
-         group_by(indicator) %>% 
-         fill(ind_w_glob_vals, .direction = "downup") %>% 
-         ungroup() %>% 
-         arrange(indicator) %>% 
-         mutate(ind_w_glob_vals = fct_inorder(ind_w_glob_vals)) 
+   df_achv_viz <- df_achv_viz %>% 
+     mutate(indicator_ss = ifelse(indicator %in% snapshot_ind, paste(indicator, "(SS)"), indicator),
+            ind_w_glob_vals = case_when(psnuuid == "GLOBAL" & is.na(targets) ~ glue("**{indicator_ss}**<br><span style = 'font-size:11pt;'>No MER reporting</span>"),
+                                        psnuuid == "GLOBAL" ~ glue("**{indicator_ss}**<br><span style = 'font-size:11pt;'>{clean_number(cumulative)} / {clean_number(targets)}</span>")),
+            indicator = factor(indicator, levels = ind_sel)) %>% 
+     group_by(indicator) %>% 
+     fill(ind_w_glob_vals, .direction = "downup") %>% 
+     ungroup() %>% 
+     arrange(indicator) %>% 
+     mutate(ind_w_glob_vals = fct_inorder(ind_w_glob_vals)) 
      
   
   

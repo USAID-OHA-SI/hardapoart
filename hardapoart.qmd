@@ -130,7 +130,7 @@ df_natsubnat %>%
 # | label: youth_bulge
 
 df_natsubnat %>% 
-  prep_pop_pyramid(params$cntry) %>% 
+  prep_pop_pyramid(params$cntry, "country") %>% 
   viz_pop_pyramid()
 
 ```

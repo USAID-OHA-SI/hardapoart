@@ -11,9 +11,9 @@
   # df = df_natsubnat comes from 91_setup.R, could add a test to make sure 
   # it is actually natsubnat data
   # cntry is a string
-  # selected_ind is either "POP_EST" or "PLHIV"
+  # level is either country or psnu
 
-  prep_pop_pyramid <- function(df, cntry){
+  prep_pop_pyramid <- function(df, cntry, level){
   
   # clean exit if no data
   if(cntry %ni% unique(df$country))
@@ -36,9 +36,14 @@
                                                Please check the first filter in prep_pop_pyramid().")),
                     description = glue::glue("Verify that the filters worked"))
   
+  grp_vars <- c("fiscal_year", "country", "indicator", "sex", "ageasentered")
+  
+  if(level != "country")
+    grp_vars <- c(grp_vars, {level})
+  
   df_filt <- df_filt %>%
     dplyr::mutate(indicator = ifelse(indicator == "POP_EST", "Population (Est)", indicator)) %>% 
-    dplyr::group_by(fiscal_year, country, indicator, sex, ageasentered) %>%
+    dplyr::group_by(dplyr::pick(grp_vars)) %>%
     dplyr::summarise(targets = sum(targets, na.rm = TRUE),
                      .groups = "drop") %>%
     dplyr::mutate(population = if_else(sex == "Male", -targets, targets))
@@ -46,8 +51,12 @@
   df_viz <- df_filt %>%
     tidyr::drop_na(sex, ageasentered)
 
+  grp_vars_viz <- c("indicator")
+  if(level != "country")
+    grp_vars <- c(grp_vars_viz, {level})
+  
   df_viz <- df_viz %>% 
-    dplyr::group_by(indicator) %>% 
+    dplyr::group_by(dplyr::all_of(grp_vars_viz)) %>% 
     dplyr::mutate(axis_max = max(targets, na.rm = TRUE),
                   axis_min = -axis_max) %>% 
     dplyr::ungroup()

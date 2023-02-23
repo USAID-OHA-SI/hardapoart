@@ -111,7 +111,7 @@ df_natsubnat %>%
 ### Is there a youth bulge we need to plan for?
 
 df_natsubnat %>% 
-  prep_pop_pyramid(params$cntry) %>% 
+  prep_pop_pyramid(params$cntry, "country") %>% 
   viz_pop_pyramid()
 
 ```

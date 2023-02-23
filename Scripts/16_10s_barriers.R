@@ -68,9 +68,10 @@ prep_10s_barriers <- function(df, cntry) {
 
 viz_10s_barriers <- function(df) {
   
+  q <- glue::glue("What gaps exists in adopting structural laws/policies towards UNAIDS' 10-10-10 goals?") %>% toupper
 
   if(is.null(df) || nrow(df) == 0)
-    return(print(paste("No data available.")))
+    return(dummy_plot(q))
   
   ref_id <- "1e748b9a" #for plot identification
   vrsn <- 1
@@ -83,12 +84,12 @@ viz_10s_barriers <- function(df) {
     ggplot2::scale_fill_identity() +
     ggplot2::scale_x_continuous(position = "top") +
     ggplot2::labs(x = NULL, y = NULL,
-         title = glue::glue("THE LARGEST GAP IN THE 10-10-10 GOALS IN {unique(df$country) %>% toupper()}"),
-         subtitle = "Progress towards adopting structural laws/policies towards UNAIDS' 10-10-10 goals",
-         caption = glue::glue("{metadata_pol_lab$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
+                  title = {q},
+                  subtitle = glue::glue("{unique(df$country)}'s progress towards adopting structural laws/policies towards UNAIDS' 10-10-10 goals"),
+                  caption = glue::glue("{metadata_pol_lab$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     glitr::si_style_nolines() +
     ggplot2::theme(strip.placement = "outside",
-          axis.text.x = ggplot2::element_blank())
+                   axis.text.x = ggplot2::element_blank())
   
 }
 

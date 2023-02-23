@@ -174,6 +174,7 @@ viz_epi_control <- function(df) {
 #plot 95s progress
 viz_95s <- function(df) {
   
+  
   if(is.null(df) || nrow(df) == 0)
     return(NULL)
   
@@ -227,6 +228,8 @@ viz_95s <- function(df) {
 #patchwork all together!
 viz_unaids_all <- function(cntry) {
   
+  q <- glue::glue("Is progress being made in reaching epidemic control/95s targets?") %>% toupper
+  
   ref_id <- "02e4fc9c" 
   vrsn <- 2 
   
@@ -237,28 +240,27 @@ viz_unaids_all <- function(cntry) {
     viz_95s()
   
   if(is.null(v1) && is.null(v2)){
-    print(paste("No data available."))
+    viz <- dummy_plot(q)
   } else if(is.null(v1)){
-    v2
+    viz <- v2
   } else if(is.null(v2)){
-    v1
+    viz <- v1
   } else {
     #v1 + v2 + plot_layout(widths = c(2, 1), heights = c(10))
 
       viz <- v1 + v2 + plot_layout(widths = c(2, 1), heights = c(10)) +
       patchwork::plot_annotation(
-        title = glue::glue("{cntry %>% toupper()}: NUMBER OF <span style= 'color:#2057a7;'> 
+        title = {q},
+        subtitle = glue::glue("{cntry %>% toupper()}: NUMBER OF <span style= 'color:#2057a7;'> 
   NEW HIV INFECTIONS</span> AND <span style = 'color:#c43d4d;'> TOTAL PLHIV DEATHS </span> AND PROGRESS TO <span style = 'color:#1e87a5;'>95S</span>"),
         #subtitle = "Facilities location data availability",
         caption =  glue("{metadata_unaids$caption} | USAID/OHA/SIEI | Ref id: {ref_id} v{vrsn}"),
         theme = si_style_nolines() + ggplot2::theme(
-          plot.title = ggtext::element_markdown(),
-          plot.subtitle = element_text(hjust = .5)))
-      
-    return(viz)
-
+          plot.subtitle = ggtext::element_markdown()))
+  
   }
   
+    return(viz)
   
 }
 

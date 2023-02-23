@@ -91,8 +91,10 @@ prep_ovc_coverage <- function(df_mer, df_subnat, cntry, agency){
 
 viz_ovc_coverage <- function(df){
   
+  q <- glue::glue("What proportion of PEPFAR's <15 TX cohort is the OVC Comprehensive program reaching?") %>% toupper
+    
   if(is.null(df) || nrow(df) == 0)
-    return(print(paste("No data available.")))
+    return(dummy_plot(q))
   
   ref_id <- "7f4c9dc0" #id for adorning to plots, making it easier to find on GH
   vrsn <- 2 
@@ -110,18 +112,19 @@ viz_ovc_coverage <- function(df){
     ggplot2::geom_col(aes(tx_curr), color = glitr::moody_blue, fill = NA, na.rm = TRUE) +
     ggplot2::geom_col(aes(ovc_hivstat_art), fill = glitr::moody_blue, na.rm = TRUE) +
     ggplot2::geom_text(aes(x = 0, label = scales::percent(coverage_tx, 1)),
-                     hjust = -.5, family = "Source Sans Pro SemiBold", color = "white", na.rm = TRUE) +
+                       hjust = -.5, family = "Source Sans Pro SemiBold", color = "white", na.rm = TRUE) +
     ggplot2::facet_grid(forcats::fct_rev(group) ~ ., scale = "free_y", space = "free", switch = "y") +
     ggplot2::scale_x_continuous(label = scales::comma, expand = c(.005, .005)) +
     ggplot2::scale_alpha_identity() +
     ggplot2::labs(x = NULL, y = NULL,
-                subtitle = glue::glue("{unique(df$period)} {unique(df$funding_agency)}/{unique(df$country)} **<span style = 'color:{glitr::moody_blue};'>comprehensive OVC program </span>** covered {scales::percent(overall_cov,1)} of <15 on Treatment in PSNUs with OVC Programming"),
-                caption = glue::glue("{cap_note}{metadata_msd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
+                  title = {q},
+                  subtitle = glue::glue("{unique(df$period)} {unique(df$funding_agency)}/{unique(df$country)} **<span style = 'color:{glitr::moody_blue};'>comprehensive OVC program </span>** covered {scales::percent(overall_cov,1)} of <15 on Treatment in PSNUs with OVC Programming"),
+                  caption = glue::glue("{cap_note}{metadata_msd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     glitr::si_style_xgrid() +
     ggplot2::theme(strip.placement = "outside",
-                 panel.spacing = ggplot2::unit(.5, "picas"),
-                 strip.text.y = ggplot2::element_text(hjust = .5),
-                 plot.subtitle = ggtext::element_markdown())
+                   panel.spacing = ggplot2::unit(.5, "picas"),
+                   strip.text.y = ggplot2::element_text(hjust = .5),
+                   plot.subtitle = ggtext::element_markdown())
   
   
 }  

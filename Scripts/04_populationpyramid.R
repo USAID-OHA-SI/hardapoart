@@ -84,12 +84,14 @@
 
   viz_pop_pyramid <- function(df){
   
+    indicator <- unique(df$indicator)[1]
+    q <- glue::glue("Is there a youth bulge ({indicator}) {unique(df$country)} needs to plan for?") %>% toupper
+      
   if(is.null(df) || nrow(df) == 0)
-    return(print(paste("No data available.")))
+    return(dummy_plot(q))
   
   ref_id <- "aa8bd5b4"
-  vrsn <- 1.1
-  indicator <- unique(df$indicator)[1]
+  vrsn <- 2
   
   # pull in the number of PLHIV/POP_EST reported with no age or sex data available
   n_PPL_unknown <- df$n_unknown[1]
@@ -112,8 +114,8 @@
       limits = c(-max(df$targets), max(df$targets)),
       labels = function(x) {glue("{label_number(scale_cut = cut_short_scale())(abs(x))}")}, 
     ) +
-    ggplot2::labs(title = glue("{unique(df$country)} - {unique(df$fiscal_year)} {indicator} Pyramid") %>% toupper,
-                  subtitle =  glue::glue("Comparison between <span style='color:{genoa}'>Males</span> & <span style='color:{moody_blue}'>FEMALES</span> {indicator} by age band"),
+    ggplot2::labs(title = {q},
+                  subtitle =  glue::glue("Comparison between <span style='color:{genoa}'>Males</span> & <span style='color:{moody_blue}'>FEMALES</span> {indicator} {indicator} by age band"),
                   x = NULL, y = NULL, fill = NULL,
                   caption = 
                     glue("Note: There are {n_PPL_unknown} {indicator} with unreported age and sex data.

@@ -120,8 +120,10 @@ prep_undiagnosed <- function(cntry) {
  
  viz_modality_age <- function(df) {
    
+   q <- glue::glue("Does testing favor prevention or case finding? Does this fit with where {unique(df$country)} is in the epidemic?") %>% toupper
+     
    if(is.null(df) || nrow(df) == 0)
-     return(print(paste("No data available.")))
+     return(dummy_plot(q))
    
    ref_id <- "cc4f6cf7"
    vrsn <- 1 
@@ -146,7 +148,7 @@ prep_undiagnosed <- function(cntry) {
                    linewidth = 0.25, color = "white", 
                    linetype = "dotted") +
      ggplot2::scale_fill_identity() +
-     ggplot2::facet_grid(mod_order ~ forcats::fct_reorder(age_facet, value, na.rm = TRUE, .desc = TRUE), scales = "free_y") +
+     ggplot2::facet_grid(mod_order ~ forcats::fct_reorder(age_facet, value, na.rm = TRUE, .desc = TRUE), scales = "free_y", switch = "y") +
      ggplot2::geom_text(aes(y = value, label = scales::percent(start, 1)), size = 7/.pt, vjust = -0.5, family = "Source Sans Pro", na.rm = TRUE) +
      ggplot2::geom_text(aes(y = value, label = scales::percent(end, 1)), size = 7/.pt,  vjust = -0.5, family = "Source Sans Pro", na.rm = TRUE) +
      ggplot2::geom_text(data = . %>% dplyr::filter(trendscoarse == "15+", period == min(period)),
@@ -155,13 +157,16 @@ prep_undiagnosed <- function(cntry) {
      # geom_text(aes(y = pd_tot, label = note), size = 8/.pt, color = "#7C7C7C",
      #           hjust = 0.2, vjust = -0.25) +
      ggplot2::labs(x = NULL, y = NULL,
-          title = glue::glue("{unique(df$funding_agency)}/{unique(df$country) %>% toupper} HTS_TST MODALITY SUMMARY BY AGE GROUP"),
-          caption = glue::glue("Note: Undiagnosed PLHIV proxy calculated as the number of PLHIV minus PLHIV who know their status (UNAIDS 2022 Data)
+                   title = stringr::str_wrap({q}, width = 80),
+                   subtitle = glue::glue("{unique(df$funding_agency)}/{unique(df$country) %>% toupper} HTS_TST modality summary by age group"),
+                   caption = glue::glue("Note: Undiagnosed PLHIV proxy calculated as the number of PLHIV minus PLHIV who know their status (UNAIDS 2022 Data)
                                Source: UNAIDS 2022 Epidemiology Data & {metadata_msd$source} | USAID/OHA/SIEI |  Ref id:{ref_id} v{vrsn}")) +
-     ggplot2::theme(legend.position = "none") +
      ggplot2::scale_y_continuous(label = label_number(scale_cut = cut_short_scale())) +
      ggplot2::scale_x_discrete(labels = pd_brks) +
-     glitr::si_style_ygrid(facet_space = 0.5)   
+     glitr::si_style_ygrid(facet_space = 0.5) +
+     ggplot2::theme(legend.position = "none",
+                    strip.placement = "outside",
+                    strip.text = ggplot2::element_text(face = "bold", hjust = .5))
    
  }
  

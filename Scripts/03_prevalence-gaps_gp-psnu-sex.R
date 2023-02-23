@@ -131,8 +131,10 @@
   #' 
   viz_hiv_prevalence <- function(df, save = F) {
     
+    q <- glue::glue("Are there clear HIV prevalence gaps by PSNU or sex?") %>% toupper
+      
     if(is.null(df) || nrow(df) == 0)
-      return(print(paste("No data available.")))
+      return(dummy_plot(q))
     
     # OU/Country Reference line
     
@@ -199,8 +201,8 @@
       scale_y_continuous(labels = percent, position = "right") +
       coord_flip() +
       labs(x = "", y = "", 
-           title = glue::glue("{toupper(unique(df$country))} - {unique(df$fiscal_year)} HIV PREVALENCE"),
-           subtitle = glue::glue("HIV Prevalence Gap between <span style='color:{genoa}'>Male</span> & <span style='color:{moody_blue}'>Female</span> by PSNU"),
+           title = {q},
+           subtitle = glue::glue("{toupper(unique(df$country))} - {unique(df$fiscal_year)} HIV Prevalence Gap between <span style='color:{genoa}'>Male</span> & <span style='color:{moody_blue}'>Female</span> by PSNU"),
            caption = glue::glue("{cap_note}{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
       si_style_nolines() +
       theme(plot.subtitle = element_markdown(),

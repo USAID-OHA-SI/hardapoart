@@ -93,9 +93,10 @@
   
   viz_linkage_psnu <- function(df){
     
+    q <- glue::glue("Are there any major issues with proxy linkage by geography/population that can be targeted?") %>% toupper
     
     if(is.null(df) || nrow(df) == 0)
-      return(print(paste("No data available.")))
+      return(dummy_plot(q))
     
     ref_id <- "f6f26589"
     vrsn <- 1 
@@ -120,7 +121,8 @@
       scale_x_continuous(expand = c(.005, .005)) +
       scale_fill_identity() +
       si_style_nolines() +
-      labs(subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)} {metadata_msd$curr_pd} Proxy Linkage"),
+      labs(title = {q},
+           subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)} {metadata_msd$curr_pd} Proxy Linkage"),
            x = NULL, y = NULL,
            caption = glue("{cap_note}{metadata_msd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
       theme(legend.position = "none",

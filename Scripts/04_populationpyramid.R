@@ -98,23 +98,26 @@
   
   df %>%
     ggplot2::ggplot(aes(population, ageasentered, fill = sex)) +
-    ggplot2::geom_col() +
+    ggplot2::geom_blank(aes(axis_max)) +
+    ggplot2::geom_blank(aes(axis_min)) +
+    ggplot2::geom_col(alpha = .8, na.rm = TRUE) +
     ggplot2::geom_vline(aes(xintercept = 0), color = "white", linewidth = 1.1)+
+    ggplot2::facet_wrap(~forcats::fct_rev(indicator), scales = "free_x") +
     ggplot2::scale_fill_manual(values = c("Male" = glitr::genoa, 
                                           "Female" = glitr::moody_blue)) +
     ggplot2::scale_x_continuous(
-      limits = c(-max(df$targets), max(df$targets)),
       labels = function(x) {glue("{label_number(scale_cut = cut_short_scale())(abs(x))}")}, 
     ) +
     ggplot2::labs(title = {q},
-                  subtitle =  glue::glue("Comparison between <span style='color:{genoa}'>Males</span> & <span style='color:{moody_blue}'>FEMALES</span> {indicator} {indicator} by age band"),
+                  subtitle =  glue::glue("Comparison between <span style='color:{genoa}'>Males</span> & <span style='color:{moody_blue}'>Females</span> by age band"),
                   x = NULL, y = NULL, fill = NULL,
                   caption = 
-                    glue("Note: There are {n_PPL_unknown} {indicator} with unreported age and sex data.
+                    glue("Note: There are {n_PPL_unknown} indicator with unreported age and sex data.
                   {metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     glitr::si_style_yline() +
     ggplot2::theme(
       legend.position = "none",
+      strip.text = element_text(hjust = .5),
       plot.subtitle = element_markdown())
   
   }

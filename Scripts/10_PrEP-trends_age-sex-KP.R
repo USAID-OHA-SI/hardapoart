@@ -17,7 +17,8 @@ prep_prep_disagg <- function (df, cntry, agency){
     filter(indicator == "PrEP_NEW", 
            standardizeddisaggregate %in% c("Age/Sex", "KeyPopAbr"),
            country==cntry,
-           funding_agency==agency)
+           funding_agency==agency,
+           fiscal_year >= metadata_msd$curr_fy - 1)
   
   if(nrow(df_prep) == 0)
     return(NULL)

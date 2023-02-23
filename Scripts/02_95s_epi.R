@@ -184,7 +184,7 @@ viz_95s <- function(df) {
     ggplot(aes(indicator, pop,
                fill = fill_color, color = scooter, shape = 22)) +
     geom_point(size = 15) +
-    geom_vline(xintercept = 3.5) +
+    #geom_vline(xintercept = 3.5) +
     geom_text(data = . %>% filter(achv != TRUE & indicator != "Epi\nControl"), 
               vjust = .5, hjust = .5,
               aes(label = value), family = "Source Sans Pro SemiBold", size = 6) +

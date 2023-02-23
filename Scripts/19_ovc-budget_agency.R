@@ -16,10 +16,11 @@ prep_ovc_budget <- function(df_mer, df_fin, cntry){
     return(NULL)
   
   #limit data to OVC non-DREAMS (and remove PEPFAR comparing agency)
-  df_ovc <- df_msd %>% 
+  df_ovc <- df_mer %>% 
     dplyr::filter(indicator == "OVC_SERV",
                   stringr::str_detect(standardizeddisaggregate, "Age/Sex/(?!DREAMS)"),
                   country == cntry,
+                  fiscal_year >= max(fiscal_year) - 1,
                   !funding_agency %in% c("PEPFAR", "Dedup"))
   
   if(nrow(df_ovc) == 0)
@@ -36,7 +37,7 @@ prep_ovc_budget <- function(df_mer, df_fin, cntry){
   df_budget <- df_fsd %>% 
     filter(beneficiary == "OVC",
            country == cntry,
-           fiscal_year > 2021) %>% 
+           fiscal_year %in% unique(df_ovc$fiscal_year)) %>% 
     dplyr::mutate(funding_agency = ifelse(funding_agency %in% c("USAID", "CDC"), funding_agency, "Other Agencies")) %>% 
     dplyr::count(fiscal_year, country, funding_agency, wt = cop_budget_total, name = "value") %>% 
     dplyr::mutate(type = "Budget")

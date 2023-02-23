@@ -42,10 +42,7 @@ knitr::opts_chunk$set(echo = FALSE)
   source(here("Scripts/19_ovc-budget_agency.R"))
   source(here("Scripts/20_DREAMS_prev-gaps_psnu.R"))
   source(here("Scripts/20_tbstat_coverage.R"))
-
-
-# Helper function for assertr::verify() to show more descriptive error messages
-  err_text <- function(msg) stop(msg, call = FALSE)
+  source(here("Scripts/99_utilities.R"))
 
 ```
 
@@ -71,9 +68,9 @@ sup_text <- glue("Note that the visuals below largely reflect {params$cntry} as 
 
 `r if(params$agency == "PEPFAR"){sup_text}`
 
-### 1. Are there any major gaps in achievement as of `r params$curr_pd`?
 
 ```{r achievement}
+# 1. Are there any major gaps in achievement as of `r params$curr_pd`?
 
 df_msd %>%
   prep_achv_psnu(params$cntry,params$agency) %>%

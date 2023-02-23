@@ -53,11 +53,6 @@
       return_latest("PSNU_IM") %>%
       read_psd()
 
-    #filter to data from last 5 quarters & relevant indicators/disaggs
-    df_msd <- df_msd %>%
-      filter(fiscal_year >= 2021)
-
-
     #add _D to denom variables
     df_msd <- clean_indicator(df_msd)
 

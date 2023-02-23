@@ -42,8 +42,10 @@
 
  viz_hrh_titles <- function(df){
 
+   q <- glue::glue("What are the large staffing categories? How do they align with sustainability and leveraging our assets?") %>% toupper
+   
    if(is.null(df) || nrow(df) == 0)
-     return(print(paste("No data available.")))
+     return(dummy_plot(q))
 
    ref_id <- "9831a46a" #id for adorning to plots, making it easier to find on GH
    vrsn <- 1
@@ -53,6 +55,7 @@
      ggplot2::geom_col(fill = glitr::genoa, alpha = .7) +
      ggplot2::scale_x_continuous(expand = c(.005, .005), label = comma) +
      ggplot2::labs(x = NULL, y = NULL,
+                   title = {q},
                    subtitle = glue::glue("Top FTEs Position Titles in {unique(df$funding_agency)}/{unique(df$country)}"),
                    caption = glue::glue("{metadata_hrh$caption} Structured Dataset (not redacted) | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
      glitr::si_style_xgrid() +

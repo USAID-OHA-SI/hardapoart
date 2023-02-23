@@ -62,8 +62,10 @@ prep_ovc_budget <- function(df_mer, df_fin, cntry){
 
 viz_ovc_budget <- function(df){
   
+  q <- glue::glue("Are OVC target changes proportional to changes in the OVC budget?") %>% toupper
+  
   if(is.null(df) || nrow(df) == 0)
-    return(print(paste("No data available.")))
+    return(dummy_plot(q))
   
   ref_id <- "15e7b94c" #id for adorning to plots, making it easier to find on GH
   vrsn <- 2
@@ -128,6 +130,7 @@ viz_ovc_budget <- function(df){
                                aesthetics = c("fill", "color")) +
     ggplot2::coord_cartesian(clip = "off") +
     ggplot2::labs(x = NULL, y = NULL,
+                  title = {q},
                   subtitle = glue("{df_title$funding_agency}/{df_title$country} had a {df_title$Targets} OVC target {ifelse({df_title$Targets} <0, 'decline', 'growth')} with a OVC beneficiary budget {ifelse({df_title$Budget} <0, 'decline', 'growth')} of {df_title$Budget}"),
                   caption = glue("Note: DREAMS targets removed from OVC targets; M&O and supply chain excluded from budget
                         {metadata_msd$caption} + {metadata_fsd$source} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
@@ -137,7 +140,7 @@ viz_ovc_budget <- function(df){
                    strip.placement = "outside",
                    strip.text = ggplot2::element_text(hjust = .5),
                    legend.position = "none")
-  
+
 }
   
     

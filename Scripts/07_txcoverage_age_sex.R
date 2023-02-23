@@ -99,8 +99,10 @@ viz_txcoverage <- function(df_plhivtx, df_txnew) {
   
   df <- dplyr::bind_rows(df_plhivtx, df_txnew)
   
+  q <- glue::glue("Are new patients being added to the areas with the largest gaps in TX coverage?") %>% toupper
+    
   if(is.null(df) || nrow(df) == 0)
-    return(print(paste("No data available.")))
+    return(dummy_plot(q))
   
   ref_id <- "725ebd70"
   vrsn <- 2
@@ -128,6 +130,7 @@ viz_txcoverage <- function(df_plhivtx, df_txnew) {
                                 expand = c(.005, .005)) +
     ggplot2::scale_fill_identity(aesthetics = c("fill", "color")) +
     ggplot2::labs(x = NULL, y = NULL,
+                  title = {q},
                   caption = glue("{metadata_msd$caption} + {metadata_natsubnat$source} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     ggplot2::coord_cartesian(clip = "off") +
     glitr::si_style_xgrid() +

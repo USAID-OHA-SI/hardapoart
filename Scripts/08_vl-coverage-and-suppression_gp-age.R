@@ -111,8 +111,10 @@
   #' 
   viz_viral_load <- function(df, save = F) {
     
+    q <- glue::glue("Are certain populations being missed when trying to reach the 3rd 95?") %>% toupper
+      
     if(is.null(df) || nrow(df) == 0)
-      return(print(paste("No data available.")))
+      return(dummy_plot(q))
     
     ref_id <- "29675452"
     vrsn <- 1 
@@ -131,8 +133,8 @@
                       family = "Source Sans Pro", na.rm = TRUE) +
       scale_y_continuous(labels = percent) +
       labs(x = "", y = "",
-           title = glue::glue("{toupper(unique(df$funding_agency))}/{toupper(unique(df$country))} - VIRAL LOAD TRENDS"),
-           subtitle = glue::glue("<span style='color:{burnt_sienna}'>Coverage</span> & <span style='color:{genoa}'>Suppression</span>"),
+           title = {q},
+           subtitle = glue::glue("{unique(df$funding_agency)}/{unique(df$country)} VL <span style='color:{burnt_sienna}'>Coverage</span> & <span style='color:{genoa}'>Suppression</span>"),
            caption = glue::glue("{metadata_msd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
       coord_cartesian(clip = "off") +
       facet_wrap(~age) +

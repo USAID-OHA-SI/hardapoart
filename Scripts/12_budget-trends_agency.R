@@ -46,8 +46,10 @@ prep_budget_trends <- function(df, cntry){
 
 viz_budget_trends <- function(df){
   
+  q <- glue::glue("Have COP budgets been flatlining or changing in a similar manner across agencies?") %>% toupper
+    
   if(is.null(df) || nrow(df) == 0)
-    return(print(paste("No data available.")))
+    return(dummy_plot(q))
   
   ref_id <- "11a316e1"
   vrsn <- 1 
@@ -57,20 +59,22 @@ viz_budget_trends <- function(df){
     ggplot2::geom_col(aes(y = pepfar_total), fill = "#909090", alpha = .2) +
     ggplot2::geom_col(alpha = .6) +
     ggplot2::geom_text(aes(label = scales::label_number(prefix = "$",scale_cut = cut_short_scale())(lab)), 
-              family = "Source Sans Pro", color = glitr::matterhorn, vjust = -.3, na.rm = TRUE) +
+                       family = "Source Sans Pro", color = glitr::matterhorn, vjust = -.3, na.rm = TRUE) +
     ggplot2::facet_grid(~forcats::fct_reorder2(funding_agency, fiscal_year, cop_budget_total)) +
     ggplot2::scale_y_continuous(label = scales::label_number(prefix = "$", scale_cut = cut_short_scale()),
-                       expand = c(.005, .005)) +
+                                expand = c(.005, .005)) +
     ggplot2::scale_fill_manual(values = c("USAID" = glitr::denim,
-                                 "CDC" = glitr::scooter_light,
-                                 "Other Agencies" = glitr::trolley_grey)) +
+                                          "CDC" = glitr::scooter_light,
+                                          "Other Agencies" = glitr::trolley_grey)) +
     ggplot2::coord_cartesian(clip = "off") +
     ggplot2::labs(x = NULL, y = NULL,
-         subtitle = glue("{unique(df$country)}'s annual budget shifts by agency (fiscal year)"),
-         caption = glue("Note: M&O and supply chain excluded
+                  title = {q},
+                  subtitle = glue("{unique(df$country)}'s annual budget shifts by agency (fiscal year)"),
+                  caption = glue("Note: M&O and supply chain excluded
                         {metadata_fsd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     si_style_ygrid() +
-    ggplot2::theme(legend.position = "none")
+    ggplot2::theme(legend.position = "none",
+                   strip.text = element_text(family = "Source Sans Pro SemiBold"))
 }
   
   

@@ -121,8 +121,10 @@ prep_hiv_prev_DREAMS <- function(df, cntry,
   
 viz_hiv_prev_DREAMS <- function(df, save = F) {
   
+  q <- glue::glue("Are there clear HIV prevalence gaps by AGYW/ABYM?") %>% toupper
+    
   if(is.null(df) || nrow(df) == 0)
-    return(print(paste("No data available.")))
+    return(dummy_plot(q))
   
   # OU/Country Reference line
   
@@ -190,8 +192,8 @@ viz_hiv_prev_DREAMS <- function(df, save = F) {
     scale_y_continuous(labels = percent, position = "right") +
     coord_flip() +
     labs(x = "", y = "", 
-         title = glue::glue("{toupper(unique(df$country))} - {unique(df$fiscal_year)} HIV PREVALANCE"),
-         subtitle = glue::glue("HIV Prevalence Gap between <span style='color:{genoa}'>ABYM</span> & <span style='color:{moody_blue}'>AGYW</span> ages 10-24 by PSNU"),
+         title = {q},
+         subtitle = glue::glue("{toupper(unique(df$country))} - {unique(df$fiscal_year)} HIV Prevalence Gap between <span style='color:{genoa}'>ABYM</span> & <span style='color:{moody_blue}'>AGYW</span> ages 10-24 by PSNU"),
          caption = glue::glue("{cap_note}{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     si_style_nolines() +
     theme(plot.subtitle = element_markdown(),

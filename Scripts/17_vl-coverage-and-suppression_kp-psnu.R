@@ -99,8 +99,10 @@ prep_viral_load_kp_agyw <- function(df, cntry, agency){
 
 viz_viral_load_kp_agyw <- function(df){
   
+  q <- glue::glue("Are certain key populations being missed when trying to reach the 3rd 95?") %>% toupper
+  
   if(is.null(df) || nrow(df) == 0)
-    return(print(paste("No data available.")))
+    return(dummy_plot(q))
   
   ref_id <- "f5d17218" #id for adorning to plots, making it easier to find on GH
   
@@ -132,6 +134,7 @@ viz_viral_load_kp_agyw <- function(df){
                        breaks = seq(0,1.1, by = .25),
                        oob = oob_squish) + 
     labs(x = NULL, y = NULL,
+         title = {q},
          subtitle = glue("{unique(df$period)} {unique(df$funding_agency)}/{unique(df$country)} VLC/S gaps between different population groups"),
          caption = glue("Note: VL capped at 110% {cap_note}{metadata_msd$caption} | USAID/OHA/SIEI | Ref id: {ref_id} v{vrsn}")) +
     si_style_xline() +

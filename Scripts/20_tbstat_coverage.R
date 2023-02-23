@@ -93,8 +93,10 @@ prep_tbstat_cov <- function(df, cntry, agency, ...) {
 
 viz_tbstat_cov <- function(df) {
   
+  q <- glue::glue("Is the percentage of TB patients that know their HIV status (TB_STAT % coverage) close to a 95% to align with the first 95 target?") %>% toupper %>% stringr::str_wrap(width = 80)
+  
   if(is.null(df) || nrow(df) == 0)
-    return(print(paste("No data available.")))
+    return(dummy_plot(q))
   
   ref_id <- "70ebd4eb"
   vrsn <- 1 
@@ -127,7 +129,8 @@ viz_tbstat_cov <- function(df) {
     scale_x_continuous(expand = c(.005, .005)) +
     scale_fill_identity() +
     si_style_nolines() +
-    labs(subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)} {metadata_msd$curr_pd} TB_STAT Coverage"),
+    labs(title = {q},
+         subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)} {metadata_msd$curr_pd} TB_STAT Coverage"),
          x = NULL, y = NULL,
          caption = glue("{cap_note}{metadata_msd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     theme(legend.position = "none",

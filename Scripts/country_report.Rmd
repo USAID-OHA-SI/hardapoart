@@ -70,7 +70,7 @@ sup_text <- glue("Note that the visuals below largely reflect {params$cntry} as 
 
 
 ```{r achievement}
-# 1. Are there any major gaps in achievement as of `r params$curr_pd`?
+# Are there any major gaps in achievement as of `r params$curr_pd`?
 
 df_msd %>%
   prep_achv_psnu(params$cntry,params$agency) %>%
@@ -78,17 +78,17 @@ df_msd %>%
 
 ```
 
-### 2. Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
 
 ```{r epi_95s}
+### Is progress being made in reaching epidemic control? Are there gaps in the 95s that can be targeted?
 
 viz_unaids_all(params$cntry)
 
 ```
 
-### 3. What does HIV prevalence look like across sex / SNUs?
 
 ```{r prevalence}
+### What does HIV prevalence look like across sex / SNUs?
 
 df_natsubnat %>% 
   prep_hiv_prevalence(params$cntry) %>% 
@@ -96,9 +96,9 @@ df_natsubnat %>%
   
 ```
 
-### What does HIV prevalence look like across AGYW/ABYM across SNUs?
 
 ```{r prevalence_dreams}
+### What does HIV prevalence look like across AGYW/ABYM across SNUs?
 
 df_natsubnat %>% 
   prep_hiv_prev_DREAMS(params$cntry) %>% 
@@ -107,10 +107,8 @@ df_natsubnat %>%
 ```
 
 
-
-### 4. Is there a youth bulge of PLHIV we need to plan for?
-
 ```{r youth_bulge_plhiv}
+### Is there a youth bulge of PLHIV we need to plan for?
 
 df_natsubnat %>% 
   prep_pop_pyramid(params$cntry, "PLHIV") %>% 
@@ -118,8 +116,8 @@ df_natsubnat %>%
 
 ```
 
-### Is there a youth bulge of the overall population we need to plan for?
 ```{r youth_bulge_pop}
+### Is there a youth bulge of the overall population we need to plan for?
 
 df_natsubnat %>% 
   prep_pop_pyramid(params$cntry, "POP_EST") %>% 
@@ -127,9 +125,9 @@ df_natsubnat %>%
 
 ```
 
-### What proportion of PEPFAR's <15 on treatment is the OVC Comprehensive program reaching?
 
 ```{r ovc_tx}
+### What proportion of PEPFAR's <15 on treatment is the OVC Comprehensive program reaching?
 
 prep_ovc_coverage(df_msd, df_subnat, params$cntry, "PEPFAR") %>% 
   viz_ovc_coverage()
@@ -137,9 +135,9 @@ prep_ovc_coverage(df_msd, df_subnat, params$cntry, "PEPFAR") %>%
 ```
 
 
-### 5. Does testing favor prevention or case finding and does this fit with where `r params$cntry` is in the epidemic?
 
 ```{r testing}
+### Does testing favor prevention or case finding and does this fit with where `r params$cntry` is in the epidemic?
 
  prep_modality_age(df_msd, params$cntry, "PEPFAR", trendscoarse) %>% 
    viz_modality_age()
@@ -147,17 +145,17 @@ prep_ovc_coverage(df_msd, df_subnat, params$cntry, "PEPFAR") %>%
 ```
 
 
-### Is the percentage of TB patients that know their HIV status (TB_STAT % coverage) close to a 95% to align with the first 95 target?
 
 ```{r tb_stat_coverage}
+### Is the percentage of TB patients that know their HIV status (TB_STAT % coverage) close to a 95% to align with the first 95 target?
 
 prep_tbstat_cov(df_msd, params$cntry, "PEPFAR") %>% 
   viz_tbstat_cov()
 ```
 
-### 6. Are there any major issues with proxy linkage by geography/population that can be targeted?
 
 ```{r linkage}
+### 6. Are there any major issues with proxy linkage by geography/population that can be targeted?
 
 df_msd %>% 
   prep_linkage_psnu(params$cntry, params$agency) %>% 
@@ -165,17 +163,17 @@ df_msd %>%
 
 ```
 
-### 7. Are new patients being added to the areas with the largest gaps in treatment coverage?
 
 ```{r tx_gap, warning=FALSE}
+### 7. Are new patients being added to the areas with the largest gaps in treatment coverage?
 
 viz_tx_all(params$cntry, params$agency) 
 
 ```
 
-### 8. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
 
 ```{r vlsc_pop}
+### 8. Are certain populations by age or sex being missed when trying to reach the 3rd 95?
 
 df_msd %>% 
   prep_viral_load(params$cntry, params$agency) %>% 
@@ -183,19 +181,19 @@ df_msd %>%
 
 ```
 
-### 9. Are certain populations groups being missed when trying to reach the 3rd 95?
 
 ```{r vlsc_kp}
 
+### 9. Are certain key populations groups being missed when trying to reach the 3rd 95?
 df_msd %>% 
   prep_viral_load_kp_agyw(params$cntry, params$agency) %>% 
   viz_viral_load_kp_agyw()
 
 ```
 
-### 10. Are certain regions by age or sex being missed when trying to reach the 3rd 95?
 
 ```{r vlsc_geo}
+### 10. Are certain regions by age or sex being missed when trying to reach the 3rd 95?
 
 df_msd %>% 
   prep_viral_load_psnu(params$cntry, params$agency) %>% 
@@ -204,9 +202,9 @@ df_msd %>%
 ```
 
 
-### 11. Is PrEP uptake relatively consistent across demographics?
 
 ```{r prep}
+### 11. Is PrEP uptake relatively consistent across demographics?
 suppressMessages(
   df_msd %>%
     prep_prep_disagg(params$cntry, params$agency) %>%
@@ -215,9 +213,9 @@ suppressMessages(
 )
 ```
 
-### 12. Are there key gaps identified by the SID for `r params$cntry` to prioritize?
 
 ```{r sid}
+### 12. Are there key gaps identified by the SID for `r params$cntry` to prioritize?
 
 df_sid %>% 
   prep_sid(params$cntry) %>% 
@@ -225,9 +223,9 @@ df_sid %>%
 
 ```
 
-### 13. Have COP budgets been flatlining or changing in a similar manner across agencies?
 
 ```{r budget_share}
+### 13. Have COP budgets been flatlining or changing in a similar manner across agencies?
 
 df_fsd %>% 
   prep_budget_trends(params$cntry) %>% 
@@ -235,9 +233,9 @@ df_fsd %>%
 
 ```
 
-### Are OVC target increases proportional to changes in the OVC budget?
 
 ```{r ovc_budget}
+### Are OVC target increases proportional to changes in the OVC budget?
 
 df_msd %>% 
   prep_ovc_budget(df_fsd, params$cntry) %>% 
@@ -246,9 +244,9 @@ df_msd %>%
 ```
 
 
-### 14. Does `r params$cntry` have the optimal mix of PEPFAR spending when thinking about sustainability?
-
 ```{r funding_distro}
+
+### Does `r params$cntry` have the optimal mix of PEPFAR spending when thinking about sustainability?
 
 df_fsd %>% 
   prep_funding_distro(params$cntry, "USAID") %>% 
@@ -256,9 +254,9 @@ df_fsd %>%
 
 ```
 
-### 15. What does the current staffing footprint look like in `r params$cntry`? How do they align with sustainability and leveraging our assets?
 
 ```{r staffing_footprint}
+### 15. What does the current staffing footprint look like in `r params$cntry`? How do they align with sustainability and leveraging our assets?
 
 df_hrh %>% 
   prep_hrh_footprint(params$cntry, "USAID") %>% 
@@ -266,9 +264,9 @@ df_hrh %>%
 
 ```
 
-### 16. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
 
 ```{r staffing_titles}
+### 16. What are the large staffing categories? How do they align with sustainability and leveraging our assets?
 
 df_hrh %>% 
   prep_hrh_titles(params$cntry, "USAID") %>% 
@@ -276,9 +274,9 @@ df_hrh %>%
 
 ```
 
-### 17. What are the gaps in adopting structural laws and policies towards the UNAIDS 10-10-10 goals?
 
 ```{r 10s_barriers}
+### 17. What are the gaps in adopting structural laws and policies towards the UNAIDS 10-10-10 goals?
 
 df_tens %>% 
   prep_10s_barriers(params$cntry) %>% 

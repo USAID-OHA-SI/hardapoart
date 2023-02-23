@@ -343,7 +343,7 @@
 # LOAD 10-10-10 ------------------------------------------------------------
   
   #store meta data
-  metadata_pol_lab <- list(caption = "Source: HIV Policy Lab [2021-11-09]")
+  metadata_pol_lab <- list(caption = "Source: HIV Policy Lab [2023-01-27]")
 
   #read in HIV Policy Lab data export
   df_tens <- googlesheets4::range_speedread(as_sheets_id(pol_lab_id), "Policy adoption data",

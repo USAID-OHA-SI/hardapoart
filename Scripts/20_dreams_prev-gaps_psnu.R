@@ -45,7 +45,16 @@ prep_hiv_prev_DREAMS <- function(df, cntry) {
   #pivot wider to calc prevalence
   df_prev <- df_pops %>% 
     tidyr::pivot_wider(names_from = "indicator",
-                       names_glue = "{tolower(indicator)}") %>% 
+                       names_glue = "{tolower(indicator)}") 
+  
+  #clean exit if no data
+  if("pop_est" %ni% names(df_prev))
+    return(NULL)
+  
+  if("plhiv" %ni% names(df_prev))
+    df_prev <- dplyr::mutate(df_prev, plhiv = NA_real_)
+  
+  df_prev <- df_prev %>% 
     dplyr::mutate(prevalence = plhiv / pop_est)
   
   #create a psnu level prevalence to order plot on

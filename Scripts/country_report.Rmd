@@ -7,9 +7,9 @@ output:
     fig_height: 5.625
     dpi: 330
 params:
-  curr_pd: FY23Q1
-  cntry: Malawi
-  agency: USAID
+  curr_pd: "FY23Q1"
+  cntry: "Malawi"
+  agency: "USAID"
 ---
 
 
@@ -151,7 +151,7 @@ prep_ovc_coverage(df_msd, df_subnat, params$cntry, "PEPFAR") %>%
 ```{r tb_stat_coverage}
 ### Is the percentage of TB patients that know their HIV status (TB_STAT % coverage) close to a 95% to align with the first 95 target?
 
-prep_tbstat_cov(df_msd, params$cntry, "PEPFAR") %>% 
+prep_tbstat_cov(df_msd, params$cntry, params$agency) %>% 
   viz_tbstat_cov()
 ```
 

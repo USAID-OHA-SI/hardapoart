@@ -38,8 +38,11 @@
   
   grp_vars <- c("fiscal_year", "country", "indicator", "sex", "ageasentered")
   
-  if(level != "country")
-    grp_vars <- c(grp_vars, {level})
+  if(level != "country"){
+    level_uid <- glue::glue("{level}uid")
+    grp_vars <- c(grp_vars, {level}, level_uid)
+    
+  }
   
   df_filt <- df_filt %>%
     dplyr::mutate(indicator = ifelse(indicator == "POP_EST", "Population (Est)", indicator)) %>% 
@@ -53,7 +56,7 @@
 
   grp_vars_viz <- c("indicator")
   if(level != "country")
-    grp_vars <- c(grp_vars_viz, {level})
+    grp_vars <- c(grp_vars_viz, {level}, {level_uid})
   
   df_viz <- df_viz %>% 
     dplyr::group_by(dplyr::across(grp_vars_viz)) %>% 

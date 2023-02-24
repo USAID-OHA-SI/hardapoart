@@ -28,7 +28,7 @@ prep_hiv_prev_DREAMS <- function(df, cntry,
   df_pops <- df %>% 
     dplyr::filter(country == cntry, 
                   ageasentered %in% c("10-14", "15-19", "20-24")) %>% 
-    dplyr::group_by(fiscal_year, operatingunit, country, 
+    dplyr::group_by(fiscal_year,  country, 
                     psnuuid, psnu, indicator, ageasentered, sex) %>% 
     dplyr::summarise(value = sum(targets, na.rm = T), .groups = "drop")
   
@@ -39,48 +39,40 @@ prep_hiv_prev_DREAMS <- function(df, cntry,
   ## Add OU/Country Summary
   
   df_pops <- df_pops %>% 
-    group_by(fiscal_year, operatingunit, country, indicator, ageasentered, sex) %>% 
+    group_by(fiscal_year,  country, indicator, ageasentered, sex) %>% 
     summarise(value = sum(value, na.rm = T), .groups = "drop") %>% 
     mutate(psnu = "COUNTRY") %>% 
     bind_rows(df_pops, .)
-  
-  # NOTE - Keep only Country Summaries
-  # df_pops <- df_pops %>% 
-  #   filter(psnu != "COUNTRY") %>% 
-  #   group_by(fiscal_year, operatingunit, indicator, ageasentered, sex) %>% 
-  #   summarise(value = sum(value, na.rm = T), .groups = "drop") %>% 
-  #   mutate(psnu = "OU") %>% 
-  #   bind_rows(df_pops, .)
+
   
   # PSNU Only Summaries
   df_pops_psnu <- df_pops %>%
-    group_by(fiscal_year, operatingunit, country,
+    group_by(fiscal_year, country,
               psnuuid, psnu, indicator) %>%
     summarise(value = sum(value, na.rm = T), .groups = "drop")
   
   # Sex Only Summaries
   df_pops_sex <- df_pops %>%
-    group_by(fiscal_year, operatingunit, country,
+    group_by(fiscal_year, country,
               psnuuid, psnu, indicator, sex) %>%
     summarise(value = sum(value, na.rm = T), .groups = "drop")
   
   ## Compute Prevalence
   df_prev_sex <- df_pops_sex %>% 
-    group_by(fiscal_year, operatingunit, country,  psnuuid, psnu, sex) %>% 
+    group_by(fiscal_year,  country,  psnuuid, psnu, sex) %>% 
     reframe(prevalence = value[indicator == "PLHIV"] / 
               value[indicator == "POP_EST"]) %>% 
     ungroup() 
   
   df_prev_psnu <- df_pops_psnu %>% 
-    group_by(fiscal_year, operatingunit, country,  psnuuid, psnu) %>% 
+    group_by(fiscal_year,  country,  psnuuid, psnu) %>% 
     reframe(psnu_prev = sum(value[indicator == "PLHIV"], na.rm = T) / 
               sum(value[indicator == "POP_EST"], na.rm = T)) %>% 
     ungroup() 
   
   df_prev <- df_prev_sex %>% 
     left_join(df_prev_psnu,
-              by = c("fiscal_year","operatingunit", "country", 
-                     "snu1uid", "snu1", "psnuuid", "psnu"))
+              by = c("fiscal_year", "country", "psnuuid"))
   
   # ## Add SI Style for viz
   if (add_style) {
@@ -94,8 +86,7 @@ prep_hiv_prev_DREAMS <- function(df, cntry,
     
     df_prev <- df_prev %>%
       left_join(df_prev_gap,
-                by = c("fiscal_year","operatingunit", "country",
-                       "snu1uid", "snu1", "psnuuid", "psnu")) %>%
+                by = c("fiscal_year",  "country", "psnuuid")) %>%
       mutate(
         color_sex = case_when(
           sex == "Female" ~ moody_blue,
@@ -104,7 +95,7 @@ prep_hiv_prev_DREAMS <- function(df, cntry,
         psnu_label = case_when(
           psnu %in% c("COUNTRY", "OU") ~ paste0("<span style='color:", usaid_black, "'><strong>", psnu, "</strong></span>"),
           TRUE ~ psnu),) %>%
-      group_by(operatingunit) %>%
+      group_by(country) %>%
       mutate(
         threshold = case_when(
           psnu_prev < prevalence[psnu == "COUNTRY"] ~ .3,

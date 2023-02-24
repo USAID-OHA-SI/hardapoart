@@ -22,7 +22,13 @@ prep_tpt <- function(df, cntry, agency) {
   df_tb_prev <- df_tb_prev %>% 
     group_by(country, funding_agency, snu1, indicator, fiscal_year) %>% 
     summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE)), .groups = "drop") %>% 
-    reshape_msd(include_type = FALSE) %>% 
+    reshape_msd(include_type = FALSE)
+  
+  #clean exit if no data
+  if(nrow(df_tb_prev) == 0)
+    return(NULL)
+  
+  df_tb_prev <- df_tb_prev %>% 
     pivot_wider(names_from = indicator,
                 names_glue = "{tolower(indicator)}") %>% 
     mutate(across(c(tb_prev, tb_prev_d), ~ na_if(., 0)),

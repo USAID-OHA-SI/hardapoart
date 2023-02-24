@@ -61,7 +61,7 @@ prep_tbstat_cov <- function(df, cntry, agency, ...) {
   df_viz <- df_reshaped %>% 
     pivot_wider(names_from = "indicator") 
   
-  if("TB_STAT" %ni% names(df_viz))
+  if("TB_STAT" %ni% names(df_viz) || "TB_STAT_D" %ni% names(df_viz))
     return(NULL)
   
   df_viz <- df_viz %>% 

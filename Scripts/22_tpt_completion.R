@@ -42,15 +42,15 @@ viz_tpt <- function(df) {
   ref_id <- 'a3e0423e'
   vrsn <- 1 
 
+  n_max <- 11
   
   v_tb_prev_lrg <- df %>% 
     filter(period == max(period)) %>% 
     arrange(desc(tb_prev_d)) %>% 
-    mutate(cumsum = cumsum(tb_prev_d)/sum(tb_prev_d)) %>% 
-    slice_head(n = 11) %>% 
+    slice_head(n = n_max) %>% 
     pull(snu1)
   
-  cap_note <- ifelse(nrow(df) > 21, glue("Note: Points sized by TB_PREV_D \n", ""))
+  cap_note <- ifelse(length(unique(df$snu1)) > n_max, glue("Limited to the largest TB_PREV_D SNUs |"), "")
   
   
   df %>% 
@@ -71,7 +71,7 @@ viz_tpt <- function(df) {
     labs(x = NULL, y = NULL, 
            title = {q},
          subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)} TPT completion rates amongst largest {length(v_tb_prev_lrg)} SNUs for TB_PREV_D"),
-         caption = glue("{cap_note}
+         caption = glue("Note:{cap_note} Points sized by TB_PREV_D
                         {metadata_msd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     si_style_ygrid() +
     theme(panel.spacing = unit(.5, "line"),

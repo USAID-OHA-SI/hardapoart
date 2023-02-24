@@ -16,7 +16,7 @@ prep_tpt <- function(df, cntry, agency) {
            standardizeddisaggregate %in% c("Total Numerator", "Total Denominator")) %>% 
     # clean_indicator() %>% 
     group_by(country, funding_agency, snu1, indicator, fiscal_year) %>% 
-    summarise(across(starts_with("qtr"), sum, na.rm = TRUE), .groups = "drop") %>% 
+    summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE)), .groups = "drop") %>% 
     reshape_msd(include_type = FALSE) %>% 
     pivot_wider(names_from = indicator,
                 names_glue = "{tolower(indicator)}") %>% 

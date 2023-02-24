@@ -100,12 +100,9 @@ df_natsubnat %>%
 
 ```{r prevalence_dreams}
 ### What does HIV prevalence look like across AGYW/ABYM across SNUs?
-suppressMessages(
 df_natsubnat %>% 
   prep_hiv_prev_DREAMS(params$cntry) %>% 
-  viz_hiv_prev_DREAMS() %>% 
-  print()
-)
+  viz_hiv_prev_DREAMS()
 
 ```
 

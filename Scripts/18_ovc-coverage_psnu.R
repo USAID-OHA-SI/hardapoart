@@ -100,7 +100,7 @@ viz_ovc_coverage <- function(df){
   vrsn <- 2 
   
   #overall coverage to include in plot title
-  overall_cov <- sum(df$ovc_hivstat_art, na.rm = TRUE) / sum(df$tx_curr)
+  overall_cov <- sum(df$ovc_hivstat_art, na.rm = TRUE) / sum(df$tx_curr, na.rm = TRUE)
   
   #limit to 21 bars (overall + 20 psnus)
   cap_note <- ifelse(nrow(df) > 20, "Note: Limited to the largest 20 TX_CURR <15 PSNUs\n", "")

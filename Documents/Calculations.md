@@ -1,9 +1,9 @@
 ## Calculations
 
-**Target Achievement**
+**DREAMS PSNU Designation**
   - Data Source: MSD
-  - FY Cumulative Results / FY Targets
-
+  - `dreams` indicator = `Y`
+  
 **HIV Prevalence**
   - Data Source: MSD
   - PLHIV / Population
@@ -34,6 +34,10 @@
   - Data Source: UNAIDS
   - PLHIV - PLHIV with Known Status
 
+**Target Achievement**
+  - Data Source: MSD
+  - FY Cumulative Results / FY Targets
+  
 **Treatment Coverage Status**
   - Data Source: NAT_SUBNAT MSD
   - Diagnosed / PLHIV
@@ -53,9 +57,9 @@
 
 ## Adjustments
 
-**AGYW Grouping**
+**AGYW/ABYM Grouping**
   - Data Source: MSD
-  - 10-24 Females 
+  - 10-24 Females/Men 
   
 **GenPop Grouping**
   - Data Source: MSD
@@ -91,4 +95,3 @@
   - Site Level Non-SD = interaction_type either Non Service Delivery or Non-Service Delivery
   - Service Delivery = interaction_type == Direct Service Delivery
   - All others are their program type
-  - 

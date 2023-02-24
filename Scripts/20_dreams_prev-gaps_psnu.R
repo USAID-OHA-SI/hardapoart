@@ -112,7 +112,7 @@ viz_hiv_prev_DREAMS <- function(df, save = F) {
                linewidth = .8, linetype = "dashed", color = usaid_darkgrey) +
     geom_line(linewidth = 2, alpha = 1, color = "white") +
     geom_line(linewidth = 2, alpha = .6, color = grey30k) +
-    geom_errorbar(aes(xmin = prevalence_psnu, xmax = prevalence_psnu), size = 1, color = "white") +
+    geom_errorbar(aes(xmin = prevalence_psnu, xmax = prevalence_psnu), linewidth = 1, color = "white") +
     geom_point(size = 5, color = "white", alpha = 1, na.rm = TRUE) +
     geom_point(size = 5, na.rm = TRUE) +
     facet_wrap(~fiscal_year, nrow = 1, ncol = 3) +
@@ -121,7 +121,7 @@ viz_hiv_prev_DREAMS <- function(df, save = F) {
     scale_x_continuous(labels = scales::percent) +
     labs(x = "", y = "",
          title = {q},
-         subtitle = glue::glue("{unique(df$country)}} HIV prevalence gap between <span style='color:{genoa}'>ABYM</span> & <span style='color:{moody_blue}'>AGYW</span> ages 10-24"),
+         subtitle = glue::glue("{unique(df$country)} HIV prevalence gap between <span style='color:{genoa}'>ABYM</span> & <span style='color:{moody_blue}'>AGYW</span> ages 10-24"),
          caption = glue::glue("{cap_note}{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     si_style_nolines() +
     theme(plot.subtitle = element_markdown(),

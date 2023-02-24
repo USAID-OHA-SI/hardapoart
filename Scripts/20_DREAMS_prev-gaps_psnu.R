@@ -27,9 +27,10 @@ prep_hiv_prev_DREAMS <- function(df, cntry,
   ## PSNU/Age/Sex Summaries
   df_pops <- df %>% 
     dplyr::filter(country == cntry, 
+                  indicator %in% c("PLHIV", "POP_EST"),
                   ageasentered %in% c("10-14", "15-19", "20-24")) %>% 
     dplyr::group_by(fiscal_year,  country, 
-                    psnuuid, psnu, indicator, ageasentered, sex) %>% 
+                    psnuuid, psnu, indicator, sex) %>% 
     dplyr::summarise(value = sum(targets, na.rm = T), .groups = "drop")
   
   #clean exit if no data

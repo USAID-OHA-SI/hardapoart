@@ -92,12 +92,7 @@ prep_tbstat_cov <- function(df, cntry, agency, ...) {
 
 
 viz_tbstat_cov <- function(df) {
-  
-  q <- glue::glue("Is the percentage of TB patients that know their HIV status (TB_STAT % coverage) close to a 95% to align with the first 95 target?") %>% toupper %>% stringr::str_wrap(width = 80)
-  
-  if(is.null(df) || nrow(df) == 0)
-    return(dummy_plot(q))
-  
+
   q <- glue::glue("Is the percentage of TB patients that know their HIV status (TB_STAT % coverage) close to a 95% to align with the first 95 target?") %>% toupper
   
   if(is.null(df) || nrow(df) == 0)

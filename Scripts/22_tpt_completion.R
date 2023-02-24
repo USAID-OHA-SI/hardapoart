@@ -16,7 +16,7 @@ prep_tpt <- function(df, cntry, agency) {
            standardizeddisaggregate %in% c("Total Numerator", "Total Denominator")) %>% 
     # clean_indicator() %>% 
     group_by(country, funding_agency, snu1, indicator, fiscal_year) %>% 
-    summarise(across(starts_with("qtr"), sum, na.rm = TRUE), .groups = "drop") %>% 
+    summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE)), .groups = "drop") %>% 
     reshape_msd(include_type = FALSE) %>% 
     pivot_wider(names_from = indicator,
                 names_glue = "{tolower(indicator)}") %>% 
@@ -42,36 +42,38 @@ viz_tpt <- function(df) {
   ref_id <- 'a3e0423e'
   vrsn <- 1 
 
+  n_max <- 12
   
   v_tb_prev_lrg <- df %>% 
     filter(period == max(period)) %>% 
     arrange(desc(tb_prev_d)) %>% 
-    mutate(cumsum = cumsum(tb_prev_d)/sum(tb_prev_d)) %>% 
-    slice_head(n = 11) %>% 
+    slice_head(n = n_max) %>% 
     pull(snu1)
   
-  cap_note <- ifelse(nrow(df) > 21, glue("Note: Points sized by TB_PREV_D \n", ""))
+  cap_note <- ifelse(length(unique(df$snu1)) > n_max, glue("Limited to the largest TB_PREV_D SNUs |"), "")
   
   
   df %>% 
     filter(snu1 %in% v_tb_prev_lrg,
            !is.na(tb_prev_d)) %>% 
     ggplot(aes(period, coverage, group = snu1)) +
-    geom_point(aes(size = tb_prev_d, color = fill_color)) +
-    geom_line(aes(group=snu1, color = fill_color), linewidth=1) +
+    geom_line(aes(group=snu1), color = suva_grey, alpha = .8, linewidth=1) +
+    geom_point(aes(size = tb_prev_d, fill = fill_color), shape =21, color = "white") +
     facet_wrap(~fct_reorder(snu1, tb_prev_d, sum, na.rm = TRUE, .desc = TRUE))+
     geom_hline(yintercept = .85, linetype = "dashed") +
     geom_text(aes(label = percent(coverage, 1)), 
               vjust = -.75,
-              #color = trolley_grey,
+              color = matterhorn,
               #max.overlaps = 50, force = 10,
               family = "Source Sans Pro", na.rm = TRUE) +
-    scale_y_continuous(label = percent_format(1), limits = c(0.5,1)) +
+    scale_y_continuous(label = percent_format(1)) +
     scale_fill_identity(aesthetics = c("fill", "color")) +
+    expand_limits(y = 1) +
+    coord_cartesian(clip = "off") +
     labs(x = NULL, y = NULL, 
            title = {q},
          subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)} TPT completion rates amongst largest {length(v_tb_prev_lrg)} SNUs for TB_PREV_D"),
-         caption = glue("{cap_note}
+         caption = glue("Note:{cap_note} Points sized by TB_PREV_D
                         {metadata_msd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     si_style_ygrid() +
     theme(panel.spacing = unit(.5, "line"),

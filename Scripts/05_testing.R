@@ -158,7 +158,7 @@ prep_undiagnosed <- function(cntry) {
      #           hjust = 0.2, vjust = -0.25) +
      ggplot2::labs(x = NULL, y = NULL,
                    title = stringr::str_wrap({q}, width = 80),
-                   subtitle = glue::glue("{unique(df$funding_agency)}/{unique(df$country) %>% toupper} HTS_TST modality summary by age group"),
+                   subtitle = glue::glue("{unique(df$funding_agency)}/{unique(df$country)} HTS_TST modality summary by age group"),
                    caption = glue::glue("Note: Undiagnosed PLHIV proxy calculated as the number of PLHIV minus PLHIV who know their status (UNAIDS 2022 Data)
                                Source: UNAIDS 2022 Epidemiology Data & {metadata_msd$source} | USAID/OHA/SIEI |  Ref id:{ref_id} v{vrsn}")) +
      ggplot2::scale_y_continuous(label = label_number(scale_cut = cut_short_scale())) +

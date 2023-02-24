@@ -75,7 +75,7 @@
                "PrEP_NEW",                      "KeyPopAbr",
                "PrEP_NEW",                "Total Numerator",
                 "TB_PREV",                "Total Numerator",
-                "TB_PREV_D",                "Total Denominator",
+              "TB_PREV_D",              "Total Denominator",
                 "TB_STAT",         "Age/Sex/KnownNewPosNeg",
               "TB_STAT_D",                        "Age/Sex",
                 "TX_CURR",              "Age/Sex/HIVStatus",
@@ -287,8 +287,11 @@
   df_natsubnat <- df_natsubnat %>%
     semi_join(df_natsubnat_ind, by = c("indicator", "standardizeddisaggregate"))
   
+  rm(df_natsubnat_ind)
+  
   #clean PSNU names
   df_natsubnat <- clean_psnu(df_natsubnat)
+  
   }
 
 

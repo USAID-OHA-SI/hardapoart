@@ -102,7 +102,7 @@ df_natsubnat %>%
 
 df_natsubnat %>% 
   prep_hiv_prev_DREAMS(params$cntry) %>% 
-  viz_hiv_prevalence()
+  viz_hiv_prev_DREAMS()
 
 ```
 

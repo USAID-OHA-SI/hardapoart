@@ -42,7 +42,7 @@ viz_tpt <- function(df) {
   ref_id <- 'a3e0423e'
   vrsn <- 1 
 
-  n_max <- 11
+  n_max <- 12
   
   v_tb_prev_lrg <- df %>% 
     filter(period == max(period)) %>% 

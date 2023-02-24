@@ -123,7 +123,7 @@ df_natsubnat %>%
 df_natsubnat %>% 
   prep_pop_pyramid(params$cntry, "psnu") %>% 
   prep_pop_pyramid_dreams(df_msd) %>% 
-  viz_pop_pyramid_dreams()
+  viz_pop_pyramid(type = "DREAMS")
 
 ```
 

@@ -104,16 +104,26 @@
   
   # df = df_natsubnat comes from 91_setup.R, could add a test to make sure 
 
-  viz_pop_pyramid <- function(df, type){
+  viz_pop_pyramid <- function(df, type = NULL){
   
-    q <- glue::glue("Is there a youth bulge {unique(df$country)} needs to plan for?") %>% toupper
+    q <- ifelse(is.null(type), 
+                glue::glue("Is there a youth bulge the country needs to plan for?") %>% toupper,
+                glue::glue("Is there a youth bulge the country needs to plan for in DREAMS PSNUs?") %>% toupper
+                )
+
       
   if(is.null(df) || nrow(df) == 0)
     return(dummy_plot(q))
   
+  q <- stringr::str_replace(q, "THE COUNTRY", toupper(unique(df$country)))
+  
   ref_id <- "aa8bd5b4"
   vrsn <- 2
   
+  subt <-  ifelse(is.null(type),
+                  glue::glue("Comparison between <span style='color:{genoa}'>Males</span> & <span style='color:{moody_blue}'>Females</span> by age band"),
+                  glue::glue("Comparison between <span style='color:{genoa}'>Males</span> & <span style='color:{moody_blue}'>Females</span> Population (Est) by age band")
+                  )
   
   df %>%
     ggplot2::ggplot(aes(population, ageasentered, fill = sex)) +
@@ -128,7 +138,7 @@
       labels = function(x) {glue("{label_number(scale_cut = cut_short_scale())(abs(x))}")}, 
     ) +
     ggplot2::labs(title = {q},
-                  subtitle =  glue::glue("Comparison between <span style='color:{genoa}'>Males</span> & <span style='color:{moody_blue}'>Females</span> by age band"),
+                  subtitle =  {subt},
                   x = NULL, y = NULL, fill = NULL,
                   caption = 
                     glue("{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
@@ -139,43 +149,5 @@
       plot.subtitle = element_markdown(),
       panel.spacing.y = unit(.2, "picas"))
   
-  }
-  
-
-  viz_pop_pyramid_dreams <- function(df){
-    
-    q <- glue::glue("Is there a youth bulge {unique(df$country)} needs to plan for in DREAMS PSNUs?") %>% toupper
-    
-    if(is.null(df) || nrow(df) == 0)
-      return(dummy_plot(q))
-    
-    ref_id <- "06dbca9d"
-    vrsn <- 1
-    
-    
-    df %>%
-      ggplot2::ggplot(aes(population, ageasentered, fill = sex)) +
-      ggplot2::geom_blank(aes(axis_max)) +
-      ggplot2::geom_blank(aes(axis_min)) +
-      ggplot2::geom_col(alpha = .8, na.rm = TRUE) +
-      ggplot2::geom_vline(aes(xintercept = 0), color = "white", linewidth = 1.1)+
-      ggplot2::facet_wrap(~facet_grp, scales = "free_x") +
-      ggplot2::scale_fill_manual(values = c("Male" = glitr::genoa, 
-                                            "Female" = glitr::moody_blue)) +
-      ggplot2::scale_x_continuous(
-        labels = function(x) {glue("{label_number(scale_cut = cut_short_scale())(abs(x))}")}, 
-      ) +
-      ggplot2::labs(title = {q},
-                    subtitle =  glue::glue("Comparison between <span style='color:{genoa}'>Males</span> & <span style='color:{moody_blue}'>Females</span> Population (Est) by age band"),
-                    x = NULL, y = NULL, fill = NULL,
-                    caption = 
-                      glue("{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
-      glitr::si_style_yline() +
-      ggplot2::theme(
-        legend.position = "none",
-        strip.text = element_text(hjust = .5),
-        plot.subtitle = element_markdown(),
-        panel.spacing.y = unit(.2, "picas"))
-    
   }
 

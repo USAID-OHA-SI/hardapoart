@@ -109,8 +109,8 @@ viz_ovc_coverage <- function(df){
   
   df %>%
     ggplot2::ggplot(aes(y = forcats::fct_reorder(psnu, tx_curr, na.rm = TRUE), alpha = fill_alpha)) +
-    ggplot2::geom_col(aes(tx_curr), color = glitr::moody_blue, fill = NA, na.rm = TRUE) +
-    ggplot2::geom_col(aes(ovc_hivstat_art), fill = glitr::moody_blue, na.rm = TRUE) +
+    ggplot2::geom_col(aes(tx_curr), color = glitr::burnt_sienna, fill = NA, na.rm = TRUE) +
+    ggplot2::geom_col(aes(ovc_hivstat_art), fill = glitr::burnt_sienna, na.rm = TRUE) +
     ggplot2::geom_text(aes(x = 0, label = scales::percent(coverage_tx, 1)),
                        hjust = -.5, family = "Source Sans Pro SemiBold", color = "white", na.rm = TRUE) +
     ggplot2::facet_grid(forcats::fct_rev(group) ~ ., scale = "free_y", space = "free", switch = "y") +
@@ -118,7 +118,7 @@ viz_ovc_coverage <- function(df){
     ggplot2::scale_alpha_identity() +
     ggplot2::labs(x = NULL, y = NULL,
                   title = {q},
-                  subtitle = glue::glue("{unique(df$period)} {unique(df$funding_agency)}/{unique(df$country)} **<span style = 'color:{glitr::moody_blue};'>comprehensive OVC program </span>** covered {scales::percent(overall_cov,1)} of <15 on Treatment in PSNUs with OVC Programming"),
+                  subtitle = glue::glue("{unique(df$period)} {unique(df$funding_agency)}/{unique(df$country)} **<span style = 'color:{glitr::burnt_sienna};'>comprehensive OVC program </span>** covered {scales::percent(overall_cov,1)} of <15 on Treatment in PSNUs with OVC Programming"),
                   caption = glue::glue("{cap_note}{metadata_msd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     glitr::si_style_xgrid() +
     ggplot2::theme(strip.placement = "outside",

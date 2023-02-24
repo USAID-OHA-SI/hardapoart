@@ -125,13 +125,33 @@
                   glue::glue("Comparison between <span style='color:{genoa}'>Males</span> & <span style='color:{moody_blue}'>Females</span> Population (Est) by age band")
                   )
   
+  cap_note <- ""
+  
+  # Display only a subset of PSNUs
+  if("psnuuid" %in% names(df)){
+    df_psnus <- df %>% 
+      dplyr::filter(indicator == "Population (Est)") 
+    
+    n_max <- 8
+    
+    cap_note <- ifelse(nrow(df_psnus) > n_max, "Note: Limited to the largest PSNUs by Population (Est) \n", "")
+    
+    v_lim_uids <- df_psnus %>% 
+      dplyr::count(psnuuid, wt = targets, name = "targets", sort = TRUE) %>% 
+      dplyr::slice_head(n = n_max) %>%  
+      dplyr::pull(psnuuid)
+    
+    df <- dplyr::filter(df, psnuuid %in% v_lim_uids) 
+  }
+  
+  
   df %>%
     ggplot2::ggplot(aes(population, ageasentered, fill = sex)) +
     ggplot2::geom_blank(aes(axis_max)) +
     ggplot2::geom_blank(aes(axis_min)) +
     ggplot2::geom_col(alpha = .8, na.rm = TRUE) +
     ggplot2::geom_vline(aes(xintercept = 0), color = "white", linewidth = 1.1)+
-    ggplot2::facet_wrap(~facet_grp, scales = "free_x") +
+    ggplot2::facet_wrap(~facet_grp, scales = "free_x", nrow = 2) +
     ggplot2::scale_fill_manual(values = c("Male" = glitr::genoa, 
                                           "Female" = glitr::moody_blue)) +
     ggplot2::scale_x_continuous(
@@ -141,13 +161,13 @@
                   subtitle =  {subt},
                   x = NULL, y = NULL, fill = NULL,
                   caption = 
-                    glue("{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
+                    glue("{cap_note}{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     glitr::si_style_yline() +
     ggplot2::theme(
       legend.position = "none",
       strip.text = element_text(hjust = .5),
       plot.subtitle = element_markdown(),
-      panel.spacing.y = unit(.2, "picas"))
+      panel.spacing = unit(.2, "picas"))
   
   }
 

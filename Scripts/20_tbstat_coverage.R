@@ -1,5 +1,5 @@
 # AUTHOR:   K. Srikanth | USAID
-# PURPOSE:  
+# PURPOSE:  TB stat coverage by PSNUs
 # REF ID:   70ebd4eb 
 # LICENSE:  MIT
 # DATE:     2023-02-21
@@ -98,6 +98,11 @@ viz_tbstat_cov <- function(df) {
   if(is.null(df) || nrow(df) == 0)
     return(dummy_plot(q))
   
+  q <- glue::glue("Is the percentage of TB patients that know their HIV status (TB_STAT % coverage) close to a 95% to align with the first 95 target?") %>% toupper
+  
+  if(is.null(df) || nrow(df) == 0)
+    return(dummy_plot(q))
+  
   ref_id <- "70ebd4eb"
   vrsn <- 1 
   
@@ -130,9 +135,9 @@ viz_tbstat_cov <- function(df) {
     scale_fill_identity() +
     si_style_nolines() +
     labs(title = {q},
-         subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)} {metadata_msd$curr_pd} TB_STAT Coverage"),
+       subtitle = glue("{unique(df$funding_agency)}/{unique(df$country)} {metadata_msd$curr_pd} TB_STAT Coverage"),
          x = NULL, y = NULL,
-         caption = glue("{cap_note}{metadata_msd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
+         caption = glue("{cap_note} {metadata_msd$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     theme(legend.position = "none",
           axis.text.x = element_blank())
   

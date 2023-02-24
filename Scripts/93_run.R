@@ -16,6 +16,8 @@ library(quarto)
 library(rmarkdown)
 
 
+source("Scripts/98_export_imgs.R")
+
 # SETUP DATA --------------------------------------------------------------
 
 # source(here("Scripts/91_setup.R"))
@@ -59,3 +61,8 @@ library(rmarkdown)
   #       execute_params = params
   #     )
   #   })
+  
+  
+  vct_cntry
+  
+  export_imgs("Malawi", "PEPFAR")

@@ -7,9 +7,9 @@ output:
     fig_height: 5.625
     dpi: 330
 params:
-  curr_pd: FY23Q1
-  cntry: Malawi
-  agency: USAID
+  curr_pd: "FY23Q1"
+  cntry: "Malawi"
+  agency: "USAID"
 ---
 
 

@@ -110,11 +110,11 @@ viz_hiv_prev_DREAMS <- function(df, save = F) {
     geom_vline(xintercept = 0, color = "#D3D3D3") +
     geom_hline(yintercept = ref_psnu,
                linewidth = .8, linetype = "dashed", color = usaid_darkgrey) +
-    geom_line(linewidth = 2, alpha = 1, color = "white") +
-    geom_line(linewidth = 2, alpha = .6, color = grey30k) +
-    geom_errorbar(aes(xmin = prevalence_psnu, xmax = prevalence_psnu), linewidth = 1, color = "white") +
-    geom_point(size = 5, color = "white", alpha = 1, na.rm = TRUE) +
-    geom_point(size = 5, na.rm = TRUE) +
+    geom_line(linewidth = 2, alpha = 1, color = "white", na.rm = TRUE) +
+    geom_line(linewidth = 2, alpha = .6, color = grey30k, na.rm = TRUE) +
+    geom_errorbar(aes(xmin = prevalence_psnu, xmax = prevalence_psnu), linewidth = 1, color = "white", na.rm = TRUE) +
+    geom_point(size = 5, color = "white", alpha = 1, na.rm = TRUE, na.rm = TRUE) +
+    geom_point(size = 5, na.rm = TRUE, na.rm = TRUE) +
     facet_wrap(~fiscal_year, nrow = 1, ncol = 3) +
     scale_color_identity() +
     scale_alpha_identity() +

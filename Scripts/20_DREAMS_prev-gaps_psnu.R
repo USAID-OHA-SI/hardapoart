@@ -17,8 +17,7 @@
 
 # prep -------------------------------------------------------------------------
   
-prep_hiv_prev_DREAMS <- function(df, cntry,
-                                 add_style = T) {
+prep_hiv_prev_DREAMS <- function(df, cntry) {
   
   #clean exit if no data
   if(cntry %ni% unique(df$country))

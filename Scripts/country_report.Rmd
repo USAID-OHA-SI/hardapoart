@@ -40,8 +40,9 @@ knitr::opts_chunk$set(echo = FALSE)
   source(here("Scripts/17_vl-coverage-and-suppression_kp-psnu.R"))
   source(here("Scripts/18_ovc-coverage_psnu.R"))
   source(here("Scripts/19_ovc-budget_agency.R"))
-  source(here("Scripts/20_DREAMS_prev-gaps_psnu.R"))
-  source(here("Scripts/20_tbstat_coverage.R"))
+  source(here("Scripts/20_dreams_prev-gaps_psnu.R"))
+  source(here("Scripts/21_tbstat_coverage.R"))
+  source(here("Scripts/22_tpt_completion.R"))
   source(here("Scripts/99_utilities.R"))
 
 ```
@@ -213,6 +214,15 @@ suppressMessages(
     viz_prep_disagg() %>% 
     print()
 )
+```
+
+```{r tpt}
+### Has 85%  TPT completion been achieved across all SNUs?
+
+  df_msd %>%
+    prep_tpt(params$cntry, params$agency) %>%
+    viz_tpt()
+
 ```
 
 

@@ -45,7 +45,7 @@ prep_tbstat_cov <- function(df, cntry, agency, ...) {
   #group by, sum and reshape
   df_reshaped <- df_filtered %>% 
     dplyr::group_by(country, fiscal_year, funding_agency, indicator, psnu) %>% 
-    dplyr::summarise(across(starts_with("qtr"), sum, na.rm = TRUE),
+    dplyr::summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE)),
                      .groups = "drop") %>%
     gophr::reshape_msd() 
   

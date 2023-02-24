@@ -63,8 +63,8 @@ viz_prep_disagg <-function (df){
    
     df %>% 
     ggplot(aes(x=period, y=value)) + 
-    geom_point(aes(color=sex), size = 4) +
-    geom_line(aes(group=sex, color=sex), linewidth=1) +
+    geom_point(aes(color=sex), size = 4, alpha = .8) +
+    geom_line(aes(group=sex, color=sex), linewidth=1, alpha = .8) +
     scale_x_discrete(labels = pd_brks) +
     scale_y_continuous(labels = comma) +
     scale_color_manual(values = c("Female" = moody_blue, "Male" = genoa, "KP"=burnt_sienna),

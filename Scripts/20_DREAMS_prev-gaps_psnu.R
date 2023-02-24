@@ -76,71 +76,52 @@ viz_hiv_prev_DREAMS <- function(df, save = F) {
   # OU/Country Reference line
   
   ref_id <- "70241287"
-  ref_psnu <- "COUNTRY"
+  ref_psnu <- "OVERALL"
   vrsn <- 1 
-  
-  # if (all(na.omit(df$country) %in% df$operatingunit)) {
-  #   df <- df %>% filter(psnu != "COUNTRY")
-  # } else {
-  #   ref_psnu <- c("OU", "COUNTRY")
-  # }
-  
-  # Guides
-  gap_max <- df %>% 
-    filter(psnu %ni% c("COUNTRY", "OU")) %>% 
-    pull(prevalence) %>%
-    max() %>%
-    round(2)
-  
-  gap_step <- .01
-  
-  # Control the number of vlines
-  if (gap_max > .10) {
-    gap_step <- .05
-  } else if (gap_max <= .02) {
-    gap_step <- .005
-  }
   
   # Foot note for reduced datasets
   n_max <- 21
   
-  cap_note <- ifelse(nrow(df) > (n_max +1) * 2, "Note: Limited to the largest 20 HIV Prevalence PSNUs\n", "")
+  cap_note <- ifelse(nrow(df) > n_max, "Note: Limited to the largest 20 HIV Prevalence PSNUs\n", "")
   
   # Display only a subset
-  df_viz <- df %>% 
-    dplyr::slice_max(order_by = psnu_prev, n = n_max * 2) 
+  v_lim_uids <- df %>% 
+    dplyr::filter(fiscal_year == max(fiscal_year)) %>% 
+    dplyr::distinct(psnu, psnuuid, prevalence_psnu) %>% 
+    dplyr::slice_max(order_by = prevalence_psnu, n = 21) %>% 
+    dplyr::pull(psnuuid)
   
-  if ("COUNTRY" %ni% df_viz$psnu) {
+  df_viz <- df %>% 
+    dplyr::filter(psnuuid %in% v_lim_uids) 
+  
+  if ("OVERALL" %ni% df_viz$psnu) {
     df_viz <- df %>% 
-      filter(psnu == "COUNTRY") %>% 
+      filter(psnu == "OVERALL") %>% 
       bind_rows(df_viz, .)
   }
   
   # Viz
   viz <- df_viz %>% 
-    ggplot(aes(x = reorder(psnu, female), 
-               y = prevalence,
-               fill = color_sex)) +
-    geom_hline(yintercept = seq(from = 0, 
-                                to = gap_max, 
-                                by = gap_step),
-               linewidth = .8, linetype = "dashed", color = grey20k) +
-    geom_vline(xintercept = ref_psnu,
+    ggplot(aes(x = prevalence,
+               y = forcats::fct_reorder(psnu, prevalence_order, .fun = max, .na_rm = TRUE), 
+               color = fill_color,
+               alpha = fill_alpha,
+               group = viz_group)) +
+    geom_vline(xintercept = 0, color = "#D3D3D3") +
+    geom_hline(yintercept = ref_psnu,
                linewidth = .8, linetype = "dashed", color = usaid_darkgrey) +
-    geom_segment(aes(xend = reorder(psnu, female),
-                     y = female, 
-                     yend = male,
-                     color = color_gap),
-                 linewidth = 2) +
-    geom_point(shape = 21, size = 5, color = grey10k) +
+    geom_line(linewidth = 2, alpha = 1, color = "white") +
+    geom_line(linewidth = 2, alpha = .6, color = grey30k) +
+    geom_errorbar(aes(xmin = prevalence_psnu, xmax = prevalence_psnu), size = 1, color = "white") +
+    geom_point(size = 5, color = "white", alpha = 1, na.rm = TRUE) +
+    geom_point(size = 5, na.rm = TRUE) +
     facet_wrap(~fiscal_year, nrow = 1, ncol = 3) +
-    scale_fill_identity() +
     scale_color_identity() +
-    scale_y_continuous(labels = percent, position = "right") +
-    coord_flip() +
-    labs(x = "", y = "", 
+    scale_alpha_identity() +
+    scale_x_continuous(labels = scales::percent) +
+    labs(x = "", y = "",
          title = {q},
-         subtitle = glue::glue("{toupper(unique(df$country))} - {unique(df$fiscal_year)} HIV Prevalence Gap between <span style='color:{genoa}'>ABYM</span> & <span style='color:{moody_blue}'>AGYW</span> ages 10-24 by PSNU"),
+         subtitle = glue::glue("{unique(df$country)}} HIV prevalence gap between <span style='color:{genoa}'>ABYM</span> & <span style='color:{moody_blue}'>AGYW</span> ages 10-24"),
          caption = glue::glue("{cap_note}{metadata_natsubnat$caption} | USAID/OHA/SIEI |  Ref id: {ref_id} v{vrsn}")) +
     si_style_nolines() +
     theme(plot.subtitle = element_markdown(),
@@ -151,7 +132,7 @@ viz_hiv_prev_DREAMS <- function(df, save = F) {
   if (save) {
     glitr::si_save(
       plot = viz,
-      filename = glue::glue("./Graphics/{unique(df$fiscal_year)} - {toupper(unique(df$country))} HIV Prevalence.png"))
+      filename = glue::glue("./Graphics/{unique(df$fiscal_year)} - {toupper(unique(df$country))} HIV Prevalence AGYW-ABYM.png"))
   }
 }
 

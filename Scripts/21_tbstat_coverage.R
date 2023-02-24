@@ -62,7 +62,8 @@ prep_tbstat_cov <- function(df, cntry, agency, ...) {
     pivot_wider(names_from = "indicator") %>% 
     mutate(coverage = `TB_STAT`/`TB_STAT_D`) %>% 
     mutate(fill_color = ifelse(coverage >= .95, genoa_light, burnt_sienna_light)) %>% 
-    filter(period == max(period)) %>%
+    filter(period == max(period),
+           !is.na(coverage)) %>%
     dplyr::mutate(fill_color = case_when(psnu == "OVERALL" & coverage >= .95 ~ glitr::genoa,
                                          psnu == "OVERALL" & coverage < .95 ~ glitr::burnt_sienna,
                                          psnu!= "OVERALL" &  coverage >= .95 ~ glitr::genoa_light,
@@ -110,7 +111,7 @@ viz_tbstat_cov <- function(df) {
   
   df %>%
     # dplyr::slice_max(order_by = `TB_STAT_D`, n = 21) %>% 
-    ggplot(aes(coverage, forcats::fct_reorder(psnu, coverage), fill = fill_color)) +
+    ggplot(aes(coverage, forcats::fct_reorder(psnu, coverage, .na_rm = TRUE), fill = fill_color)) +
     geom_col() +
     geom_vline(aes(xintercept = .95), linetype = "dashed", color = glitr::matterhorn) +
     geom_text(aes(label = percent(coverage, 1)), 

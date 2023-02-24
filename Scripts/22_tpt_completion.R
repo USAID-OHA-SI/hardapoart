@@ -13,8 +13,13 @@ prep_tpt <- function(df, cntry, agency) {
     filter(funding_agency == agency,
            country == cntry,
            indicator %in% c("TB_PREV", "TB_PREV_D"),
-           standardizeddisaggregate %in% c("Total Numerator", "Total Denominator")) %>% 
-    # clean_indicator() %>% 
+           standardizeddisaggregate %in% c("Total Numerator", "Total Denominator")) 
+  
+  #clean exit if no data
+  if(nrow(df_tb_prev) == 0)
+    return(NULL)
+  
+  df_tb_prev <- df_tb_prev %>% 
     group_by(country, funding_agency, snu1, indicator, fiscal_year) %>% 
     summarise(across(starts_with("qtr"), \(x) sum(x, na.rm = TRUE)), .groups = "drop") %>% 
     reshape_msd(include_type = FALSE) %>% 

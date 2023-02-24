@@ -40,7 +40,11 @@ prep_ovc_budget <- function(df_mer, df_fin, cntry){
            fiscal_year %in% unique(df_ovc$fiscal_year)) %>% 
     dplyr::mutate(funding_agency = ifelse(funding_agency %in% c("USAID", "CDC"), funding_agency, "Other Agencies")) %>% 
     dplyr::count(fiscal_year, country, funding_agency, wt = cop_budget_total, name = "value") %>% 
-    dplyr::mutate(type = "Budget")
+    dplyr::mutate(type = "Budget",
+                  funding_agency = as.character(funding_agency))
+  
+  if(nrow(df_budget) == 0)
+    return(NULL)
   
   #bind data and complete
   df_ovc <- bind_rows(df_ovc, df_budget) %>% 

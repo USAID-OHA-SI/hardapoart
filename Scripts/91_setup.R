@@ -287,8 +287,11 @@
   df_natsubnat <- df_natsubnat %>%
     semi_join(df_natsubnat_ind, by = c("indicator", "standardizeddisaggregate"))
   
+  rm(df_natsubnat_ind)
+  
   #clean PSNU names
   df_natsubnat <- clean_psnu(df_natsubnat)
+  
   }
 
 

@@ -59,7 +59,12 @@ prep_tbstat_cov <- function(df, cntry, agency, ...) {
   
   #mutate coverage and add color
   df_viz <- df_reshaped %>% 
-    pivot_wider(names_from = "indicator") %>% 
+    pivot_wider(names_from = "indicator") 
+  
+  if("TB_STAT" %ni% names(df_viz))
+    return(NULL)
+  
+  df_viz <- df_viz %>% 
     mutate(coverage = `TB_STAT`/`TB_STAT_D`) %>% 
     mutate(fill_color = ifelse(coverage >= .95, genoa_light, burnt_sienna_light)) %>% 
     filter(period == max(period),

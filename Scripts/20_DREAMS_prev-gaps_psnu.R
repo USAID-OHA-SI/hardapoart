@@ -33,45 +33,33 @@ prep_hiv_prev_DREAMS <- function(df, cntry) {
   if(nrow(df_pops) == 0)
     return(NULL)
   
+  #include overall total and aggregate
   df_pops <- df_pops %>%
     dplyr::bind_rows(df_pops %>% 
                        dplyr::mutate(dplyr::across(c(psnu, psnuuid), \(x) x = "OVERALL"))) %>% 
+    dplyr::mutate(group = ifelse(sex == "Female", "AGYW", "ABYM")) %>% 
     dplyr::group_by(fiscal_year,  country, 
-                    psnuuid, psnu, indicator, sex) %>% 
+                    psnuuid, psnu, indicator, group) %>% 
     dplyr::summarise(value = sum(targets, na.rm = T), .groups = "drop")
   
+  #pivot wider to calc prevalence
+  df_prev <- df_pops %>% 
+    tidyr::pivot_wider(names_from = "indicator",
+                       names_glue = "{tolower(indicator)}") %>% 
+    dplyr::mutate(prevalence = plhiv / pop_est)
   
+  #create a psnu level prevalence to order plot on
+  df_prev <- df_prev %>% 
+    dplyr::group_by(psnuuid) %>% 
+    dplyr::mutate(prevalence_psnu = sum(plhiv, na.rm = TRUE) / sum(pop_est, na.rm = TRUE)) %>% 
+    dplyr::ungroup() %>% 
+    dplyr::mutate(prevalence_order = dplyr::case_when(fiscal_year == max(fiscal_year) ~ prevalence_psnu))
   
-  # ## Add SI Style for viz
-  if (add_style) {
-    
-    df_prev_gap <- df_prev %>%
-      select(-psnu_prev) %>%
-      mutate(sex = tolower(sex)) %>%
-      pivot_wider(names_from = sex,
-                  values_from = prevalence) %>%
-      mutate(color_gap = grey30k)
-    
-    df_prev <- df_prev %>%
-      left_join(df_prev_gap,
-                by = c("fiscal_year",  "country", "psnuuid")) %>%
-      mutate(
-        color_sex = case_when(
-          sex == "Female" ~ moody_blue,
-          sex == "Male" ~ genoa,
-          TRUE ~ grey30k),
-        psnu_label = case_when(
-          psnu == "OVERALL" ~ paste0("<span style='color:", usaid_black, "'><strong>", psnu, "</strong></span>"),
-          TRUE ~ psnu),) %>%
-      group_by(country) %>%
-      mutate(
-        threshold = case_when(
-          psnu_prev < prevalence[psnu == "COUNTRY"] ~ .3,
-          TRUE ~ 1
-        )
-      ) %>%
-      ungroup()
-  }
+  #apply aes for plotting
+  df_prev <- df_prev %>% 
+    dplyr::mutate(fill_color = ifelse(group == "AGYW", moody_blue, genoa),
+                  fill_alpha = ifelse(psnu == "OVERALL", .9, .75),
+                  viz_group = glue::glue("{fiscal_year}{psnu}"))
   
   return(df_prev)
 }

@@ -28,7 +28,7 @@ prep_hiv_prev_DREAMS <- function(df, cntry,
   df_pops <- df %>% 
     dplyr::filter(country == cntry, 
                   ageasentered %in% c("10-14", "15-19", "20-24")) %>% 
-    dplyr::group_by(fiscal_year, operatingunit, country, snu1uid, snu1,
+    dplyr::group_by(fiscal_year, operatingunit, country, 
                     psnuuid, psnu, indicator, ageasentered, sex) %>% 
     dplyr::summarise(value = sum(targets, na.rm = T), .groups = "drop")
   
@@ -55,24 +55,24 @@ prep_hiv_prev_DREAMS <- function(df, cntry,
   # PSNU Only Summaries
   df_pops_psnu <- df_pops %>%
     group_by(fiscal_year, operatingunit, country,
-             snu1uid, snu1, psnuuid, psnu, indicator) %>%
+              psnuuid, psnu, indicator) %>%
     summarise(value = sum(value, na.rm = T), .groups = "drop")
   
   # Sex Only Summaries
   df_pops_sex <- df_pops %>%
     group_by(fiscal_year, operatingunit, country,
-             snu1uid, snu1, psnuuid, psnu, indicator, sex) %>%
+              psnuuid, psnu, indicator, sex) %>%
     summarise(value = sum(value, na.rm = T), .groups = "drop")
   
   ## Compute Prevalence
   df_prev_sex <- df_pops_sex %>% 
-    group_by(fiscal_year, operatingunit, country, snu1uid, snu1, psnuuid, psnu, sex) %>% 
+    group_by(fiscal_year, operatingunit, country,  psnuuid, psnu, sex) %>% 
     reframe(prevalence = value[indicator == "PLHIV"] / 
               value[indicator == "POP_EST"]) %>% 
     ungroup() 
   
   df_prev_psnu <- df_pops_psnu %>% 
-    group_by(fiscal_year, operatingunit, country, snu1uid, snu1, psnuuid, psnu) %>% 
+    group_by(fiscal_year, operatingunit, country,  psnuuid, psnu) %>% 
     reframe(psnu_prev = sum(value[indicator == "PLHIV"], na.rm = T) / 
               sum(value[indicator == "POP_EST"], na.rm = T)) %>% 
     ungroup() 

@@ -72,37 +72,39 @@
 }
 
   
-  prep_pop_pyramid_dreams <- function(df_prep_psnu, df_msd){
+  prep_pop_pyramid_dreams <- function(df_prep_psnu, df_mer){
     
-    if(is.null(df) || nrow(df) == 0)
+    if(is.null(df_prep_psnu) || nrow(df_prep_psnu) == 0)
       return(NULL)
     
-    dreams_psnus <- df_msd %>% 
-      filter(indicator == "AGYW_PREV_D",
-             country == cntry,
-             fiscal_year == max(fiscal_year),
-             !is.na(targets)) %>% 
-      count(psnu, wt = targets, sort = TRUE) %>% 
-      pull(psnu)
+    #identify DREAMS PSNUs
+    df_dreams <- df_mer %>% 
+      filter(fiscal_year == max(fiscal_year),
+             country == unique(df_prep_psnu$country),
+             dreams == "Y") %>% 
+      distinct(fiscal_year, psnuuid)
     
-    df <- df %>% 
-      dplyr::filter(psnu %in% dreams_psnus,
-                    indicator == "Population (Est)") 
+    #filter join to only keep DREAMS PSNUs
+    df_prep_psnu_dreams <-  dplyr::semi_join(df_prep_psnu, df_dreams, 
+                                             by = join_by(fiscal_year, psnuuid))
     
-    if(nrow(df) == 0)
+    if(nrow(df_prep_psnu_dreams) == 0)
       return(NULL)
-    df <- df %>% 
-      dplyr::mutate(psnu = factor(psnu, dreams_psnus),
+    
+    #keep only pop and order psnus
+    df_prep_psnu_dreams <- df_prep_psnu_dreams %>% 
+      dplyr::filter(indicator == "Population (Est)") %>% 
+      dplyr::mutate(psnu = forcats::fct_reorder(psnu, targets, .fun = sum, .desc = TRUE),
                     facet_grp = psnu)
     
-    return(df)
+    return(df_prep_psnu_dreams)
   }
   
 # VIZ --------------------------------------------------------------------------
   
   # df = df_natsubnat comes from 91_setup.R, could add a test to make sure 
 
-  viz_pop_pyramid <- function(df){
+  viz_pop_pyramid <- function(df, type){
   
     q <- glue::glue("Is there a youth bulge {unique(df$country)} needs to plan for?") %>% toupper
       

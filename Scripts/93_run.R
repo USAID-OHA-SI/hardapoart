@@ -24,7 +24,7 @@ library(rmarkdown)
 # GLOBAL VARIABLES --------------------------------------------------------
 
   vct_cntry <- glamr::pepfar_country_list$country
-  
+
   
 # GENERATE REPORTS --------------------------------------------------------
 

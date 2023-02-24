@@ -99,10 +99,14 @@ viz_txcoverage <- function(df_plhivtx, df_txnew) {
   
   df <- dplyr::bind_rows(df_plhivtx, df_txnew)
   
+  
   q <- glue::glue("Are new patients being added to the areas with the largest gaps in TX coverage?") %>% toupper
     
   if(is.null(df) || nrow(df) == 0)
     return(dummy_plot(q))
+  
+  if("plhiv_marker" %ni% names(df))
+    df <- dplyr::mutate(df, plhiv_marker = NA_real_)
   
   ref_id <- "725ebd70"
   vrsn <- 2

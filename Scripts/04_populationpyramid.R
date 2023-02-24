@@ -127,6 +127,8 @@
   
   cap_note <- ""
   
+  f_nrow <- 1
+  
   # Display only a subset of PSNUs
   if("psnuuid" %in% names(df)){
     df_psnus <- df %>% 
@@ -134,12 +136,14 @@
     
     n_max <- 8
     
-    cap_note <- ifelse(nrow(df_psnus) > n_max, "Note: Limited to the largest PSNUs by Population (Est) \n", "")
+    cap_note <- ifelse(length(unique(df_psnus$psnuuid)) > n_max, "Note: Limited to the largest PSNUs by Population (Est) \n", "")
     
     v_lim_uids <- df_psnus %>% 
       dplyr::count(psnuuid, wt = targets, name = "targets", sort = TRUE) %>% 
       dplyr::slice_head(n = n_max) %>%  
       dplyr::pull(psnuuid)
+    
+    f_nrow <- ifelse(length(v_lim_uids) > 4, 2, 1)
     
     df <- dplyr::filter(df, psnuuid %in% v_lim_uids) 
   }
@@ -151,7 +155,7 @@
     ggplot2::geom_blank(aes(axis_min)) +
     ggplot2::geom_col(alpha = .8, na.rm = TRUE) +
     ggplot2::geom_vline(aes(xintercept = 0), color = "white", linewidth = 1.1)+
-    ggplot2::facet_wrap(~facet_grp, scales = "free_x", nrow = 2) +
+    ggplot2::facet_wrap(~facet_grp, scales = "free_x", nrow = f_nrow) +
     ggplot2::scale_fill_manual(values = c("Male" = glitr::genoa, 
                                           "Female" = glitr::moody_blue)) +
     ggplot2::scale_x_continuous(

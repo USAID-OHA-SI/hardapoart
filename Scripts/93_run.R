@@ -19,9 +19,15 @@ library(rmarkdown)
 source("Scripts/98_export_imgs.R")
 
 # SETUP DATA --------------------------------------------------------------
-
-# source(here("Scripts/91_setup.R"))
-#run manually metadata causing issues with rmd - cannot change value of locked binding for 'metadata'
+  
+  #need to store a placeholder for metadata, to avoid conflict with rmarkdown metadata
+  metadata <- ""
+  
+  #load all data/metadata info
+  source(here("Scripts/91_setup.R"))
+  
+  #remove placeholder
+  rm(metadata)
 
 # GLOBAL VARIABLES --------------------------------------------------------
 
@@ -39,18 +45,12 @@ source("Scripts/98_export_imgs.R")
     params = map(vct_cntry, ~list(curr_pd = metadata_msd$curr_pd, cntry = ., agency = "PEPFAR"))
   )
   
-  # reports <- tibble(
-  #   output_file = glue("{metadata$curr_pd}_{vct_cntry}_cop-support-viz_oha-siei.pptx"),
-  #   params = map(vct_cntry, ~list(curr_pd = metadata$curr_pd, cntry = ., agency = "PEPFAR"))
-  # )
-  
-
-    
-  #create reports
+  #create (html) reports via rmd 
   reports %>%
     pwalk(render,
           input = here("Scripts","country_report.Rmd"))
 
+  #create (html) reports via qmd
   # reports %>%
   #   filter(str_detect(output_file, "Nigeria")) %>% 
   #   pwalk(function(output_file, params) {
@@ -63,6 +63,8 @@ source("Scripts/98_export_imgs.R")
   #   })
   
   
-  vct_cntry
+ 
+  #export folder of images
+  walk(vct_cntry, 
+       ~export_imgs(.x, "PEPFAR"))
   
-  export_imgs("Malawi", "PEPFAR")

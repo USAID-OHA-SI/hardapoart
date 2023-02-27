@@ -12,7 +12,7 @@ library(tidyverse)
 library(glue)
 library(gophr)
 library(here)
-library(quarto)
+#library(quarto)
 library(rmarkdown)
 
 

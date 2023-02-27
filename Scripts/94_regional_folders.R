@@ -30,6 +30,7 @@ source(here("Scripts/20_dreams_prev-gaps_psnu.R"))
 source(here("Scripts/21_tbstat_coverage.R"))
 source(here("Scripts/22_tpt_completion.R"))
 source(here("Scripts/99_utilities.R"))
+source(here("Scripts/98_export_imgs.R"))
 
 regions<-c("Western Hemisphere Region", "West Africa Region","Asia Region")
 
@@ -38,6 +39,7 @@ for (region in regions)
 {
 vct_cntry <- glamr::pepfar_country_list %>% filter(operatingunit==region) %>%
              select(country)
+print(vct_cntry)
 walk(vct_cntry$country,~export_imgs(.,agency="PEPFAR"))
 }
 

@@ -128,7 +128,7 @@ export_imgs <- function(cntry, agency, folder_out = "Images"){
   
   #tpt
   df_msd %>%
-    prep_tpt(params$cntry, params$agency) %>%
+    prep_tpt(cntry, agency) %>%
     viz_tpt()
   
   si_save(file.path(fldr, glue("{length(list.files(fldr, 'png')) + 1}_{cntry_iso}_{agency_lwr}_tpt")), device = "png")
